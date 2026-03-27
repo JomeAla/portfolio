@@ -1,59 +1,173 @@
-# Developer Portfolio - Environment Setup
+# JoAla Portfolio - Setup Instructions
 
-## Requirements
+## Developer Information
+- **Name:** Jome Alawuru
+- **Email:** jomealawuru@hotmail.com
+- **Phone:** +2349065257784
+- **Twitter:** @jomswoks
 
+---
+
+## Quick Start (Local Development)
+
+### Prerequisites
 - PHP 8.1 or higher
 - Composer
+- Node.js & npm
 - MySQL 5.7+
-- Node.js & NPM (for Tailwind CSS)
 
-## Quick Start
+### Step 1: Install Dependencies
 
-1. Create new Laravel project:
 ```bash
-composer create-project laravel/laravel joala-portfolio
-cd joala-portfolio
-```
+# Navigate to project
+cd C:/Users/jomea/JoAla/portfolio
 
-2. Install dependencies:
-```bash
-composer require laravel/breeze spatie/laravel-permission
+# Install PHP dependencies
+composer install
+
+# Install Node.js dependencies
 npm install
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init
 ```
 
-3. Copy .env file and configure:
+### Step 2: Configure Environment
+
 ```bash
-cp .env.example .env
+# Copy environment file
+copy .env.example .env
+
+# Edit .env with your database credentials
 ```
 
-4. Update .env with your database credentials and settings
+Example `.env` configuration:
+```env
+APP_NAME="JoAla Portfolio"
+APP_URL=http://localhost:8000
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=joala_portfolio
+DB_USERNAME=root
+DB_PASSWORD=
 
-5. Run migrations:
+MAIL_MAILER=smtp
+MAIL_HOST=127.0.0.1
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+### Step 3: Generate Key & Setup Database
+
 ```bash
+# Generate application key
+php artisan key:generate
+
+# Create database (in MySQL)
+# CREATE DATABASE joala_portfolio;
+
+# Run migrations
 php artisan migrate
 ```
 
-6. Create admin user:
+### Step 4: Create Admin User
+
 ```bash
-php artisan make:seeder AdminUserSeeder
+# Run the seeder
+php artisan db:seed --class=AdminUserSeeder
 ```
 
-7. Build assets:
-```bash
-npm run build
-```
+### Step 5: Start Development Server
 
-8. Start development server:
 ```bash
+# Start Laravel server
 php artisan serve
+
+# Start Vite (for frontend)
+npm run dev
 ```
 
-## Deployment to Shared Hosting
+---
 
-1. Upload all files except /vendor to your hosting
-2. Upload /vendor folder or run `composer install` on server
-3. Configure .env on server
-4. Run migrations on server
-5. Set proper file permissions
+## Admin Login
+
+- **URL:** http://localhost:8000/admin/login
+- **Email:** jomealawuru@hotmail.com
+- **Password:** password123
+
+---
+
+## Public Pages
+
+| Page | URL |
+|------|-----|
+| Home | http://localhost:8000/ |
+| Portfolio | http://localhost:8000/portfolio |
+| Services | http://localhost:8000/services |
+| About | http://localhost:8000/about |
+| Contact | http://localhost:8000/contact |
+| Project Brief | http://localhost:8000/brief |
+
+---
+
+## Default Services (Database Seeds)
+
+The following services will be available:
+1. Web Application Development
+2. Mobile App Development
+3. UI/UX Design
+4. API Development & Integration
+5. Business Process Automation
+6. Technical Consultation
+
+---
+
+## Paystack Setup
+
+1. Create account at https://paystack.com
+2. Get your API keys (test keys for development)
+3. Go to Admin Panel > Settings > Payment
+4. Enter keys and enable test mode
+
+---
+
+## GitHub Integration
+
+1. Create Personal Access Token at https://github.com/settings/tokens
+2. Go to Admin Panel > Settings > GitHub
+3. Enter username and token
+
+---
+
+## Deployment to Shared Hosting (WhoGoHost)
+
+1. **Upload Files:**
+   - Upload all files except `vendor/` to `public_html`
+   - Upload `vendor/` folder separately
+
+2. **Setup Database:**
+   - Create MySQL database in cPanel
+   - Import migration SQL
+
+3. **Configure .env:**
+   - Update database credentials
+   - Update APP_URL to your domain
+
+4. **Permissions:**
+   ```bash
+   chmod -R 755 storage/
+   chmod -R 755 bootstrap/cache/
+   ```
+
+5. **SSL:**
+   - Enable Let's Encrypt in cPanel
+
+---
+
+## Support
+
+For issues, check:
+- Laravel documentation: https://laravel.com/docs
+- Paystack docs: https://paystack.com/docs
+- GitHub API docs: https://docs.github.com

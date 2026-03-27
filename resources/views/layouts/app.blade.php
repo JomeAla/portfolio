@@ -1,3 +1,4 @@
+@php($settings = $settings ?? [])
 <!DOCTYPE html>
 <html lang="en">
 <head>

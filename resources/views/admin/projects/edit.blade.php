@@ -8,7 +8,7 @@
     <p class="text-gray-600 mt-2">Update project details</p>
 </div>
 
-<form method="POST" action="{{ route('admin.projects.update', $project) }}" enctype="multipart/form-data" class="space-y-6">
+<form method="POST" action="/admin/projects/{{ $project->id }}" enctype="multipart/form-data" class="space-y-6">
     @csrf
     @method('PUT')
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
@@ -39,45 +39,10 @@
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
-                <input type="text" name="industry" value="{{ $project->industry }}" 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Client Name</label>
-                <input type="text" name="client_name" value="{{ $project->client_name }}" 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
-                <input type="text" name="duration" value="{{ $project->duration }}" 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
-        <h2 class="text-lg font-semibold text-slate-900 mb-4">Project Details</h2>
-        
-        <div class="grid grid-cols-1 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Problem Solved</label>
-                <textarea name="problem_solved" rows="3" 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">{{ $project->problem_solved }}</textarea>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Solution</label>
-                <textarea name="solution" rows="3" 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">{{ $project->solution }}</textarea>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Technologies (JSON)</label>
-                <input type="text" name="technologies" value="{{ is_array($project->technologies) ? json_encode($project->technologies) : $project->technologies }}" 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Technologies</label>
+                <input type="text" name="technologies" value="{{ $project->technologies }}" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="Laravel, React, MySQL">
             </div>
         </div>
     </div>
@@ -85,25 +50,16 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
         <h2 class="text-lg font-semibold text-slate-900 mb-4">Media & Links</h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 gap-6">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Thumbnail Image</label>
-                <input type="file" name="thumbnail" accept="image/*" 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-                @if($project->thumbnail)
-                    <p class="mt-2 text-sm text-gray-500">Current: {{ $project->thumbnail }}</p>
-                @endif
-            </div>
-            
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Live URL</label>
-                <input type="url" name="live_url" value="{{ $project->live_url }}" 
+                <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                <input type="url" name="image" value="{{ $project->image }}" 
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
             </div>
             
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2">GitHub URL</label>
-                <input type="url" name="github_url" value="{{ $project->github_url }}" 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Project URL</label>
+                <input type="url" name="link" value="{{ $project->link }}" 
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
             </div>
         </div>
@@ -121,7 +77,7 @@
         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
             Update Project
         </button>
-        <a href="{{ route('admin.projects.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors">
+        <a href="/admin/projects" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors">
             Cancel
         </a>
     </div>

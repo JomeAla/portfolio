@@ -28,7 +28,7 @@
 
 <!-- General Settings -->
 <div id="tab-general" class="tab-content">
-    <form method="POST" action="{{ route('admin.settings.general') }}" class="space-y-6">
+    <form method="POST" action="/admin/settings/general" class="space-y-6">
         @csrf
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
             <h2 class="text-lg font-semibold text-slate-900 mb-4">General Information</h2>
@@ -102,7 +102,7 @@
 
 <!-- Appearance Settings -->
 <div id="tab-appearance" class="tab-content hidden">
-    <form method="POST" action="{{ route('admin.settings.appearance') }}" enctype="multipart/form-data" class="space-y-6">
+    <form method="POST" action="/admin/settings/appearance" enctype="multipart/form-data" class="space-y-6">
         @csrf
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
             <h2 class="text-lg font-semibold text-slate-900 mb-4">Branding</h2>
@@ -182,7 +182,7 @@
 
 <!-- Payment Settings -->
 <div id="tab-payment" class="tab-content hidden">
-    <form method="POST" action="{{ route('admin.settings.payment') }}" class="space-y-6">
+    <form method="POST" action="/admin/settings/payment" class="space-y-6">
         @csrf
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
             <h2 class="text-lg font-semibold text-slate-900 mb-4">Paystack Configuration</h2>
@@ -218,7 +218,7 @@
 
 <!-- GitHub Settings -->
 <div id="tab-github" class="tab-content hidden">
-    <form method="POST" action="{{ route('admin.settings.github') }}" class="space-y-6">
+    <form method="POST" action="/admin/settings/github" class="space-y-6">
         @csrf
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
             <h2 class="text-lg font-semibold text-slate-900 mb-4">GitHub Integration</h2>

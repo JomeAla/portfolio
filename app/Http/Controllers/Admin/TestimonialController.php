@@ -10,7 +10,7 @@ class TestimonialController extends Controller
 {
     public function index()
     {
-        $testimonials = Testimonial::orderBy('order')->get();
+        $testimonials = Testimonial::orderBy('id')->paginate(10);
         return view('admin.testimonials.index', compact('testimonials'));
     }
 
@@ -28,7 +28,7 @@ class TestimonialController extends Controller
 
         Testimonial::create($request->all());
 
-        return redirect()->route('admin.testimonials.index')->with('success', 'Testimonial created.');
+        return redirect('/admin/testimonials')->with('success', 'Testimonial created.');
     }
 
     public function edit(Testimonial $testimonial)
@@ -45,12 +45,12 @@ class TestimonialController extends Controller
 
         $testimonial->update($request->all());
 
-        return redirect()->route('admin.testimonials.index')->with('success', 'Testimonial updated.');
+        return redirect('/admin/testimonials')->with('success', 'Testimonial updated.');
     }
 
     public function destroy(Testimonial $testimonial)
     {
         $testimonial->delete();
-        return redirect()->route('admin.testimonials.index')->with('success', 'Testimonial deleted.');
+        return redirect('/admin/testimonials')->with('success', 'Testimonial deleted.');
     }
 }

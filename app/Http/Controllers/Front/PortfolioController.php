@@ -16,10 +16,9 @@ class PortfolioController extends Controller
             $query->where('category', $request->category);
         }
         
-        $projects = $query->orderBy('order')->paginate(12);
-        $categories = Project::distinct()->pluck('category')->filter();
+        $projects = $query->orderBy('id')->paginate(12);
         
-        return view('front.portfolio.index', compact('projects', 'categories'));
+        return view('front.portfolio.index', compact('projects'));
     }
 
     public function show(Project $project)

@@ -11,7 +11,7 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::orderBy('order')->get();
+        $services = Service::orderBy('id')->paginate(10);
         return view('admin.services.index', compact('services'));
     }
 
@@ -32,7 +32,7 @@ class ServiceController extends Controller
 
         Service::create($data);
 
-        return redirect()->route('admin.services.index')->with('success', 'Service created.');
+        return redirect('/admin/services')->with('success', 'Service created.');
     }
 
     public function edit(Service $service)
@@ -52,12 +52,12 @@ class ServiceController extends Controller
 
         $service->update($data);
 
-        return redirect()->route('admin.services.index')->with('success', 'Service updated.');
+        return redirect('/admin/services')->with('success', 'Service updated.');
     }
 
     public function destroy(Service $service)
     {
         $service->delete();
-        return redirect()->route('admin.services.index')->with('success', 'Service deleted.');
+        return redirect('/admin/services')->with('success', 'Service deleted.');
     }
 }

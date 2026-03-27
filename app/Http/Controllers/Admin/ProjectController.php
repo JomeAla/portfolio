@@ -11,7 +11,7 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::latest()->paginate(10);
+        $projects = Project::orderBy('id')->paginate(10);
         return view('admin.projects.index', compact('projects'));
     }
 
@@ -31,13 +31,9 @@ class ProjectController extends Controller
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
         
-        if ($request->hasFile('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')->store('projects', 'public');
-        }
-
         Project::create($data);
 
-        return redirect()->route('admin.projects.index')->with('success', 'Project created.');
+        return redirect('/admin/projects')->with('success', 'Project created.');
     }
 
     public function edit(Project $project)
@@ -56,18 +52,14 @@ class ProjectController extends Controller
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
 
-        if ($request->hasFile('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')->store('projects', 'public');
-        }
-
         $project->update($data);
 
-        return redirect()->route('admin.projects.index')->with('success', 'Project updated.');
+        return redirect('/admin/projects')->with('success', 'Project updated.');
     }
 
     public function destroy(Project $project)
     {
         $project->delete();
-        return redirect()->route('admin.projects.index')->with('success', 'Project deleted.');
+        return redirect('/admin/projects')->with('success', 'Project deleted.');
     }
 }

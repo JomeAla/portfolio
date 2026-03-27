@@ -1,5 +1,11 @@
 # JoAla Portfolio - Developer Portfolio Website
 
+**Developer:** Jome Alawuru  
+**Phone:** +2349065257784  
+**Twitter:** @jomswoks  
+**Location:** Nigeria  
+**Email:** jomealawuru@hotmail.com
+
 ## Project Overview
 
 A professional portfolio website for a Nigerian-based custom application developer offering web development, mobile app development, UI/UX design, and automation services.

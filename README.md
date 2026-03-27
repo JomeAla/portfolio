@@ -115,8 +115,12 @@ php artisan serve
 | `services` | Services offered |
 | `testimonials` | Client testimonials |
 | `project_briefs` | Client project submissions |
-| `github_repos` | GitHub repository data |
-| `payments` | Payment transaction logs |
+| `support_tickets` | Contact form submissions |
+| `products` | Digital products for sale |
+| `orders` | Product purchase orders |
+| `coupons` | Discount coupons |
+| `promo_banners` | Promotional banners |
+| `invoices` | Invoice system for services |
 
 ---
 
@@ -128,6 +132,22 @@ php artisan serve
 - Manage services (CRUD)
 - Manage testimonials (CRUD)
 - View and respond to project briefs
+- View and manage support tickets
+
+### Digital Store
+- Manage products (templates, scripts)
+- Create and manage discount coupons
+- Manage promotional banners
+- View and manage orders
+- Resend download links to customers
+
+### Invoice System
+- Create invoices for services
+- Generate Paystack payment links
+- Send invoices via email
+- Support installment payments
+- 24-hour invoice expiry
+- Mark invoices as paid manually
 
 ### Design Customization
 - Upload logo and favicon
@@ -139,6 +159,7 @@ php artisan serve
 - Configure Paystack API keys (test/live)
 - Toggle test mode
 - View payment history
+- Email notifications for new submissions
 
 ### GitHub Integration
 - Connect GitHub account with token
@@ -150,17 +171,19 @@ php artisan serve
 ## Public Features
 
 ### Pages
-- **Home**: Hero, featured projects, testimonials, stats, CTA
+- **Home**: Hero, featured projects, services, testimonials, stats, CTA
 - **Portfolio**: Filterable project grid with details
 - **Services**: Service cards with pricing
+- **Store**: Digital products (templates, scripts)
 - **About**: Developer profile, skills, experience
 - **Contact**: Contact form, info, WhatsApp link
 - **Project Brief**: Multi-step form for new projects
+- **Invoice View**: Client-facing invoice with Paystack payment
 
 ### Integrations
-- **Paystack**: Accept payments for services
+- **Paystack**: Accept payments for products and invoices
 - **GitHub**: Display portfolio from GitHub
-- **Email**: Notifications for new briefs
+- **Email**: Notifications for new briefs, support tickets, invoices
 - **WhatsApp**: Direct contact option
 
 ---
@@ -193,14 +216,24 @@ PAYSTACK_TEST_MODE=true
 | Key | Description | Example |
 |-----|-------------|---------|
 | `site_name` | Website title | "JoAla Development" |
+| `site_description` | Site description | "Professional developer..." |
+| `contact_email` | Contact email | "jomealawuru@hotmail.com" |
+| `phone` | Phone number | "+2349065257784" |
+| `whatsapp` | WhatsApp number | "+2349065257784" |
+| `address` | Office address | "132 Ovwian main road..." |
 | `logo` | Logo file path | "/uploads/logos/logo.png" |
+| `favicon` | Favicon path | "/uploads/logos/favicon.png" |
 | `primary_color` | Main brand color | "#0f172a" |
 | `accent_color` | Accent color | "#3b82f6" |
 | `font_heading` | Heading font | "Cabinet Grotesk" |
 | `font_body` | Body font | "Geist" |
 | `paystack_public_key` | Paystack public key | "pk_test_..." |
 | `paystack_secret_key` | Paystack secret key | "sk_test_..." |
+| `paystack_test_mode` | Enable test mode | "true" |
 | `github_username` | GitHub username | "joala-dev" |
+| `github_token` | GitHub personal token | "ghp_..." |
+| `mail_from_address` | Email from address | "support@joala.com.ng" |
+| `mail_from_name` | Email from name | "JoAla Support" |
 
 ---
 

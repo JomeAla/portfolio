@@ -80,30 +80,25 @@
             <p class="text-lg text-slate-600 mt-4 max-w-2xl mx-auto">Delivering high-quality custom applications tailored to your business needs.</p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:shadow-lg transition-shadow">
-                <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
-                    <i class="fas fa-laptop-code text-2xl text-blue-600"></i>
+        <div class="flex flex-wrap justify-center gap-8">
+            @forelse($services as $index => $service)
+            @php
+                $colors = ['blue', 'purple', 'emerald', 'amber', 'rose', 'cyan', 'indigo', 'orange'];
+                $color = $colors[$index % count($colors)];
+                $iconClass = $service->icon ?: 'fas fa-code';
+            @endphp
+            <div class="p-8 rounded-2xl bg-slate-50 border-2 border-slate-100 hover:border-{{ $color }}-500 hover:shadow-lg transition-all cursor-pointer w-full md:w-[calc(33.333%-21px)] max-w-sm">
+                <div class="w-14 h-14 bg-{{ $color }}-100 rounded-2xl flex items-center justify-center mb-6">
+                    <i class="{{ $iconClass }} text-2xl text-{{ $color }}-600"></i>
                 </div>
-                <h3 class="text-xl font-semibold text-slate-900 mb-3">Web Development</h3>
-                <p class="text-slate-600">Custom web applications built with modern frameworks. Scalable, secure, and optimized for performance.</p>
+                <h3 class="text-xl font-semibold text-slate-900 mb-3">{{ $service->title }}</h3>
+                <p class="text-slate-600">{{ $service->description }}</p>
             </div>
-            
-            <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:shadow-lg transition-shadow">
-                <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
-                    <i class="fas fa-mobile-alt text-2xl text-purple-600"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-slate-900 mb-3">Mobile Apps</h3>
-                <p class="text-slate-600">Native and cross-platform mobile applications for iOS and Android that deliver great user experiences.</p>
+            @empty
+            <div class="text-center py-8">
+                <p class="text-slate-500">Services coming soon.</p>
             </div>
-            
-            <div class="p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:shadow-lg transition-shadow">
-                <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6">
-                    <i class="fas fa-paint-brush text-2xl text-emerald-600"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-slate-900 mb-3">UI/UX Design</h3>
-                <p class="text-slate-600">User-centered design that combines aesthetics with functionality for optimal user engagement.</p>
-            </div>
+            @endforelse
         </div>
         
         <div class="text-center mt-12">
@@ -156,6 +151,65 @@
                 </div>
             </a>
             @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+<!-- Featured Products (Store) -->
+@if(isset($featuredProducts) && $featuredProducts->count() > 0)
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2 class="text-4xl font-bold text-slate-900">Digital Products</h2>
+                <p class="text-lg text-slate-600 mt-4">Premium templates, scripts, and more</p>
+            </div>
+            <a href="{{ route('store') }}" class="hidden md:inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-medium">
+                View Store <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach($featuredProducts as $product)
+            <a href="{{ route('store.show', $product->slug) }}" class="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1">
+                <div class="aspect-video relative overflow-hidden">
+                    @if($product->image)
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    @else
+                    <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-box text-4xl text-white/50"></i>
+                    </div>
+                    @endif
+                    <div class="absolute top-3 right-3">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-white/90 text-slate-700">
+                            {{ ucfirst($product->type) }}
+                        </span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">{{ $product->title }}</h3>
+                    <div class="flex items-center justify-between mt-3">
+                        @if($product->isOnSale())
+                        <div>
+                            <span class="text-sm text-gray-400 line-through">₦{{ number_format($product->price) }}</span>
+                            <span class="text-lg font-bold text-emerald-600">₦{{ number_format($product->sale_price) }}</span>
+                        </div>
+                        @else
+                        <span class="text-lg font-bold text-slate-900">₦{{ number_format($product->price) }}</span>
+                        @endif
+                        <span class="text-sm text-blue-600 font-medium">View</span>
+                    </div>
+                </div>
+            </a>
+            @endforeach
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="{{ route('store') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                <i class="fas fa-shopping-bag"></i>
+                Browse Store
+            </a>
         </div>
     </div>
 </section>

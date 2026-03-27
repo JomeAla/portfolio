@@ -19,15 +19,18 @@
                 <h3 class="text-xl font-bold text-slate-900 mb-3">{{ $service->title }}</h3>
                 <p class="text-slate-600 mb-6">{{ $service->description }}</p>
                 
-                @if($service->features && count($service->features) > 0)
+                @if($service->features)
+                @php $features = is_array($service->features) ? $service->features : json_decode($service->features, true); @endphp
+                @if($features && count($features) > 0)
                 <ul class="space-y-2 mb-6">
-                    @foreach($service->features as $feature)
+                    @foreach($features as $feature)
                     <li class="flex items-center gap-2 text-sm text-slate-600">
                         <i class="fas fa-check text-emerald-500"></i>
                         {{ $feature }}
                     </li>
                     @endforeach
                 </ul>
+                @endif
                 @endif
                 
                 @if($service->pricing)

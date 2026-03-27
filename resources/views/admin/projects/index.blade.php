@@ -47,13 +47,9 @@
                         <a href="/admin/projects/{{ $project->id }}/edit" class="text-gray-400 hover:text-blue-600">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <form method="POST" action="/admin/projects/{{ $project->id }}" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-gray-400 hover:text-red-600" onclick="return confirm('Are you sure?')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
+                        <a href="/admin/projects/{{ $project->id }}/delete" class="text-gray-400 hover:text-red-600" onclick="return confirm('Are you sure you want to delete this project?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
                     </div>
                 </td>
             </tr>

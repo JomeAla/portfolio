@@ -37,6 +37,7 @@
                     <a href="{{ route('home') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Home</a>
                     <a href="{{ route('portfolio') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Portfolio</a>
                     <a href="{{ route('services') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Services</a>
+                    <a href="{{ route('store') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Store</a>
                     <a href="{{ route('about') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">About</a>
                     <a href="{{ route('contact') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Contact</a>
                     <a href="{{ route('brief.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Start a Project</a>
@@ -62,6 +63,7 @@
                     <ul class="space-y-2 text-slate-400">
                         <li><a href="{{ route('portfolio') }}" class="hover:text-white transition-colors">Portfolio</a></li>
                         <li><a href="{{ route('services') }}" class="hover:text-white transition-colors">Services</a></li>
+                        <li><a href="{{ route('store') }}" class="hover:text-white transition-colors">Store</a></li>
                         <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">About</a></li>
                         <li><a href="{{ route('contact') }}" class="hover:text-white transition-colors">Contact</a></li>
                     </ul>
@@ -69,15 +71,10 @@
                 <div>
                     <h4 class="font-semibold mb-4">Contact</h4>
                     <ul class="space-y-2 text-slate-400">
-                        @if(isset($settings['phone']))
-                        <li><i class="fas fa-phone mr-2"></i>{{ $settings['phone'] }}</li>
-                        @endif
-                        @if(isset($settings['whatsapp']))
-                        <li><i class="fab fa-whatsapp mr-2"></i>{{ $settings['whatsapp'] }}</li>
-                        @endif
-                        @if(isset($settings['contact_email']))
-                        <li><i class="fas fa-envelope mr-2"></i>{{ $settings['contact_email'] }}</li>
-                        @endif
+                        <li><i class="fas fa-phone mr-2"></i>+2349065257784</li>
+                        <li><i class="fab fa-whatsapp mr-2"></i>+2349065257784</li>
+                        <li><i class="fas fa-envelope mr-2"></i>support@joala.com.ng</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i>132 Ovwian main road, Opposite the Primary School, Ovwian, Delta State, Nigeria</li>
                     </ul>
                 </div>
             </div>

@@ -40,6 +40,36 @@
         <p class="text-cyan-100 text-sm mt-1">View client requests</p>
     </a>
     
+    <a href="/admin/products" class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl p-6 text-white hover:shadow-lg transition-all hover:-translate-y-1">
+        <i class="fas fa-shopping-bag text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg">Products</h3>
+        <p class="text-pink-100 text-sm mt-1">Manage digital products</p>
+    </a>
+
+    <a href="/admin/coupons" class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-6 text-white hover:shadow-lg transition-all hover:-translate-y-1">
+        <i class="fas fa-tag text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg">Coupons</h3>
+        <p class="text-yellow-100 text-sm mt-1">Manage discount codes</p>
+    </a>
+
+    <a href="/admin/banners" class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl p-6 text-white hover:shadow-lg transition-all hover:-translate-y-1">
+        <i class="fas fa-bullhorn text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg">Banners</h3>
+        <p class="text-indigo-100 text-sm mt-1">Promotional banners</p>
+    </a>
+
+    <a href="/admin/support" class="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-6 text-white hover:shadow-lg transition-all hover:-translate-y-1">
+        <i class="fas fa-life-ring text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg">Support</h3>
+        <p class="text-teal-100 text-sm mt-1">Manage support tickets</p>
+    </a>
+
+    <a href="/admin/orders" class="bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl p-6 text-white hover:shadow-lg transition-all hover:-translate-y-1">
+        <i class="fas fa-shopping-cart text-2xl mb-3"></i>
+        <h3 class="font-semibold text-lg">Orders</h3>
+        <p class="text-rose-100 text-sm mt-1">View customer orders</p>
+    </a>
+
     <a href="/" target="_blank" class="bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl p-6 text-white hover:shadow-lg transition-all hover:-translate-y-1">
         <i class="fas fa-external-link-alt text-2xl mb-3"></i>
         <h3 class="font-semibold text-lg">View Live Site</h3>

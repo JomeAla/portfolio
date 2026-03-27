@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::orderBy('id')->paginate(10);
+        $projects = Project::orderBy('order')->paginate(10);
         return view('admin.projects.index', compact('projects'));
     }
 
@@ -30,7 +31,27 @@ class ProjectController extends Controller
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
-        
+
+        if ($request->hasFile('thumbnail')) {
+            $filename = time() . '_' . Str::random(10) . '.' . $request->file('thumbnail')->getClientOriginalExtension();
+            $request->file('thumbnail')->move(public_path('uploads/projects'), $filename);
+            $data['thumbnail'] = 'uploads/projects/' . $filename;
+        }
+
+        if ($request->hasFile('images')) {
+            $images = [];
+            foreach ($request->file('images') as $image) {
+                $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/projects/gallery'), $filename);
+                $images[] = 'uploads/projects/gallery/' . $filename;
+            }
+            $data['images'] = json_encode($images);
+        }
+
+        if ($request->technologies) {
+            $data['technologies'] = json_encode(array_map('trim', explode(',', $request->technologies)));
+        }
+
         Project::create($data);
 
         return redirect('/admin/projects')->with('success', 'Project created.');
@@ -52,13 +73,57 @@ class ProjectController extends Controller
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
 
+        if ($request->hasFile('thumbnail')) {
+            if ($project->thumbnail && file_exists(public_path($project->thumbnail))) {
+                unlink(public_path($project->thumbnail));
+            }
+            $filename = time() . '_' . Str::random(10) . '.' . $request->file('thumbnail')->getClientOriginalExtension();
+            $request->file('thumbnail')->move(public_path('uploads/projects'), $filename);
+            $data['thumbnail'] = 'uploads/projects/' . $filename;
+        }
+
+        if ($request->hasFile('images')) {
+            if ($project->images) {
+                foreach (json_decode($project->images) as $img) {
+                    if (file_exists(public_path($img))) {
+                        unlink(public_path($img));
+                    }
+                }
+            }
+            $images = [];
+            foreach ($request->file('images') as $image) {
+                $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('uploads/projects/gallery'), $filename);
+                $images[] = 'uploads/projects/gallery/' . $filename;
+            }
+            $data['images'] = json_encode($images);
+        }
+
+        if ($request->technologies) {
+            $data['technologies'] = json_encode(array_map('trim', explode(',', $request->technologies)));
+        } else {
+            $data['technologies'] = null;
+        }
+
         $project->update($data);
 
         return redirect('/admin/projects')->with('success', 'Project updated.');
     }
 
-    public function destroy(Project $project)
+    public function destroy($id)
     {
+        $project = Project::findOrFail($id);
+        
+        if ($project->thumbnail && file_exists(public_path($project->thumbnail))) {
+            unlink(public_path($project->thumbnail));
+        }
+        if ($project->images) {
+            foreach (json_decode($project->images) as $img) {
+                if (file_exists(public_path($img))) {
+                    unlink(public_path($img));
+                }
+            }
+        }
         $project->delete();
         return redirect('/admin/projects')->with('success', 'Project deleted.');
     }

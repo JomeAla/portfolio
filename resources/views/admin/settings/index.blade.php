@@ -23,6 +23,9 @@
         <button onclick="switchTab('github')" class="pb-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium tab-btn" data-tab="github">
             GitHub
         </button>
+        <button onclick="switchTab('email')" class="pb-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium tab-btn" data-tab="email">
+            Email (SMTP)
+        </button>
     </nav>
 </div>
 
@@ -243,6 +246,76 @@
 
         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
             Save GitHub Settings
+        </button>
+    </form>
+</div>
+
+<!-- Email/SMTP Settings -->
+<div id="tab-email" class="tab-content hidden">
+    <form method="POST" action="/admin/settings/email" class="space-y-6">
+        @csrf
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
+            <h2 class="text-lg font-semibold text-slate-900 mb-4">SMTP Email Configuration</h2>
+            <p class="text-sm text-gray-500 mb-6">Configure your email settings to send support responses and product download links to customers.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mail Mailer</label>
+                    <select name="mail_mailer" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
+                        <option value="smtp" {{ ($settings['mail_mailer'] ?? '') == 'smtp' ? 'selected' : '' }}>SMTP</option>
+                        <option value="sendmail" {{ ($settings['mail_mailer'] ?? '') == 'sendmail' ? 'selected' : '' }}>Sendmail</option>
+                        <option value="log" {{ ($settings['mail_mailer'] ?? '') == 'log' ? 'selected' : '' }}>Log (Development)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mail Host</label>
+                    <input type="text" name="mail_host" value="{{ $settings['mail_host'] ?? '' }}" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                        placeholder="smtp.mailprovider.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mail Port</label>
+                    <input type="number" name="mail_port" value="{{ $settings['mail_port'] ?? '587' }}" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                        placeholder="587">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mail Username</label>
+                    <input type="text" name="mail_username" value="{{ $settings['mail_username'] ?? '' }}" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                        placeholder="username">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mail Password</label>
+                    <input type="password" name="mail_password" value="{{ $settings['mail_password'] ?? '' }}" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                        placeholder="password">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mail Encryption</label>
+                    <select name="mail_encryption" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
+                        <option value="tls" {{ ($settings['mail_encryption'] ?? 'tls') == 'tls' ? 'selected' : '' }}>TLS</option>
+                        <option value="ssl" {{ ($settings['mail_encryption'] ?? '') == 'ssl' ? 'selected' : '' }}>SSL</option>
+                        <option value="" {{ ($settings['mail_encryption'] ?? '') == '' ? 'selected' : '' }}>None</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">From Address</label>
+                    <input type="email" name="mail_from_address" value="{{ $settings['mail_from_address'] ?? 'support@joala.com.ng' }}" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                        placeholder="support@joala.com.ng">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">From Name</label>
+                    <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] ?? 'JoAla Support' }}" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                        placeholder="JoAla Support">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+            Save Email Settings
         </button>
     </form>
 </div>

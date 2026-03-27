@@ -81,4 +81,59 @@ class SettingsController extends Controller
 
         return back()->with('success', 'GitHub settings updated.');
     }
+
+    public function updateEmail(Request $request)
+    {
+        $fields = [
+            'mail_mailer', 'mail_host', 'mail_port', 
+            'mail_username', 'mail_password', 'mail_encryption',
+            'mail_from_address', 'mail_from_name'
+        ];
+
+        foreach ($fields as $field) {
+            $value = $request->has($field) ? $request->$field : '';
+            Setting::set($field, $value);
+        }
+
+        $this->updateEnvFile($request);
+
+        return back()->with('success', 'Email settings updated.');
+    }
+
+    protected function updateEnvFile(Request $request)
+    {
+        $envPath = base_path('.env');
+        $envContent = file_exists($envPath) ? file_get_contents($envPath) : '';
+
+        $mappings = [
+            'mail_mailer' => 'MAIL_MAILER',
+            'mail_host' => 'MAIL_HOST',
+            'mail_port' => 'MAIL_PORT',
+            'mail_username' => 'MAIL_USERNAME',
+            'mail_password' => 'MAIL_PASSWORD',
+            'mail_encryption' => 'MAIL_ENCRYPTION',
+            'mail_from_address' => 'MAIL_FROM_ADDRESS',
+            'mail_from_name' => 'MAIL_FROM_NAME',
+        ];
+
+        foreach ($mappings as $settingKey => $envKey) {
+            $value = $request->$settingKey ?? '';
+            $value = $this->formatEnvValue($value);
+            $pattern = '/^' . preg_quote($envKey, '/') . '=.*$/m';
+            $envContent = preg_replace($pattern, "{$envKey}={$value}", $envContent);
+        }
+
+        file_put_contents($envPath, $envContent);
+    }
+
+    protected function formatEnvValue($value)
+    {
+        if (empty($value)) {
+            return '';
+        }
+        if (preg_match('/[\s#=]/', $value) || strpos($value, '"') !== false) {
+            return '"' . str_replace('"', '\\"', $value) . '"';
+        }
+        return $value;
+    }
 }

@@ -45,6 +45,16 @@
                         </div>
                     </a>
                     
+                    <a href="mailto:support@joala.com.ng" class="flex items-center gap-4 text-slate-600 hover:text-blue-600 transition-colors">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-headset text-blue-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-slate-900">Support</p>
+                            <p>support@joala.com.ng</p>
+                        </div>
+                    </a>
+                    
                     <a href="https://twitter.com/jomswoks" target="_blank" class="flex items-center gap-4 text-slate-600 hover:text-blue-400 transition-colors">
                         <div class="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center">
                             <i class="fab fa-twitter text-slate-600"></i>
@@ -54,13 +64,30 @@
                             <p>@jomswoks</p>
                         </div>
                     </a>
+                    
+                    <div class="flex items-start gap-4 text-slate-600">
+                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-map-marker-alt text-amber-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-medium text-slate-900">Office Address</p>
+                            <p class="text-sm">132 Ovwian main road, Opposite the Primary School, Ovwian, Delta State, Nigeria</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/50">
                 <h2 class="text-xl font-bold text-slate-900 mb-6">Send a Message</h2>
                 
-                <form method="POST" action="{{ route('brief.store') }}" class="space-y-4">
+                @if(session('success'))
+                <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-4">
+                    <p class="font-semibold">Thank you!</p>
+                    <p class="text-sm">{{ session('success') }}</p>
+                </div>
+                @endif
+                
+                <form method="POST" action="{{ route('support.submit') }}" class="space-y-4">
                     @csrf
                     
                     <div>
@@ -74,14 +101,18 @@
                         <input type="email" name="email" required 
                             class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
                     </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Subject</label>
+                        <input type="text" name="subject" required 
+                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
+                    </div>
                     
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-2">Message</label>
-                        <textarea name="description" rows="4" required 
+                        <textarea name="message" rows="4" required 
                             class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"></textarea>
                     </div>
-                    
-                    <input type="hidden" name="project_type" value="other">
                     
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors">
                         Send Message

@@ -40,6 +40,10 @@
                     <i class="fas fa-envelope w-5"></i>
                     <span>Project Briefs</span>
                 </a>
+                <a href="/admin/invoices" class="flex items-center px-6 py-3 hover:bg-slate-800">
+                    <i class="fas fa-file-invoice-dollar w-5"></i>
+                    <span>Invoices</span>
+                </a>
                 <a href="/admin/pages" class="flex items-center px-6 py-3 hover:bg-slate-800">
                     <i class="fas fa-file-alt w-5"></i>
                     <span>Pages</span>

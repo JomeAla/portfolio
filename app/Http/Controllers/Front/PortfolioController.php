@@ -21,8 +21,10 @@ class PortfolioController extends Controller
         return view('front.portfolio.index', compact('projects'));
     }
 
-    public function show(Project $project)
+    public function show($slug)
     {
+        $project = Project::where('slug', $slug)->firstOrFail();
+        
         return view('front.portfolio.show', compact('project'));
     }
 }

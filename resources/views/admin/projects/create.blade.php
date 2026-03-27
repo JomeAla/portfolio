@@ -27,6 +27,20 @@
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
                     placeholder="Brief description of the project..."></textarea>
             </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Problem Solved</label>
+                <textarea name="problem_solved" rows="3" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="What problem does this project solve?"></textarea>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Solution</label>
+                <textarea name="solution" rows="3" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="How was the problem solved?"></textarea>
+            </div>
             
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Category *</label>
@@ -39,32 +53,73 @@
                     <option value="design">UI/UX Design</option>
                 </select>
             </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                <input type="text" name="industry" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="E.g., E-commerce, Healthcare, Finance">
+            </div>
             
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Technologies</label>
                 <input type="text" name="technologies" 
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                    placeholder="Laravel, React, MySQL">
+                    placeholder="Laravel, React, MySQL (comma separated)">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Client Name</label>
+                <input type="text" name="client_name" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="Client name (optional)">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                <input type="text" name="duration" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="E.g., 3 months">
             </div>
         </div>
     </div>
 
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
-        <h2 class="text-lg font-semibold text-slate-900 mb-4">Media & Links</h2>
+        <h2 class="text-lg font-semibold text-slate-900 mb-4">Media & Images</h2>
         
-        <div class="grid grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                <input type="url" name="image" 
-                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                    placeholder="https://...">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Thumbnail Image</label>
+                <input type="file" name="thumbnail" accept="image/*"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
+                <p class="text-xs text-gray-500 mt-1">Main project image (recommended: 800x600)</p>
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Project URL</label>
-                <input type="url" name="link" 
+                <label class="block text-sm font-medium text-gray-700 mb-2">Gallery Images</label>
+                <input type="file" name="images[]" accept="image/*" multiple
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
+                <p class="text-xs text-gray-500 mt-1">Select multiple screenshots</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
+        <h2 class="text-lg font-semibold text-slate-900 mb-4">Links</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">GitHub Repository</label>
+                <input type="url" name="github_url" 
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
-                    placeholder="https://...">
+                    placeholder="https://github.com/username/project">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Live Project URL</label>
+                <input type="url" name="live_url" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="https://project-demo.com">
             </div>
         </div>
         

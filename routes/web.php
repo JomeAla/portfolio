@@ -17,6 +17,10 @@ use App\Http\Controllers\Front\ContactController;
 use App\Http\Controllers\Front\BriefController as FrontBriefController;
 
 // Public Routes
+Route::get('/test', function() {
+    return 'Server is working!';
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio');
 Route::get('/portfolio/{slug}', [PortfolioController::class, 'show'])->name('portfolio.show');

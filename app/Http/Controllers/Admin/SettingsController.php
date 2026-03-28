@@ -51,6 +51,11 @@ class SettingsController extends Controller
             Setting::set('favicon', $favicon);
         }
 
+        if ($request->hasFile('about_photo')) {
+            $aboutPhoto = $request->file('about_photo')->store('about', 'public');
+            Setting::set('about_photo', $aboutPhoto);
+        }
+
         return back()->with('success', 'Appearance settings updated.');
     }
 

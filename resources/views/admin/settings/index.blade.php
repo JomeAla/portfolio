@@ -124,6 +124,14 @@
                     <input type="file" name="favicon" accept="image/*" 
                         class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">About Page Photo</label>
+                    <input type="file" name="about_photo" accept="image/*" 
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
+                    @if(isset($settings['about_photo']) && $settings['about_photo'])
+                        <p class="mt-2 text-sm text-gray-500">Current: {{ $settings['about_photo'] }}</p>
+                    @endif
+                </div>
             </div>
         </div>
 

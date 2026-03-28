@@ -7,7 +7,8 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <div class="mb-6">
-                <img src="{{ asset('uploads/about-me.jpg') }}" alt="Jome Alawuru" class="w-56 h-56 mx-auto rounded-full object-cover object-top shadow-lg border-4 border-white mt-4">
+                @php $aboutPhoto = \App\Models\Setting::get('about_photo'); @endphp
+                <img src="{{ $aboutPhoto ? asset('storage/' . $aboutPhoto) : asset('uploads/about-me.jpg') }}" alt="Jome Alawuru" class="w-56 h-56 mx-auto rounded-full object-cover object-top shadow-lg border-4 border-white mt-4">
             </div>
             <h1 class="text-4xl md:text-5xl font-bold text-slate-900">About Me</h1>
             <p class="text-lg text-slate-600 mt-4">Get to know more about me and my work.</p>

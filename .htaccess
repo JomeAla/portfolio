@@ -3,5 +3,11 @@
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
+    
+    # If requested file exists, serve it directly
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule . - [L]
+    
+    # Forward everything else to public/
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>

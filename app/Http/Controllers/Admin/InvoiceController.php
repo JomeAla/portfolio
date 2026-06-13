@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Setting;
+use App\Traits\HandlesMailConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
@@ -13,6 +14,7 @@ use Illuminate\Support\Str;
 
 class InvoiceController extends Controller
 {
+    use HandlesMailConfig;
     public function index()
     {
         $invoices = Invoice::orderBy('id', 'desc')->paginate(15);
@@ -174,11 +176,8 @@ class InvoiceController extends Controller
             $fromAddress = Setting::get('mail_from_address', 'support@joala.com.ng');
             $fromName = Setting::get('mail_from_name', 'JoAla Support');
 
-            // Set full mail config for log driver
-            Config::set('mail.default', 'log');
-            Config::set('mail.from.address', $fromAddress);
-            Config::set('mail.from.name', $fromName);
-            Config::set('mail.mailers.log', ['transport' => 'log']);
+            // Set dynamic mail config
+            $this->applyMailConfig();
 
             $paymentUrl = $invoice->getPaymentUrl();
 

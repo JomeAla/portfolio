@@ -8,10 +8,19 @@
         <h1 class="text-3xl font-bold text-gray-900">Products</h1>
         <p class="text-gray-600 mt-2">Manage your digital products</p>
     </div>
-    <a href="/admin/products/create" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors flex items-center gap-2">
-        <i class="fas fa-plus"></i>
-        Add Product
-    </a>
+    <div class="flex gap-3">
+        <form method="POST" action="{{ route('admin.seed.product') }}">
+            @csrf
+            <input type="hidden" name="key" value="migrate-2026">
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                <i class="fas fa-bolt"></i> Seed Email Templates
+            </button>
+        </form>
+        <a href="/admin/products/create" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors flex items-center gap-2">
+            <i class="fas fa-plus"></i>
+            Add Product
+        </a>
+    </div>
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
@@ -31,7 +40,7 @@
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
                         @if($product->image)
-                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->title }}" class="w-12 h-12 object-cover rounded-lg">
+                        <img src="{{ asset($product->image) }}" alt="{{ $product->title }}" class="w-12 h-12 object-cover rounded-lg">
                         @else
                         <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
                             <i class="fas fa-box text-gray-400"></i>

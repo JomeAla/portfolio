@@ -27,6 +27,12 @@
                     <i class="fas fa-check text-emerald-500"></i> Web Development (Laravel, React, Vue)
                 </li>
                 <li class="flex items-center gap-2 text-slate-600">
+                    <i class="fab fa-wordpress text-emerald-500"></i> WordPress Development
+                </li>
+                <li class="flex items-center gap-2 text-slate-600">
+                    <i class="fab fa-shopify text-emerald-500"></i> Shopify Development
+                </li>
+                <li class="flex items-center gap-2 text-slate-600">
                     <i class="fas fa-check text-emerald-500"></i> Mobile App Development
                 </li>
                 <li class="flex items-center gap-2 text-slate-600">
@@ -48,12 +54,16 @@
                     <a href="tel:+2349065257784" class="flex items-center gap-2 hover:text-blue-600">
                         <i class="fas fa-phone"></i> +2349065257784
                     </a>
-                    <a href="mailto:jomealawuru@hotmail.com" class="flex items-center gap-2 hover:text-blue-600">
-                        <i class="fas fa-envelope"></i> jomealawuru@hotmail.com
+                    <a href="mailto:support@joala.com.ng" class="flex items-center gap-2 hover:text-blue-600">
+                        <i class="fas fa-envelope"></i> support@joala.com.ng
                     </a>
                     <a href="https://twitter.com/jomswoks" target="_blank" class="flex items-center gap-2 hover:text-blue-600">
                         <i class="fab fa-twitter"></i> @jomswoks
                     </a>
+                    <div class="flex items-start gap-2">
+                        <i class="fas fa-map-marker-alt mt-1"></i>
+                        <span>132 Ovwian Main Road,<br>Opposite the Primary School,<br>Ovwian, Delta State, Nigeria</span>
+                    </div>
                 </div>
             </div>
         </div>

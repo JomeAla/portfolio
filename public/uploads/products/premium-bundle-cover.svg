@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a5d52"/>
+      <stop offset="50%" style="stop-color:#3d4f45"/>
+      <stop offset="100%" style="stop-color:#2d3a34"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#f8faf9"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f59e0b"/>
+      <stop offset="100%" style="stop-color:#d97706"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="120" fill="rgba(255,255,255,0.05)"/>
+  <circle cx="700" cy="500" r="150" fill="rgba(255,255,255,0.05)"/>
+  <circle cx="650" cy="80" r="80" fill="rgba(255,255,255,0.03)"/>
+  
+  <!-- Premium Badge -->
+  <rect x="50" y="50" width="160" height="40" rx="20" fill="url(#gold)"/>
+  <text x="130" y="77" font-family="system-ui" font-size="14" font-weight="bold" fill="white" text-anchor="middle">★ PREMIUM</text>
+  
+  <!-- Main Card -->
+  <rect x="100" y="120" width="600" height="380" rx="24" fill="url(#card)"/>
+  
+  <!-- Star Icon -->
+  <g transform="translate(280, 180)">
+    <polygon points="60,10 75,50 115,50 85,75 95,115 60,90 25,115 35,75 5,50 45,50" fill="#f59e0b"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="400" y="280" font-family="system-ui" font-size="32" font-weight="bold" fill="#1a1410" text-anchor="middle">Email Marketing</text>
+  <text x="400" y="315" font-family="system-ui" font-size="32" font-weight="bold" fill="#1a1410" text-anchor="middle">Premium Bundle</text>
+  
+  <!-- Features -->
+  <text x="400" y="360" font-family="system-ui" font-size="16" fill="#6b6560" text-anchor="middle">✓ Email Templates Pack</text>
+  <text x="400" y="385" font-family="system-ui" font-size="16" fill="#6b6560" text-anchor="middle">✓ Done-For-You Setup</text>
+  <text x="400" y="410" font-family="system-ui" font-size="16" fill="#6b6560" text-anchor="middle">✓ Priority Support</text>
+  
+  <!-- Price -->
+  <rect x="320" y="435" width="160" height="45" rx="22" fill="#1a1410"/>
+  <text x="400" y="465" font-family="system-ui" font-size="22" font-weight="bold" fill="white" text-anchor="middle">₦65,000</text>
+  <text x="400" y="365" font-family="system-ui" font-size="14" fill="#9ca3af" text-anchor="middle" text-decoration="line-through">₦90,000</text>
+  
+  <!-- Footer Note -->
+  <text x="400" y="560" font-family="system-ui" font-size="14" fill="rgba(255,255,255,0.7)" text-anchor="middle">JoAla Ventures • Instant Access</text>
+</svg>

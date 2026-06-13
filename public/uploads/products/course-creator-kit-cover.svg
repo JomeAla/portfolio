@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4338ca"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="800" fill="url(#bg)"/>
+  <!-- Book icon -->
+  <rect x="280" y="200" width="240" height="180" rx="12" fill="#fff"/>
+  <rect x="280" y="380" width="240" height="180" rx="12" fill="#e0e7ff"/>
+  <rect x="280" y="200" width="240" height="60" rx="12" fill="#818cf8"/>
+  <line x1="320" y1="320" x2="480" y2="320" stroke="#c7d2fe" stroke-width="8"/>
+  <line x1="320" y1="360" x2="440" y2="360" stroke="#c7d2fe" stroke-width="8"/>
+  <line x1="320" y1="440" x2="480" y2="440" stroke="#a5b4fc" stroke-width="8"/>
+  <line x1="320" y1="480" x2="400" y2="480" stroke="#a5b4fc" stroke-width="8"/>
+  <!-- Play icon -->
+  <circle cx="400" cy="480" r="40" fill="#fff" opacity="0.3"/>
+  <polygon points="390,465 415,480 390,495" fill="#fff"/>
+  <text x="400" y="620" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#fff" text-anchor="middle">Course Creator Kit</text>
+  <text x="400" y="660" font-family="Arial, sans-serif" font-size="24" fill="#c7d2fe" text-anchor="middle">50+ Templates</text>
+  <circle cx="620" cy="200" r="80" fill="#fff" opacity="0.3"/>
+  <text x="620" y="215" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#fff" text-anchor="middle">₦35K</text>
+</svg>

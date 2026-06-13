@@ -1,0 +1,25 @@
+--- 
+customlog: 
+  - 
+    format: combined
+    target: /etc/apache2/logs/domlogs/joala.com.ng
+  - 
+    format: "\"%{%s}t %I .\\n%{%s}t %O .\""
+    target: /etc/apache2/logs/domlogs/joala.com.ng-bytes_log
+documentroot: /home/joalacom/public_html/public
+group: joalacom
+hascgi: 1
+homedir: /home/joalacom
+ip: 131.153.147.162
+owner: root
+phpopenbasedirprotect: 1
+port: 80
+scriptalias: 
+  - 
+    path: /home/joalacom/public_html/public/cgi-bin
+    url: /cgi-bin/
+serveradmin: webmaster@joala.com.ng
+serveralias: www.joala.com.ng mail.joala.com.ng
+servername: joala.com.ng
+usecanonicalname: 'Off'
+user: joalacom

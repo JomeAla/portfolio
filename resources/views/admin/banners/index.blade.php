@@ -18,7 +18,7 @@
     @forelse($banners as $banner)
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/50 overflow-hidden">
         @if($banner->image)
-        <img src="{{ asset('storage/' . $banner->image) }}" alt="{{ $banner->title }}" class="w-full h-40 object-cover">
+        <img src="{{ asset($banner->image) }}" alt="{{ $banner->title }}" class="w-full h-40 object-cover">
         @else
         <div class="w-full h-40 flex items-center justify-center" style="background-color: {{ $banner->background_color }}">
             <span class="text-2xl font-bold" style="color: {{ $banner->text_color }}">{{ $banner->title }}</span>

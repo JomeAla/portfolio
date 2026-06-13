@@ -12,7 +12,7 @@
         <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200/50">
             @if($project->thumbnail)
             <div class="aspect-video bg-slate-200">
-                <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}" class="w-full h-full object-cover">
+                <img src="{{ asset($project->thumbnail) }}" alt="{{ $project->title }}" class="w-full h-full object-contain">
             </div>
             @else
             <div class="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -91,6 +91,10 @@
                         <i class="fab fa-github"></i> View Source Code
                     </a>
                     @endif
+
+                    <a href="{{ route('brief.create') }}" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors">
+                        <i class="fas fa-paper-plane"></i> Get in Touch Now
+                    </a>
                 </div>
             </div>
         </div>
@@ -101,7 +105,7 @@
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                 @foreach(json_decode($project->images) as $image)
                 <div class="aspect-video bg-slate-200 rounded-xl overflow-hidden">
-                    <img src="{{ asset('storage/' . $image) }}" alt="Project image" class="w-full h-full object-cover">
+                    <img src="{{ asset($image) }}" alt="Project image" class="w-full h-full object-contain">
                 </div>
                 @endforeach
             </div>

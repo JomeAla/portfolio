@@ -67,6 +67,32 @@
             </div>
             
             <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/50 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
+                    <i class="fab fa-wordpress text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">WordPress Development</h3>
+                <p class="text-slate-600 mb-6">Custom WordPress themes, plugins, and complete website solutions.</p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-center gap-2 text-sm text-slate-600"><i class="fas fa-check text-emerald-500"></i>Custom Themes</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-600"><i class="fas fa-check text-emerald-500"></i>Plugin Development</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-600"><i class="fas fa-check text-emerald-500"></i>WooCommerce</li>
+                </ul>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/50 hover:shadow-xl transition-all hover:-translate-y-1">
+                <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6">
+                    <i class="fab fa-shopify text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-3">Shopify Development</h3>
+                <p class="text-slate-600 mb-6">Professional Shopify stores, theme customization, and e-commerce solutions.</p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-center gap-2 text-sm text-slate-600"><i class="fas fa-check text-emerald-500"></i>Store Setup</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-600"><i class="fas fa-check text-emerald-500"></i>Theme Customization</li>
+                    <li class="flex items-center gap-2 text-sm text-slate-600"><i class="fas fa-check text-emerald-500"></i>App Integration</li>
+                </ul>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/50 hover:shadow-xl transition-all hover:-translate-y-1">
                 <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
                     <i class="fas fa-mobile-alt text-2xl text-purple-600"></i>
                 </div>

@@ -47,6 +47,8 @@
                 <select name="category" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
                     <option value="">Select Category</option>
                     <option value="web">Web Application</option>
+                    <option value="wordpress">WordPress</option>
+                    <option value="shopify">Shopify</option>
                     <option value="mobile">Mobile App</option>
                     <option value="api">API Integration</option>
                     <option value="automation">Automation</option>

@@ -44,10 +44,10 @@
                 </td>
                 <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
-                        <a href="/admin/projects/{{ $project->id }}/edit" class="text-gray-400 hover:text-blue-600">
+                        <a href="/admin/projects/{{ $project->slug }}/edit" class="text-gray-400 hover:text-blue-600">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <a href="/admin/projects/{{ $project->id }}/delete" class="text-gray-400 hover:text-red-600" onclick="return confirm('Are you sure you want to delete this project?')">
+                        <a href="/admin/projects/{{ $project->slug }}/delete" class="text-gray-400 hover:text-red-600" onclick="return confirm('Are you sure you want to delete this project?')">
                             <i class="fas fa-trash"></i>
                         </a>
                     </div>

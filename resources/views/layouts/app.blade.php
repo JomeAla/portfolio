@@ -4,8 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Home') | {{ $settings['site_name'] ?? 'JoAla Portfolio' }}</title>
+    <title>@yield('title', 'Home') | Joala Ventures</title>
     <meta name="description" content="{{ $settings['site_description'] ?? 'Professional portfolio website' }}">
+    @if(!empty($settings['favicon']))
+    <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon'] }}?v=2">
+    <link rel="shortcut icon" type="image/png" href="/storage/{{ $settings['favicon'] }}?v=2">
+    <link rel="apple-touch-icon" href="/storage/{{ $settings['favicon'] }}">
+    @else
+    <link rel="icon" type="image/png" href="/favicon.png?v=2">
+    <link rel="shortcut icon" type="image/png" href="/favicon.png?v=2">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    @endif
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
@@ -23,6 +32,7 @@
             }
         }
     </script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @yield('styles')
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased">
@@ -30,17 +40,19 @@
     <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a href="{{ route('home') }}" class="text-xl font-bold text-slate-900">
-                    {{ $settings['site_name'] ?? 'JoAla' }}
+                <a href="{{ route('home') }}" class="flex items-center gap-2">
+                    <img src="/joala-logo.png" alt="Joala Ventures" class="h-16 md:h-20">
                 </a>
                 <div class="hidden md:flex items-center gap-8">
                     <a href="{{ route('home') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Home</a>
                     <a href="{{ route('portfolio') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Portfolio</a>
                     <a href="{{ route('services') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Services</a>
+                    <a href="{{ route('blog') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Blog</a>
                     <a href="{{ route('store') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Store</a>
                     <a href="{{ route('about') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">About</a>
                     <a href="{{ route('contact') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Contact</a>
                     <a href="{{ route('brief.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Start a Project</a>
+                    <a href="/customer/login" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">My Account</a>
                 </div>
             </div>
         </div>
@@ -63,9 +75,18 @@
                     <ul class="space-y-2 text-slate-400">
                         <li><a href="{{ route('portfolio') }}" class="hover:text-white transition-colors">Portfolio</a></li>
                         <li><a href="{{ route('services') }}" class="hover:text-white transition-colors">Services</a></li>
+                        <li><a href="{{ route('blog') }}" class="hover:text-white transition-colors">Blog</a></li>
                         <li><a href="{{ route('store') }}" class="hover:text-white transition-colors">Store</a></li>
                         <li><a href="{{ route('about') }}" class="hover:text-white transition-colors">About</a></li>
                         <li><a href="{{ route('contact') }}" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Legal</h4>
+                    <ul class="space-y-2 text-slate-400">
+                        <li><a href="{{ route('terms') }}" class="hover:text-white transition-colors">Terms</a></li>
+                        <li><a href="{{ route('privacy') }}" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="{{ route('refund') }}" class="hover:text-white transition-colors">Refund Policy</a></li>
                     </ul>
                 </div>
                 <div>
@@ -86,5 +107,17 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     @yield('scripts')
+    @if(!app()->isLocal() && env('APP_ENV') !== 'local')
+    <script>
+    (function(){
+        var x=new XMLHttpRequest();
+        x.open('GET','{{ route("process.emails") }}',true);
+        x.send();
+        var y=new XMLHttpRequest();
+        y.open('GET','{{ route("process.automation") }}',true);
+        y.send();
+    })();
+    </script>
+    @endif
 </body>
 </html>

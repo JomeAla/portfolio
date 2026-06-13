@@ -3,9 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\SlugGenerator;
 
 class Page extends Model
 {
+    use SlugGenerator;
+
+    protected static $slugSourceField = 'title';
+
     protected $fillable = [
         'slug',
         'title',

@@ -9,6 +9,7 @@ use App\Models\Testimonial;
 use App\Models\Product;
 use App\Models\PromoBanner;
 use App\Models\Service;
+use App\Models\BlogPost;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -44,6 +45,11 @@ class HomeController extends Controller
             ->orderBy('order')
             ->get();
         
+        $recentPosts = BlogPost::published()
+            ->orderBy('published_at', 'desc')
+            ->limit(3)
+            ->get();
+        
         return view('front.home', [
             'settings' => $settings,
             'featuredProjects' => $featuredProjects,
@@ -51,6 +57,7 @@ class HomeController extends Controller
             'featuredProducts' => $featuredProducts,
             'activeBanners' => $activeBanners,
             'services' => $services,
+            'recentPosts' => $recentPosts,
         ]);
     }
 }

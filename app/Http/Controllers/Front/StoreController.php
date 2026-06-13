@@ -29,19 +29,21 @@ class StoreController extends Controller
         return view('front.store.index', compact('products'));
     }
 
-    public function show(Product $product)
+    public function show($slug)
     {
-        if (!$product->is_active) {
-            abort(404);
+        $product = Product::where('slug', $slug)->first();
+        
+        if (!$product) {
+            return redirect('/store');
         }
         
-        $relatedProducts = Product::where('is_active', true)
-            ->where('id', '!=', $product->id)
-            ->where('type', $product->type)
-            ->limit(4)
-            ->get();
+        // Safe view rendering with defaults
+        $data = [
+            'product' => $product,
+            'relatedProducts' => collect([])
+        ];
         
-        return view('front.store.show', compact('product', 'relatedProducts'));
+        return view('front.store.show', $data);
     }
 
     public function validateCoupon(Request $request)

@@ -30,7 +30,7 @@ class BannerController extends Controller
 
         if ($request->hasFile('image')) {
             $filename = time() . '_' . Str::random(10) . '.' . $request->file('image')->getClientOriginalExtension();
-            $request->file('image')->move(public_path('uploads/banners'), $filename);
+            $request->file('image')->move(base_path('uploads/banners'), $filename);
             $data['image'] = 'uploads/banners/' . $filename;
         }
 
@@ -55,11 +55,11 @@ class BannerController extends Controller
         $data = $request->all();
 
         if ($request->hasFile('image')) {
-            if ($banner->image && file_exists(public_path($banner->image))) {
-                unlink(public_path($banner->image));
+            if ($banner->image && file_exists(base_path($banner->image))) {
+                unlink(base_path($banner->image));
             }
             $filename = time() . '_' . Str::random(10) . '.' . $request->file('image')->getClientOriginalExtension();
-            $request->file('image')->move(public_path('uploads/banners'), $filename);
+            $request->file('image')->move(base_path('uploads/banners'), $filename);
             $data['image'] = 'uploads/banners/' . $filename;
         }
 
@@ -72,8 +72,8 @@ class BannerController extends Controller
 
     public function destroy(PromoBanner $banner)
     {
-        if ($banner->image && file_exists(public_path($banner->image))) {
-            unlink(public_path($banner->image));
+        if ($banner->image && file_exists(base_path($banner->image))) {
+            unlink(base_path($banner->image));
         }
         $banner->delete();
         return redirect('/admin/banners')->with('success', 'Banner deleted.');

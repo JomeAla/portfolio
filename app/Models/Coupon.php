@@ -4,15 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\SlugGenerator;
 
 class Coupon extends Model
 {
-    use HasFactory;
+    use HasFactory, SlugGenerator;
+
+    protected static $slugSourceField = 'code';
 
     protected $fillable = [
         'code', 'description', 'discount_type', 'discount_value',
         'min_order_amount', 'max_discount', 'usage_limit', 'used_count',
-        'valid_from', 'valid_until', 'is_active'
+        'valid_from', 'valid_until', 'is_active', 'product_id'
     ];
 
     protected $casts = [
@@ -65,5 +69,25 @@ class Coupon extends Model
         }
 
         return min($discount, $amount);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function incrementUsage(): void
+    {
+        $this->increment('used_count');
+    }
+
+    public function isExpired(): bool
+    {
+        return $this->valid_until && now()->greaterThan($this->valid_until);
+    }
+
+    public function isNotYetValid(): bool
+    {
+        return $this->valid_from && now()->lessThan($this->valid_from);
     }
 }

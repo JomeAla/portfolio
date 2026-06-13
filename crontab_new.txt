@@ -1,0 +1,3 @@
+MAILTO=""
+SHELL="/bin/bash"
+* * * * * cd /home/joalacom/www && php artisan schedule:run >> /dev/null 2>&1

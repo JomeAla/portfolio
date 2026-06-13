@@ -24,7 +24,7 @@
             <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200/50 hover:shadow-xl transition-all hover:-translate-y-1">
                 @if($project->thumbnail)
                 <div class="aspect-video bg-slate-200">
-                    <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}" class="w-full h-full object-cover">
+                    <img src="{{ asset($project->thumbnail) }}" alt="{{ $project->title }}" class="w-full h-full object-contain">
                 </div>
                 @else
                 <div class="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">

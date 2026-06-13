@@ -19,11 +19,17 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ShareSettings::class,
+            \App\Http\Middleware\LogApiRequests::class,
+            \App\Http\Middleware\CaptureUtmParams::class,
+            \App\Http\Middleware\LogVisits::class,
         ],
 
         'api' => [
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ShareSettings::class,
+            \App\Http\Middleware\LogApiRequests::class,
         ],
     ];
 
@@ -31,5 +37,6 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\Admin::class,
         'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'settings' => \App\Http\Middleware\ShareSettings::class,
     ];
 }

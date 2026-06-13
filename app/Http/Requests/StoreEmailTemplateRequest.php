@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreEmailTemplateRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+            'description' => 'nullable|string|max:500',
+            'is_active' => 'nullable|boolean',
+            'category' => 'nullable|string|in:welcome,follow_up,newsletter,promotional,transactional,notification',
+        ];
+    }
+}

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordPress SEO Checklist</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; background: #fafafa; }
+        h1 { color: #059669; border-bottom: 4px solid #059669; padding-bottom: 10px; }
+        h2 { color: #1e293b; margin-top: 30px; background: #fff; padding: 16px 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h3 { color: #334155; margin-top: 20px; }
+        ul { padding-left: 24px; }
+        li { margin-bottom: 14px; }
+        .checklist-item { background: #fff; padding: 16px 20px; margin: 12px 0; border-radius: 10px; border-left: 4px solid #2179e6; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 12px; }
+        .checklist-item.done { border-left-color: #22c55e; }
+        .checkbox { width: 24px; height: 24px; border: 2px solid #2179e6; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+        .checklist-item.done .checkbox { background: #22c55e; border-color: #22c55e; }
+        .checklist-item.done .checkbox::after { content: "✓"; color: white; display: block; text-align: center; font-size: 14px; }
+        .category { background: #1e293b; color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; margin-bottom: 10px; }
+        .important { background: #fef3c7; border: 1px solid #f59e0b; padding: 16px; border-radius: 10px; margin: 20px 0; }
+        .tip { background: #dcfce7; border: 1px solid #22c55e; padding: 16px; border-radius: 10px; margin: 20px 0; }
+        code { background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f8fafc; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<h1>WordPress SEO Checklist</h1>
+<p>Complete this checklist before launching your site to maximize your chances of ranking on Google.</p>
+
+<div class="important">
+    <strong>Priority Guide:</strong> 🔴 High = Do first | 🟡 Medium = Important | 🟢 Low = Nice to have
+</div>
+
+<!-- TECHNICAL SEO -->
+<h2>🔴 Technical SEO</h2>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Enable HTTPS (SSL)</strong><br>
+        <span style="color: #64748b;">Your site must use HTTPS. Most hosts offer free SSL via Let's Encrypt.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Set Up Yoast or RankMath SEO Plugin</strong><br>
+        <span style="color: #64748b;">Install and configure your SEO plugin. Complete the setup wizard.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Create XML Sitemap</strong><br>
+        <span style="color: #64748b;">Your SEO plugin automatically creates a sitemap at /sitemap.xml</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Submit Sitemap to Google Search Console</strong><br>
+        <span style="color: #64748b;">Go to search.google.com/search-console, add your site, submit sitemap</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Set Preferred Domain (www vs non-www)</strong><br>
+        <span style="color: #64748b;">In Yoast: SEO → Settings → Content Types → Set your preferred domain</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Enable Breadcrumbs</strong><br>
+        <span style="color: #64748b;">In Yoast: SEO → Settings → Breadcrumbs → Enable</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Check Site Speed</strong><br>
+        <span style="color: #64748b;">Use Google PageSpeed Insights. Target: 90+ on mobile and desktop</span>
+    </div>
+</div>
+
+<!-- ON-PAGE SEO -->
+<h2>🔴 On-Page SEO (Per Page)</h2>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Write SEO Title (50-60 characters)</strong><br>
+        <span style="color: #64748b;">Include your main keyword. Use Yoast's SEO title field.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Write Meta Description (150-160 characters)</strong><br>
+        <span style="color: #64748b;">Include a call-to-action and keywords. Make it compelling!</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Set Focus Keyword</strong><br>
+        <span style="color: #64748b;">Tell Google what the page is about. Optimize content around it.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Add SEO-Friendly URL Slug</strong><br>
+        <span style="color: #64748b;">Use: yourdomain.com/primary-keyword (no stop words)</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Add Heading Tags (H1, H2, H3)</strong><br>
+        <span style="color: #64748b;">One H1 per page (page title). Use H2s for main sections.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Add Images with Alt Text</strong><br>
+        <span style="color: #64748b;">Every image needs descriptive alt text including your keyword.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Optimize Image File Names</strong><br>
+        <span style="color: #64748b;">Name files like: wordpress-starter-kit-guide.jpg (not IMG_4829.jpg)</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Add Internal Links</strong><br>
+        <span style="color: #64748b;">Link to 2-3 related pages within your content.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Make Content 300+ Words</strong><br>
+        <span style="color: #64748b;">Google prefers comprehensive content. Aim for 1000+ words for important pages.</span>
+    </div>
+</div>
+
+<!-- CONTENT SEO -->
+<h2>🟡 Content SEO</h2>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Start a Blog</strong><br>
+        <span style="color: #64748b;">Publish 2-4 articles per month targeting specific keywords.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Write Long-Form Content</strong><br>
+        <span style="color: #64748b;">Comprehensive guides (2000+ words) tend to rank better.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Add FAQ Section</strong><br>
+        <span style="color: #64748b;">Add schema markup for FAQs to get rich snippets in Google.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Update Content Regularly</strong><br>
+        <span style="color: #64748b;">Refresh old posts with new information. Google prefers fresh content.</span>
+    </div>
+</div>
+
+<!-- LOCAL SEO -->
+<h2>🟡 Local SEO (If You Have a Physical Business)</h2>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Set Up Google Business Profile</strong><br>
+        <span style="color: #64748b;">Go to business.google.com and claim your business listing.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Add NAP to Website</strong><br>
+        <span style="color: #64748b;">Name, Address, Phone number in footer. Use schema markup.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Get Local Backlinks</strong><br>
+        <span style="color: #64748b;">Get listed in Nigerian directories: VConnect, BusinessList, etc.</span>
+    </div>
+</div>
+
+<!-- MOBILE SEO -->
+<h2>🟢 Mobile SEO</h2>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Use Responsive Theme</strong><br>
+        <span style="color: #64748b;">Your theme must work on mobile. Most modern themes are responsive.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Check Mobile Usability in Search Console</strong><br>
+        <span style="color: #64748b;">Google Search Console → Enhancements → Mobile Usability</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Optimize for Core Web Vitals</strong><br>
+        <span style="color: #64748b;">LCP < 2.5s, FID < 100ms, CLS < 0.1 (check in PageSpeed Insights)</span>
+    </div>
+</div>
+
+<!-- SECURITY & INDEXING -->
+<h2>🟢 Security & Indexing</h2>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Block Duplicate Content</strong><br>
+        <span style="color: #64748b;">Use canonical tags. Yoast handles this automatically.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Check robots.txt</strong><br>
+        <span style="color: #64748b;">Ensure it allows crawling of important pages.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Noindex Tag Check</strong><br>
+        <span style="color: #64748b;">Ensure important pages are NOT set to noindex.</span>
+    </div>
+</div>
+
+<div class="checklist-item">
+    <div class="checkbox"></div>
+    <div>
+        <strong>Install Security Plugin</strong><br>
+        <span style="color: #64748b;">Use Wordfence or Solid Security for protection.</span>
+    </div>
+</div>
+
+<!-- QUICK REFERENCE -->
+<h2>Quick Reference: Target Keywords</h2>
+
+<table>
+    <tr>
+        <th>Page</th>
+        <th>Sample Keywords</th>
+    </tr>
+    <tr>
+        <td>Homepage</td>
+        <td>[your city] + [service], best [service] in [city]</td>
+    </tr>
+    <tr>
+        <td>Services</td>
+        <td>[service] + [city], [service] near me</td>
+    </tr>
+    <tr>
+        <td>About</td>
+        <td>[service] + expert, [service] specialist</td>
+    </tr>
+    <tr>
+        <td>Contact</td>
+        <td>[city] + [service] + contact, [service] + [area]</td>
+    </tr>
+    <tr>
+        <td>Blog</td>
+        <td>How to [something], [topic] guide, [topic] tips</td>
+    </tr>
+</table>
+
+<div class="tip">
+    <strong>Pro Tip:</strong> Use AnswerThePublic.com or Google autocomplete to find what people search for in your niche!
+</div>
+
+<h2>Next Steps After Launch</h2>
+<ol>
+    <li>Create Google Search Console account</li>
+    <li>Submit your sitemap</li>
+    <li>Create Google Analytics account</li>
+    <li>Set up Google Business Profile (if local)</li>
+    <li>Publish 3-5 blog posts in first month</li>
+    <li>Build backlinks gradually (guest posts, directories)</li>
+</ol>
+
+<p style="margin-top: 40px; color: #64748b; text-align: center;">
+    &copy; 2024 WordPress Starter Kit by Joala Digital
+</p>
+
+</body>
+</html>

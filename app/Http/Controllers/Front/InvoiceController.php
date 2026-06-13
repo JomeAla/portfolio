@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Setting;
+use App\Traits\HandlesMailConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class InvoiceController extends Controller
 {
+    use HandlesMailConfig;
     public function show($invoiceNumber)
     {
         $invoice = Invoice::where('invoice_number', $invoiceNumber)->firstOrFail();
@@ -122,11 +124,8 @@ class InvoiceController extends Controller
     protected function sendPaymentConfirmation($invoice)
     {
         try {
-            $fromAddress = Setting::get('mail_from_address', 'support@joala.com.ng');
-            $fromName = Setting::get('mail_from_name', 'JoAla Support');
-
-            \Illuminate\Support\Facades\Config::set('mail.from.address', $fromAddress);
-            \Illuminate\Support\Facades\Config::set('mail.from.name', $fromName);
+            // Apply dynamic mail settings
+            $this->applyMailConfig();
 
             \Illuminate\Support\Facades\Mail::send('emails.invoice_paid', [
                 'invoice' => $invoice

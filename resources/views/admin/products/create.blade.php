@@ -35,6 +35,14 @@
                     placeholder="Detailed product description..."></textarea>
             </div>
 
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Full Product Page Content</label>
+                <textarea name="full_description" id="full_description" rows="12" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="Rich HTML content for the product landing page. Include features, benefits, what's included, etc. You can use HTML tags like &lt;h2&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;p&gt;, &lt;strong&gt; etc."></textarea>
+                <p class="text-xs text-gray-500 mt-1">This content will be displayed on the dedicated product page. Use HTML for formatting.</p>
+            </div>
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Product Type *</label>
                 <select name="type" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">

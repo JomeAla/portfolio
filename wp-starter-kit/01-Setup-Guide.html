@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordPress Starter Kit - Setup Guide</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.7; max-width: 800px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; }
+        h1 { color: #2179e6; border-bottom: 3px solid #2179e6; padding-bottom: 10px; }
+        h2 { color: #1e293b; margin-top: 40px; background: #f1f5f9; padding: 12px 16px; border-radius: 8px; }
+        h3 { color: #334155; }
+        ul, ol { padding-left: 24px; }
+        li { margin-bottom: 12px; }
+        .step { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .step-number { background: #2179e6; color: white; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 12px; }
+        .important { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 20px 0; }
+        .tip { background: #dcfce7; border-left: 4px solid #22c55e; padding: 16px; margin: 20px 0; }
+        code { background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+        .toc { background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 30px; }
+        .toc ul { list-style: none; padding: 0; }
+        .toc li { margin: 8px 0; }
+        .toc a { color: #2179e6; text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+        <li><a href="#step1">Step 1: Get Domain & Hosting</a></li>
+        <li><a href="#step2">Step 2: Install WordPress</a></li>
+        <li><a href="#step3">Step 3: Essential Settings</a></li>
+        <li><a href="#step4">Step 4: Install Recommended Plugins</a></li>
+        <li><a href="#step5">Step 5: Choose & Customize Theme</a></li>
+        <li><a href="#step6">Step 6: Create Essential Pages</a></li>
+        <li><a href="#step7">Step 7: Set Up Navigation</a></li>
+        <li><a href="#step8">Step 8: Configure SEO</a></li>
+        <li><a href="#step9">Step 9: Add Contact Forms</a></li>
+        <li><a href="#step10">Step 10: Launch Your Site</a></li>
+    </ul>
+</div>
+
+<h1>WordPress Starter Kit - Complete Setup Guide</h1>
+
+<p>Welcome to the WordPress Starter Kit! This guide will walk you through building a professional WordPress website from scratch in under 30 minutes per page.</p>
+
+<div class="important">
+    <strong>Before You Begin:</strong> Make sure you have your domain name and hosting ready. If you haven't gotten these yet, see Step 1 below.
+</div>
+
+<!-- STEP 1 -->
+<div class="step" id="step1">
+    <h2><span class="step-number">1</span>Get Domain & Hosting</h2>
+    <p>If you don't have a domain and hosting yet, follow these recommendations:</p>
+    
+    <h3>Recommended Hosting Providers (Nigeria):</h3>
+    <ul>
+        <li><strong>域名.com.ng</strong> - Local support, Naira payments</li>
+        <li><strong>SmartWeb</strong> - Managed WordPress hosting</li>
+        <li><strong>Whogohost</strong> - Affordable shared hosting</li>
+    </ul>
+    
+    <h3>International Options:</h3>
+    <ul>
+        <li><strong>Cloudways</strong> - Managed cloud hosting (recommended)</li>
+        <li><strong>SiteGround</strong> - Great performance & support</li>
+        <li><strong>Hostinger</strong> - Budget-friendly</li>
+    </ul>
+    
+    <div class="tip">
+        <strong>Pro Tip:</strong> Get a .com.ng domain for local businesses or .com for international reach. Most providers offer free domain with annual hosting.
+    </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step" id="step2">
+    <h2><span class="step-number">2</span>Install WordPress</h2>
+    <p>Most hosting providers offer one-click WordPress installation:</p>
+    
+    <ol>
+        <li>Log into your hosting account (cPanel or managed dashboard)</li>
+        <li>Look for "WordPress" or "Install WordPress" option</li>
+        <li>Enter your site name and create admin credentials</li>
+        <li>Click Install - typically takes 2-5 minutes</li>
+        <li>Access your site at <code>yourdomain.com/wp-admin</code></li>
+    </ol>
+    
+    <div class="important">
+        <strong>Important:</strong> Save your admin credentials somewhere safe! You'll need them to log in.
+    </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step" id="step3">
+    <h2><span class="step-number">3</span>Essential WordPress Settings</h2>
+    
+    <h3>General Settings</h3>
+    <ol>
+        <li>Go to <strong>Settings → General</strong></li>
+        <li>Set your <strong>Site Title</strong> and <strong>Tagline</strong></li>
+        <li>Set <strong>Timezone</strong> to Africa/Lagos</li>
+        <li>Set <strong>Date Format</strong> and <strong>Time Format</strong></li>
+    </ol>
+    
+    <h3>Reading Settings</h3>
+    <ol>
+        <li>Go to <strong>Settings → Reading</strong></li>
+        <li>Set "Your homepage displays" to <strong>A static page</strong></li>
+        <li>Select your homepage (we'll create this in Step 6)</li>
+    </ol>
+    
+    <h3>Permalink Settings</h3>
+    <ol>
+        <li>Go to <strong>Settings → Permalinks</strong></li>
+        <li>Select <strong>Post name</strong> (e.g., yourdomain.com/sample-post)</li>
+        <li>Click Save Changes</li>
+    </ol>
+</div>
+
+<!-- STEP 4 -->
+<div class="step" id="step4">
+    <h2><span class="step-number">4</span>Install Recommended Plugins</h2>
+    
+    <p>Go to <strong>Plugins → Add New</strong> and install these FREE essential plugins:</p>
+    
+    <h3>SEO Plugins (Install One):</h3>
+    <ul>
+        <li><strong>Yoast SEO</strong> - Most popular, great for beginners</li>
+        <li><strong>RankMath</strong> - Powerful free version</li>
+    </ul>
+    
+    <h3>Page Builder (Choose One):</h3>
+    <ul>
+        <li><strong>Elementor</strong> - Drag & drop, beginner-friendly (RECOMMENDED)</li>
+        <li><strong>Divi</strong> - Visual builder with many templates</li>
+        <li><strong>Gutenberg</strong> - Built-in block editor</li>
+    </ul>
+    
+    <h3>Security:</h3>
+    <ul>
+        <li><strong>Wordfence</strong> - Free firewall & malware scanner</li>
+        <li><strong>Solid Security</strong> (formerly iThemes Security)</li>
+    </ul>
+    
+    <h3>Performance:</h3>
+    <ul>
+        <li><strong>WP Super Cache</strong> - Free caching plugin</li>
+        <li><strong>Smush</strong> - Image optimization</li>
+    </ul>
+    
+    <h3>Contact Forms:</h3>
+    <ul>
+        <li><strong>WPForms</strong> - Drag & drop form builder (RECOMMENDED)</li>
+        <li><strong>Contact Form 7</strong> - Simple, lightweight</li>
+    </ul>
+    
+    <h3>Analytics:</h3>
+    <ul>
+        <li><strong>MonsterInsights</strong> - Connect Google Analytics easily</li>
+    </ul>
+    
+    <div class="tip">
+        <strong>Pro Tip:</strong> Don't install too many plugins! More plugins = slower site. Only install what you need.
+    </div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step" id="step5">
+    <h2><span class="step-number">5</span>Choose & Customize Theme</h2>
+    
+    <h3>Free Themes (Recommended):</h3>
+    <ul>
+        <li><strong>Astra</strong> - Lightweight, fast, lots of starter templates</li>
+        <li><strong>GeneratePress</strong> - Super fast, clean design</li>
+        <li><strong>Hestia</strong> - Modern one-page design</li>
+        <li><strong>OceanWP</strong> - Feature-rich, good for e-commerce</li>
+    </ul>
+    
+    <h3>Premium Themes (Optional):</h3>
+    <ul>
+        <li><strong>Divi Theme</strong> - $89 one-time, unlimited websites</li>
+        <li><strong>Astra Pro</strong> - $59/year, more templates</li>
+        <li><strong>Elementor Pro</strong> - $99/year, includes theme builder</li>
+    </ul>
+    
+    <h3>How to Install:</h3>
+    <ol>
+        <li>Go to <strong>Appearance → Themes</strong></li>
+        <li>Click <strong>Add New</strong></li>
+        <li>Search for your chosen theme</li>
+        <li>Click <strong>Install</strong> then <strong>Activate</strong></li>
+    </ol>
+    
+    <h3>Using Starter Templates (with Astra + Elementor):</h3>
+    <ol>
+        <li>Install <strong>Astra Theme</strong></li>
+        <li>Install <strong>Elementor Page Builder</strong></li>
+        <li>Go to <strong>Appearance → Astra Options → Starter Templates</strong></li>
+        <li>Browse and import a template that matches your business</li>
+        <li>Customize with your content</li>
+    </ol>
+</div>
+
+<!-- STEP 6 -->
+<div class="step" id="step6">
+    <h2><span class="step-number">6</span>Create Essential Pages</h2>
+    
+    <p>Every business website needs these core pages:</p>
+    
+    <ol>
+        <li><strong>Homepage</strong> - Your main landing page</li>
+        <li><strong>About Page</strong> - Your story, mission, team</li>
+        <li><strong>Services/Products Page</strong> - What you offer</li>
+        <li><strong>Contact Page</strong> - How to reach you</li>
+        <li><strong>Blog</strong> - News, tips, updates</li>
+    </ol>
+    
+    <h3>How to Create a Page:</h3>
+    <ol>
+        <li>Go to <strong>Pages → Add New</strong></li>
+        <li>Enter page title</li>
+        <li>Click <strong>Edit with Elementor</strong> (if using Elementor)</li>
+        <li>Add your content using drag & drop</li>
+        <li>Click <strong>Publish</strong> when done</li>
+    </ol>
+    
+    <div class="tip">
+        <strong>Pro Tip:</strong> Use our included page templates to speed up this process!
+    </div>
+</div>
+
+<!-- STEP 7 -->
+<div class="step" id="step7">
+    <h2><span class="step-number">7</span>Set Up Navigation</h2>
+    
+    <h3>Create Menu:</h3>
+    <ol>
+        <li>Go to <strong>Appearance → Menus</strong></li>
+        <li>Enter a menu name (e.g., "Main Menu")</li>
+        <li>Add pages from the left panel</li>
+        <li>Drag to reorder</li>
+        <li>Check <strong>Primary Menu</strong> at the bottom</li>
+        <li>Click <strong>Save Menu</strong></li>
+    </ol>
+    
+    <h3>Add Links to Menu:</h3>
+    <ul>
+        <li>Pages (created in Step 6)</li>
+        <li>Custom links (e.g., to external sites)</li>
+        <li>Categories (for blog posts)</li>
+    </ul>
+</div>
+
+<!-- STEP 8 -->
+<div class="step" id="step8">
+    <h2><span class="step-number">8</span>Configure SEO</h2>
+    
+    <h3>Using Yoast SEO:</h3>
+    <ol>
+        <li>Install & activate <strong>Yoast SEO</strong></li>
+        <li>Go through the <strong>Setup Wizard</strong> (first-time popup)</li>
+        <li>For each page, fill in:
+            <ul>
+                <li>SEO Title (appears in Google)</li>
+                <li>Meta Description (summary in search results)</li>
+                <li>Focus keyword</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h3>Important SEO Settings:</h3>
+    <ul>
+        <li>Create <strong>XML Sitemap</strong> - Submit to Google Search Console</li>
+        <li>Set up <strong>Google Search Console</strong> - Track your rankings</li>
+        <li>Install <strong>Google Analytics</strong> - Track visitors</li>
+    </ul>
+    
+    <div class="important">
+        <strong>Don't Skip:</strong> Check our SEO Checklist (included in this kit) for complete optimization steps!
+    </div>
+</div>
+
+<!-- STEP 9 -->
+<div class="step" id="step9">
+    <h2><span class="step-number">9</span>Add Contact Forms</h2>
+    
+    <h3>Using WPForms:</h3>
+    <ol>
+        <li>Install & activate <strong>WPForms</strong></li>
+        <li>Go to <strong>WPForms → Add New</strong></li>
+        <li>Select <strong>Contact Form</strong> template</li>
+        <li>Customize fields as needed</li>
+        <li>Save your form</li>
+        <li>Add to any page using the WPForms block</li>
+    </ol>
+    
+    <h3>Form Fields to Include:</h3>
+    <ul>
+        <li>Name (required)</li>
+        <li>Email (required)</li>
+        <li>Phone (optional)</li>
+        <li>Message (required)</li>
+        <li>Consent checkbox (for GDPR)</li>
+    </ul>
+    
+    <h3>Email Notifications:</h3>
+    <ol>
+        <li>Go to <strong>WPForms → Settings → Notifications</strong></li>
+        <li>Set up email to send to your email when someone submits</li>
+    </ol>
+</div>
+
+<!-- STEP 10 -->
+<div class="step" id="step10">
+    <h2><span class="step-number">10</span>Launch Your Site</h2>
+    
+    <h3>Pre-Launch Checklist:</h3>
+    <ul>
+        <li>Test all pages on mobile</li>
+        <li>Check all links work</li>
+        <li>Verify forms send notifications</li>
+        <li>Test loading speed (use GTmetrix or PageSpeed Insights)</li>
+        <li>Add privacy policy page (required by law)</li>
+        <li>Test contact form submissions</li>
+    </ul>
+    
+    <h3>Going Live:</h3>
+    <ol>
+        <li>If using staging: Push changes to live</li>
+        <li>Update nameservers if you changed DNS</li>
+        <li>Wait 24-48 hours for full propagation</li>
+        <li>Test your live site</li>
+        <li>Submit sitemap to Google Search Console</li>
+    </ol>
+    
+    <div class="important">
+        <strong>Congratulations!</strong> Your WordPress site is now live! Remember to:
+        <ul>
+            <li>Update content regularly</li>
+            <li>Backup your site weekly</li>
+            <li>Keep plugins updated</li>
+            <li>Monitor Google Analytics</li>
+        </ul>
+    </div>
+</div>
+
+<h2>Need Help?</h2>
+<p>If you have questions or need support, contact us at support@joala.com.ng</p>
+
+<p style="margin-top: 40px; color: #64748b; text-align: center;">
+    &copy; 2024 WordPress Starter Kit by Joala Digital
+</p>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+--- 
+documentroot: /home/joalacom/public_html/public
+group: joalacom
+hascgi: 1
+homedir: /home/joalacom
+ip: 131.153.147.162
+ipv6: ~
+owner: root
+phpopenbasedirprotect: ~
+port: 443
+secruleengineoff: ~
+serveradmin: webmaster@joala.com.ng
+serveralias: www.joala.com.ng mail.joala.com.ng
+servername: joala.com.ng
+ssl: 1
+usecanonicalname: 'Off'
+user: joalacom
+userdirprotect: ''

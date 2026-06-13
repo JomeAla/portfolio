@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
+use App\Traits\SlugGenerator;
 
 class SupportTicket extends Model
 {
-    use HasFactory;
+    use SlugGenerator;
+
+    protected static $slugSourceField = 'ticket_number';
 
     protected $fillable = [
         'ticket_number', 'user_id', 'name', 'email', 'phone', 'subject',
@@ -35,18 +39,37 @@ class SupportTicket extends Model
         return 'TKT-' . strtoupper(Str::random(8));
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function isOpen()
+    public function isOpen(): bool
     {
         return $this->status === 'open';
     }
 
-    public function isClosed()
+    public function isClosed(): bool
     {
         return $this->status === 'closed';
+    }
+
+    public function respond(string $response): void
+    {
+        $this->update([
+            'admin_response' => $response,
+            'responded_at' => now(),
+            'status' => 'answered',
+        ]);
+    }
+
+    public function close(): void
+    {
+        $this->update(['status' => 'closed']);
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'id';
     }
 }

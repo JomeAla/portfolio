@@ -1,0 +1,9 @@
+open joala.com.ng
+joalacom
+4fu359TgAMi-O+
+cd public_html/portfolio
+put app/Services/Marketing/MarketingService.php app/Services/Marketing/MarketingService.php
+put app/Http/Controllers/Admin/MarketingController.php app/Http/Controllers/Admin/MarketingController.php
+put resources/views/admin/marketing/funnels/edit.blade.php resources/views/admin/marketing/funnels/edit.blade.php
+put routes/web.php routes/web.php
+bye

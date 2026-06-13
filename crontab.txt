@@ -1,0 +1,4 @@
+MAILTO=""
+SHELL="/bin/bash"
+* * * * * cd /home/joalacom/www && php artisan schedule:run >> /dev/null 2>&1
+0 * * * * curl -s joala.com.ng/process-cart-abandonment.php

@@ -33,6 +33,14 @@
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">{{ $product->description }}</textarea>
             </div>
 
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Full Product Page Content</label>
+                <textarea name="full_description" id="full_description" rows="12" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
+                    placeholder="Rich HTML content for the product landing page. Include features, benefits, what's included, etc. You can use HTML tags like &lt;h2&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;p&gt;, &lt;strong&gt; etc.">{{ $product->full_description ?? '' }}</textarea>
+                <p class="text-xs text-gray-500 mt-1">This content will be displayed on the dedicated product page. Use HTML for formatting.</p>
+            </div>
+
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Product Type *</label>
                 <select name="type" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
@@ -75,7 +83,7 @@
         
         @if($product->image)
         <div class="mb-4">
-            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->title }}" class="w-48 h-32 object-cover rounded-lg">
+            <img src="{{ asset($product->image) }}" alt="{{ $product->title }}" class="w-48 h-32 object-cover rounded-lg">
             <p class="text-sm text-gray-500 mt-1">Current image</p>
         </div>
         @endif
@@ -108,7 +116,7 @@
             <p class="text-sm font-medium text-gray-700 mb-2">Current Gallery</p>
             <div class="flex flex-wrap gap-2">
                 @foreach(json_decode($product->images) as $image)
-                <img src="{{ asset('storage/' . $image) }}" alt="Gallery" class="w-24 h-24 object-cover rounded-lg">
+                <img src="{{ asset($image) }}" alt="Gallery" class="w-24 h-24 object-cover rounded-lg">
                 @endforeach
             </div>
         </div>

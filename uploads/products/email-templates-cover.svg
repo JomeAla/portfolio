@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af"/>
+      <stop offset="50%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#a855f7"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#f1f5f9"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="80" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="700" cy="500" r="120" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="650" cy="150" r="60" fill="rgba(255,255,255,0.06)"/>
+  
+  <!-- Main content card -->
+  <rect x="100" y="80" width="600" height="440" rx="20" fill="white" opacity="0.95"/>
+  
+  <!-- Email icon stack -->
+  <g transform="translate(250, 150)">
+    <!-- Back envelope -->
+    <rect x="30" y="20" width="200" height="120" rx="8" fill="#e0e7ff"/>
+    <path d="M30 50 L130 100 L230 50" stroke="#6366f1" stroke-width="2" fill="none"/>
+    
+    <!-- Middle envelope -->
+    <rect x="20" y="40" width="200" height="120" rx="8" fill="#c7d2fe"/>
+    <path d="M20 70 L120 120 L220 70" stroke="#4f46e5" stroke-width="2" fill="none"/>
+    
+    <!-- Front envelope -->
+    <rect x="10" y="60" width="200" height="120" rx="8" fill="white"/>
+    <path d="M10 90 L110 140 L210 90" stroke="#2563eb" stroke-width="3" fill="none"/>
+    <rect x="10" y="60" width="200" height="60" rx="8" fill="#dbeafe" opacity="0.5"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="400" y="340" text-anchor="middle" fill="#1e293b" font-family="Inter, sans-serif" font-size="32" font-weight="800">
+    Email Sequence
+  </text>
+  <text x="400" y="370" text-anchor="middle" fill="#1e293b" font-family="Inter, sans-serif" font-size="32" font-weight="800">
+    Templates Pack
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="400" y="410" text-anchor="middle" fill="#64748b" font-family="Inter, sans-serif" font-size="16">
+    6 Complete Sequences • 24 Ready-to-Use Templates
+  </text>
+  
+  <!-- Features -->
+  <g transform="translate(200, 440)">
+    <rect x="0" y="0" width="80" height="28" rx="14" fill="#dbeafe"/>
+    <text x="40" y="18" text-anchor="middle" fill="#2563eb" font-family="Inter, sans-serif" font-size="11" font-weight="600">WELCOME</text>
+    
+    <rect x="100" y="0" width="80" height="28" rx="14" fill="#fef3c7"/>
+    <text x="140" y="18" text-anchor="middle" fill="#92400e" font-family="Inter, sans-serif" font-size="11" font-weight="600">CART</text>
+    
+    <rect x="200" y="0" width="80" height="28" rx="14" fill="#dcfce7"/>
+    <text x="240" y="18" text-anchor="middle" fill="#166534" font-family="Inter, sans-serif" font-size="11" font-weight="600">RE-ENGAGE</text>
+    
+    <rect x="300" y="0" width="80" height="28" rx="14" fill="#fce7f3"/>
+    <text x="340" y="18" text-anchor="middle" fill="#9d174d" font-family="Inter, sans-serif" font-size="11" font-weight="600">WEBINAR</text>
+    
+    <rect x="400" y="0" width="80" height="28" rx="14" fill="#e0e7ff"/>
+    <text x="440" y="18" text-anchor="middle" fill="#4338ca" font-family="Inter, sans-serif" font-size="11" font-weight="600">LAUNCH</text>
+    
+    <rect x="500" y="0" width="80" height="28" rx="14" fill="#fef9c3"/>
+    <text x="540" y="18" text-anchor="middle" fill="#854d0e" font-family="Inter, sans-serif" font-size="11" font-weight="600">THANK YOU</text>
+  </g>
+  
+  <!-- Price -->
+  <text x="400" y="560" text-anchor="middle" fill="#2563eb" font-family="Inter, sans-serif" font-size="28" font-weight="700">
+    ₦12,000
+  </text>
+</svg>

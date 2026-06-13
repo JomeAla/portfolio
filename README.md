@@ -1,310 +1,263 @@
-# JoAla Portfolio - Developer Portfolio Website
+# ================================================
+# Joala Portfolio - Complete Documentation
+# ================================================
+#
+# Last Updated: May 2026
+# Project: Joala Ventures Portfolio Website
+# Live Site: https://www.joala.com.ng
+#
+# ================================================
 
-**Developer:** Jome Alawuru  
-**Phone:** +2349065257784  
-**Twitter:** @jomswoks  
-**Location:** Nigeria  
-**Email:** jomealawuru@hotmail.com
+## QUICK START
 
-## Project Overview
-
-A professional portfolio website for a Nigerian-based custom application developer offering web development, mobile app development, UI/UX design, and automation services.
-
-### Key Features
-- Full admin panel for content management
-- Customizable design (colors, logo, fonts)
-- Paystack payment integration with admin-configurable API keys
-- GitHub integration for project showcase
-- Client project brief submission system
-- Email and WhatsApp notifications
+1. Make changes in local repo: `C:\Users\jomea\portfolio\`
+2. Deploy via cPanel File Manager or use deploy.ps1
+3. Test with status endpoints
+4. Done!
 
 ---
 
-## Services Offered
-
-| Service | Description |
-|---------|-------------|
-| **Web Application Development** | Custom web apps using modern frameworks |
-| **Mobile App Development** | iOS and Android native/hybrid apps |
-| **UI/UX Design** | User interface and experience design, wireframes, prototypes |
-| **API Development & Integration** | RESTful APIs and third-party integrations |
-| **Business Process Automation** | Automate workflows and business processes |
-| **Technical Consultation** | Technical advice and architecture planning |
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Backend | PHP Laravel 10+ |
-| Frontend | Blade + Tailwind CSS |
-| Database | MySQL |
-| Payment | Paystack |
-| Hosting | Shared hosting (WhoGoHost compatible) |
-
----
-
-## Directory Structure
+## FILE STRUCTURE
 
 ```
-joala-portfolio/
-├── app/
-│   ├── Models/          # Eloquent models
-│   ├── Http/Controllers/# Controllers
-│   └── Providers/      # Service providers
-├── database/
-│   ├── migrations/     # Database migrations
-│   └── seeders/        # Data seeders
-├── resources/
-│   ├── views/          # Blade templates
-│   │   ├── admin/      # Admin panel views
-│   │   └── front/      # Public-facing views
-│   └── css/            # Stylesheets
-├── routes/              # Route definitions
-├── public/             # Public assets
-└── storage/            # Storage files
+C:\Users\jomea\portfolio\
+│
+├── [Core Files]
+│   ├── process_emails.php      # Email queue processor
+│   ├── process_automation.php  # Automation rules processor
+│   ├── LIVE_DEPLOY.php         # Web deployment tool (upload to live)
+│   ├── deploy.ps1              # PowerShell deployment script
+│   ├── deploy.bat             # Batch deployment script
+│   │
+│   ├── app/
+│   │   ├── Helpers/db_helper.php      # Database helper
+│   │   ├── Services/DbConfig.php      # Configuration service
+│   │   └── Http/Controllers/          # Laravel controllers
+│   │
+│   ├── config/
+│   │   └── database.php        # Database configuration
+│   │
+│   └── routes/
+│       └── web.php            # Web routes
+│
+├── [Documentation]
+│   ├── README.md              # This file
+│   ├── README_QUICK.md        # Quick reference
+│   ├── DEPLOYMENT_WORKFLOW.md # Detailed workflow
+│   └── DEPLOYMENT_GUIDE.md    # Deployment guide
+│
+└── [Backup Directory - Created by deploy.ps1]
+    └── backups/
+        └── [auto-dated backups]
 ```
 
 ---
 
-## Quick Start
+## DEPLOYMENT METHODS
 
-```bash
-# 1. Create Laravel project
-composer create-project laravel/laravel joala-portfolio
+### Method 1: cPanel File Manager (Recommended)
+1. Log into cPanel: https://joala.com.ng/cpanel
+2. Go to File Manager > public_html
+3. Upload or edit files directly
+4. Changes are immediate
 
-# 2. Install dependencies
-composer require laravel/breeze
-npm install
-npm install -D tailwindcss postcss autoprefixer
+### Method 2: LIVE_DEPLOY.php (Web Interface)
+1. Upload `LIVE_DEPLOY.php` to public_html via File Manager
+2. Access: https://www.joala.com.ng/LIVE_DEPLOY.php?token=deploy2026
+3. Use the web interface to deploy files
 
-# 3. Configure environment
-cp .env.example .env
-# Edit .env with your database credentials
-
-# 4. Generate application key
-php artisan key:generate
-
-# 5. Run migrations
-php artisan migrate
-
-# 6. Create admin user
-php artisan make:seeder AdminUserSeeder
-php artisan db:seed
-
-# 7. Build frontend assets
-npm run build
-
-# 8. Start development server
-php artisan serve
+### Method 3: PowerShell Script
+```powershell
+cd C:\Users\jomea\portfolio
+.\deploy.ps1 -Action deploy -File process_emails.php
 ```
 
 ---
 
-## Database Schema
+## SYSTEM ENDPOINTS
 
-### Tables
-
-| Table | Description |
-|-------|-------------|
-| `users` | Admin users for authentication |
-| `settings` | Site configuration (key-value store) |
-| `pages` | Dynamic page content |
-| `projects` | Portfolio projects |
-| `services` | Services offered |
-| `testimonials` | Client testimonials |
-| `project_briefs` | Client project submissions |
-| `support_tickets` | Contact form submissions |
-| `products` | Digital products for sale |
-| `orders` | Product purchase orders |
-| `coupons` | Discount coupons |
-| `promo_banners` | Promotional banners |
-| `invoices` | Invoice system for services |
+| Endpoint | Purpose | Auth |
+|----------|---------|------|
+| https://www.joala.com.ng/ | Homepage | None |
+| https://www.joala.com.ng/process_emails.php?status=1 | Email Queue Status | None |
+| https://www.joala.com.ng/process_automation.php?status=1 | Automation Status | None |
+| https://www.joala.com.ng/LIVE_DEPLOY.php?token=deploy2026 | Deployment Tool | Token Required |
 
 ---
 
-## Admin Features
+## CRON JOBS (Active)
 
-### Content Management
-- Edit all page content dynamically
-- Manage portfolio projects (CRUD)
-- Manage services (CRUD)
-- Manage testimonials (CRUD)
-- View and respond to project briefs
-- View and manage support tickets
-
-### Digital Store
-- Manage products (templates, scripts)
-- Create and manage discount coupons
-- Manage promotional banners
-- View and manage orders
-- Resend download links to customers
-
-### Invoice System
-- Create invoices for services
-- Generate Paystack payment links
-- Send invoices via email
-- Support installment payments
-- 24-hour invoice expiry
-- Mark invoices as paid manually
-
-### Design Customization
-- Upload logo and favicon
-- Change primary and accent colors
-- Select fonts (heading and body)
-- Live preview of changes
-
-### Payment Configuration
-- Configure Paystack API keys (test/live)
-- Toggle test mode
-- View payment history
-- Email notifications for new submissions
-
-### GitHub Integration
-- Connect GitHub account with token
-- Auto-fetch repositories
-- Display repo stats (stars, forks)
-
----
-
-## Public Features
-
-### Pages
-- **Home**: Hero, featured projects, services, testimonials, stats, CTA
-- **Portfolio**: Filterable project grid with details
-- **Services**: Service cards with pricing
-- **Store**: Digital products (templates, scripts)
-- **About**: Developer profile, skills, experience
-- **Contact**: Contact form, info, WhatsApp link
-- **Project Brief**: Multi-step form for new projects
-- **Invoice View**: Client-facing invoice with Paystack payment
-
-### Integrations
-- **Paystack**: Accept payments for products and invoices
-- **GitHub**: Display portfolio from GitHub
-- **Email**: Notifications for new briefs, support tickets, invoices
-- **WhatsApp**: Direct contact option
-
----
-
-## Configuration
-
-### Environment Variables (.env)
-
-```env
-APP_NAME=JoAla Portfolio
-APP_URL=http://localhost
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=joala_portfolio
-DB_USERNAME=root
-DB_PASSWORD=
-
-MAIL_MAILER=smtp
-MAIL_HOST=mailpit
-MAIL_PORT=1025
-
-PAYSTACK_PUBLIC_KEY=
-PAYSTACK_SECRET_KEY=
-PAYSTACK_TEST_MODE=true
+```
+*/5 * * * * curl -s 'https://www.joala.com.ng/process_emails.php?auto=1'
+*/5 * * * * curl -s 'https://www.joala.com.ng/process_automation.php?auto=1'
 ```
 
-### Settings (Managed via Admin)
-
-| Key | Description | Example |
-|-----|-------------|---------|
-| `site_name` | Website title | "JoAla Development" |
-| `site_description` | Site description | "Professional developer..." |
-| `contact_email` | Contact email | "jomealawuru@hotmail.com" |
-| `phone` | Phone number | "+2349065257784" |
-| `whatsapp` | WhatsApp number | "+2349065257784" |
-| `address` | Office address | "132 Ovwian main road..." |
-| `logo` | Logo file path | "/uploads/logos/logo.png" |
-| `favicon` | Favicon path | "/uploads/logos/favicon.png" |
-| `primary_color` | Main brand color | "#0f172a" |
-| `accent_color` | Accent color | "#3b82f6" |
-| `font_heading` | Heading font | "Cabinet Grotesk" |
-| `font_body` | Body font | "Geist" |
-| `paystack_public_key` | Paystack public key | "pk_test_..." |
-| `paystack_secret_key` | Paystack secret key | "sk_test_..." |
-| `paystack_test_mode` | Enable test mode | "true" |
-| `github_username` | GitHub username | "joala-dev" |
-| `github_token` | GitHub personal token | "ghp_..." |
-| `mail_from_address` | Email from address | "support@joala.com.ng" |
-| `mail_from_name` | Email from name | "JoAla Support" |
+Run frequency: Every 5 minutes
 
 ---
 
-## Deployment to Shared Hosting
+## DATABASE
 
-### 1. Prepare Files
-- Upload all files except `vendor/` to public_html
-- Upload `vendor/` folder or run `composer install` on server
-- Ensure `.env` is configured with production values
+| Setting | Value |
+|---------|-------|
+| Host | localhost |
+| Database | joalacom_joala |
+| Username | joalacom_joala |
+| Password | J0ala@2024! |
 
-### 2. Database Setup
-- Create MySQL database on hosting
-- Import database schema
-- Update `.env` with database credentials
+**Important Tables:**
+- `settings` - Contains `process_api_key` and other config
+- `email_queue` - Email queue for processing
+- `leads` - Lead data
 
-### 3. Permissions
-```bash
-# Set proper permissions
-chmod -R 755 storage/
-chmod -R 755 bootstrap/cache/
+---
+
+## DEPLOYMENT COMMANDS REFERENCE
+
+### PowerShell (Recommended)
+```powershell
+# Check status
+.\deploy.ps1 -Action status
+
+# Deploy file
+.\deploy.ps1 -Action deploy -File <filename>
+
+# Initialize credentials
+.\deploy.ps1 -Action init
+
+# List live files
+.\deploy.ps1 -Action list
+
+# Read live file
+.\deploy.ps1 -Action read -File <filename>
+
+# Create backup
+.\deploy.ps1 -Action backup
+
+# Sync local to live
+.\deploy.ps1 -Action sync
 ```
 
-### 4. SSL Configuration
-- Enable Let's Encrypt via cPanel
-- Update APP_URL to https://
+### Batch File (Simple)
+```batch
+deploy.bat status
+deploy.bat deploy process_emails.php
+deploy.bat init
+deploy.bat list
+deploy.bat backup
+```
 
 ---
 
-## API Keys Management
+## TROUBLESHOOTING
 
-### Paystack
-1. Get keys from Paystack dashboard
-2. Go to Admin Panel > Settings > Payment
-3. Enter test keys initially
-4. Toggle "Test Mode" on
-5. When ready, enter production keys and toggle off test mode
+### Issue: FTP uploads don't appear on site
+**Cause:** FTP and HTTP document roots are different
+**Solution:** Use cPanel File Manager or LIVE_DEPLOY.php
 
-### GitHub
-1. Create personal access token at github.com/settings/tokens
-2. Grant `repo` scope for private repos
-3. Add token in Admin Panel > Settings > GitHub
+### Issue: "API key not configured" error
+**Solution:**
+1. Access: https://www.joala.com.ng/LIVE_DEPLOY.php?token=deploy2026&action=init
+2. Or run: `.\deploy.ps1 -Action init`
 
----
+### Issue: Cron not processing emails
+**Check:**
+1. Verify cron is configured in cPanel
+2. Check status endpoint for pending emails
+3. Verify `process_api_key` exists in settings table
 
-## Development Workflow
-
-### Using AI Coding Agents
-
-When building this project with AI agents:
-1. Provide the brief.md document
-2. Share the TODO.md task list
-3. Use the Laravel + Tailwind skill guide
-4. Reference this README for structure
-
-### Code Style
-- Follow Laravel conventions
-- Use Tailwind CSS for styling
-- Implement proper validation
-- Add comments for complex logic
+### Issue: Deployment script fails
+**Solutions:**
+1. Check internet connection
+2. Verify LIVE_DEPLOY.php is uploaded to live site
+3. Use cPanel File Manager as fallback
 
 ---
 
-## Support
+## HOSTING CONFIGURATION
 
-For issues or questions:
-- Check Laravel documentation
-- Review Paystack integration docs
-- Check GitHub API documentation
+**Problem Identified:**
+- FTP path: `/home/joalacom/public_html/`
+- HTTP doc root: Shows same path but different actual directory
+- Files uploaded via FTP do NOT appear on live site
+
+**Solution in Place:**
+- Use cPanel File Manager for file deployment
+- Use LIVE_DEPLOY.php web interface
+- Use deploy.ps1 script (which calls LIVE_DEPLOY.php)
 
 ---
 
-## License
+## SECURITY NOTES
 
-This project is for personal portfolio use.
+1. **Token Protection:** LIVE_DEPLOY.php requires token `deploy2026`
+2. **API Key:** process_emails.php requires API key for processing
+3. **No FTP:** File uploads must use cPanel or web interface
+4. **Keep Credentials Secure:** Never commit .env or credentials to repo
+
+---
+
+## FILE DEPLOYMENT PRIORITY
+
+### Files to deploy after changes:
+1. `process_emails.php` - High priority, affects email processing
+2. `process_automation.php` - High priority, affects automation
+3. `app/Helpers/db_helper.php` - Medium priority
+4. `app/Services/DbConfig.php` - Medium priority
+5. `config/database.php` - Medium priority
+
+### Files to upload once:
+1. `LIVE_DEPLOY.php` - Upload via cPanel File Manager
+
+---
+
+## CHECKLIST BEFORE DEPLOYMENT
+
+- [ ] Changes tested locally (if applicable)
+- [ ] Backup created: `.\deploy.ps1 -Action backup`
+- [ ] File encoding verified (UTF-8)
+- [ ] Using correct deployment method (cPanel or LIVE_DEPLOY)
+
+---
+
+## CHECKLIST AFTER DEPLOYMENT
+
+- [ ] Tested file via direct URL
+- [ ] Verified status endpoint
+- [ ] Checked for errors in response
+- [ ] Monitored system for 5 minutes
+
+---
+
+## EMERGENCY CONTACTS
+
+- **cPanel:** https://joala.com.ng/cpanel
+- **Hosting Provider:** Check your hostinger account
+- **Support Email:** support@joala.com.ng
+
+---
+
+## CHANGELOG
+
+### 2026-05-12
+- Created complete deployment documentation
+- Fixed FTP/HTTP document root mismatch
+- Created LIVE_DEPLOY.php web deployment tool
+- Created deploy.ps1 and deploy.bat scripts
+- Configured cron jobs
+
+### 2026-05-11
+- Initial investigation of hosting configuration
+- Identified FTP/HTTP path mismatch issue
+- Created workaround solution
+
+---
+
+## NOTES
+
+This documentation was created to address the unique hosting configuration
+where FTP and HTTP document roots point to different directories despite
+showing the same path. All deployment processes have been updated accordingly.
+
+For questions or issues, refer to DEPLOYMENT_WORKFLOW.md for detailed
+instructions or README_QUICK.md for quick reference.

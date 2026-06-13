@@ -16,6 +16,10 @@ class BriefController extends Controller
 
     public function show(ProjectBrief $brief)
     {
+        if (!$brief->is_read) {
+            $brief->update(['is_read' => true]);
+        }
+
         return view('admin.briefs.show', compact('brief'));
     }
 
@@ -35,5 +39,20 @@ class BriefController extends Controller
     {
         $brief->delete();
         return redirect()->route('admin.briefs')->with('success', 'Brief deleted.');
+    }
+
+    public function unreadCountJson()
+    {
+        $count = self::getUnreadCount();
+        return response()->json(['count' => $count]);
+    }
+
+    public static function getUnreadCount(): int
+    {
+        try {
+            return ProjectBrief::where('is_read', false)->count();
+        } catch (\Exception $e) {
+            return 0;
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
 use App\Models\Setting;
+use App\Traits\HandlesMailConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class SupportController extends Controller
 {
+    use HandlesMailConfig;
     public function index()
     {
         $tickets = SupportTicket::orderBy('id', 'desc')->paginate(15);
@@ -44,11 +46,8 @@ class SupportController extends Controller
     protected function sendResponseEmail($ticket)
     {
         try {
-            $fromAddress = Setting::get('mail_from_address', 'support@joala.com.ng');
-            $fromName = Setting::get('mail_from_name', 'JoAla Support');
-
-            Config::set('mail.from.address', $fromAddress);
-            Config::set('mail.from.name', $fromName);
+            // Apply dynamic mail settings
+            $this->applyMailConfig();
 
             Mail::send('emails.support_response', ['ticket' => $ticket], function ($message) use ($ticket) {
                 $message->to($ticket->email, $ticket->name)

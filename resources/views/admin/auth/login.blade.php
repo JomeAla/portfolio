@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @if(!empty($settings['favicon']))
+    <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon'] }}?v=2">
+    <link rel="shortcut icon" type="image/png" href="/storage/{{ $settings['favicon'] }}?v=2">
+    <link rel="apple-touch-icon" href="/storage/{{ $settings['favicon'] }}">
+    @else
+    <link rel="icon" type="image/png" href="/favicon.png?v=2">
+    <link rel="shortcut icon" type="image/png" href="/favicon.png?v=2">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    @endif
     <title>Admin Login - JoAla Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>

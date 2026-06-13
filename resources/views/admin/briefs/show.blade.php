@@ -46,7 +46,7 @@
                     <ul class="space-y-2">
                         @foreach(json_decode($brief->files) as $file)
                         <li>
-                            <a href="{{ asset('storage/' . $file) }}" target="_blank" class="text-blue-600 hover:underline">
+                            <a href="{{ asset($file) }}" target="_blank" class="text-blue-600 hover:underline">
                                 <i class="fas fa-file mr-2"></i>{{ basename($file) }}
                             </a>
                         </li>

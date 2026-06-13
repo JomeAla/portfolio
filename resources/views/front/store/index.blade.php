@@ -35,10 +35,13 @@
             @foreach($products as $product)
             <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
                 @if($product->image)
-                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->title }}" class="w-full h-48 object-cover">
+                <img src="{{ asset($product->image) }}" alt="{{ $product->title }}" class="w-full h-48 object-cover">
                 @else
-                <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                    <i class="fas fa-box text-4xl text-gray-400"></i>
+                <div class="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center relative">
+                    <div class="text-center text-white">
+                        <i class="fas fa-envelope text-4xl mb-2"></i>
+                        <p class="text-sm font-medium">Email Templates</p>
+                    </div>
                 </div>
                 @endif
                 <div class="p-5">
@@ -54,9 +57,103 @@
                             <span class="text-xl font-bold text-slate-900">₦{{ number_format($product->price) }}</span>
                             @endif
                         </div>
+                        @if($product->slug === 'email-sequence-templates-pack')
+                        <a href="/email-sequence-templates-pack.php" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'email-marketing-premium-bundle')
+                        <a href="/email-marketing-premium-bundle.php" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'done-for-you-email-automation')
+                        <a href="/done-for-you-email-automation.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'whatsapp-marketing-bundle')
+                        <a href="/whatsapp-marketing-bundle.php" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'course-creator-kit')
+                        <a href="/course-creator-kit.php" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'local-business-digital-kit')
+                        <a href="/local-business-kit.php" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+                            View
+                        </a>
+@elseif($product->slug === 'saas-starter-kit')
+                        <a href="/saas-starter-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'website-audit-kit')
+                        <a href="/website-audit-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'course-creator-kit')
+                        <a href="/course-creator-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'local-business-digital-kit')
+                        <a href="/local-business-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'wordpress-starter-kit')
+                        <a href="/wordpress-starter-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'email-sequence-templates-pack')
+                        <a href="/email-sequence-templates-pack.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'email-marketing-premium-bundle')
+                        <a href="/email-marketing-premium-bundle.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'done-for-you-email-automation')
+                        <a href="/done-for-you-email-automation.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'freelancer-toolkit')
+                        <a href="/freelancer-toolkit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'instagram-growth-system')
+                        <a href="/instagram-growth-system.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'nigerian-business-digital-kit')
+                        <a href="/nigerian-business-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'church-organization-website-kit')
+                        <a href="/church-website-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'restaurant-pos-kit')
+                        <a href="/restaurant-pos-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'school-management-system')
+                        <a href="/school-management-system.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'real-estate-property-kit')
+                        <a href="/real-estate-property-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'whatsapp-marketing-bundle')
+                        <a href="/whatsapp-marketing-bundle.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @elseif($product->slug === 'e-commerce-starter-kit')
+                        <a href="/ecommerce-starter-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            View
+                        </a>
+                        @else
                         <a href="{{ route('store.show', $product->slug) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                             View
                         </a>
+                        @endif
                     </div>
                 </div>
             </div>

@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ProjectController extends Controller
 {
+    protected string $defaultSubfolder = 'projects';
+    
     public function index()
     {
         $projects = Project::orderBy('order')->paginate(10);
@@ -30,20 +31,34 @@ class ProjectController extends Controller
         ]);
 
         $data = $request->all();
-        $data['slug'] = Str::slug($request->title);
+        
+        $slug = \Illuminate\Support\Str::slug($request->title);
+        $baseSlug = $slug;
+        $counter = 1;
+        while (\App\Models\Project::where('slug', $slug)->where('id', '!=', null)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+        $data['slug'] = $slug;
 
         if ($request->hasFile('thumbnail')) {
-            $filename = time() . '_' . Str::random(10) . '.' . $request->file('thumbnail')->getClientOriginalExtension();
-            $request->file('thumbnail')->move(public_path('uploads/projects'), $filename);
-            $data['thumbnail'] = 'uploads/projects/' . $filename;
+            $file = $request->file('thumbnail');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $uploadPath = '/home/joalacom/public_html/public/uploads/projects';
+            if (!is_dir($uploadPath)) { mkdir($uploadPath, 0755, true); }
+            $file->move($uploadPath, $filename);
+            $data['thumbnail'] = '/uploads/projects/' . $filename;
         }
 
         if ($request->hasFile('images')) {
             $images = [];
-            foreach ($request->file('images') as $image) {
-                $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('uploads/projects/gallery'), $filename);
-                $images[] = 'uploads/projects/gallery/' . $filename;
+            $files = is_array($request->file('images')) ? $request->file('images') : [$request->file('images')];
+            foreach ($files as $idx => $file) {
+                $filename = time() . '_' . uniqid() . '_' . $idx . '.' . $file->getClientOriginalExtension();
+                $uploadPath = '/home/joalacom/public_html/public/uploads/projects/gallery';
+                if (!is_dir($uploadPath)) { mkdir($uploadPath, 0755, true); }
+                $file->move($uploadPath, $filename);
+                $images[] = '/uploads/projects/gallery/' . $filename;
             }
             $data['images'] = json_encode($images);
         }
@@ -53,7 +68,6 @@ class ProjectController extends Controller
         }
 
         Project::create($data);
-
         return redirect('/admin/projects')->with('success', 'Project created.');
     }
 
@@ -71,30 +85,43 @@ class ProjectController extends Controller
         ]);
 
         $data = $request->all();
-        $data['slug'] = Str::slug($request->title);
+        if ($request->title !== $project->title) {
+            $slug = \Illuminate\Support\Str::slug($request->title);
+            $baseSlug = $slug;
+            $counter = 1;
+            while (\App\Models\Project::where('slug', $slug)->where('id', '!=', $project->id)->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+            $data['slug'] = $slug;
+        }
 
         if ($request->hasFile('thumbnail')) {
-            if ($project->thumbnail && file_exists(public_path($project->thumbnail))) {
-                unlink(public_path($project->thumbnail));
+            if ($project->thumbnail && file_exists(base_path($project->thumbnail))) {
+                unlink(base_path($project->thumbnail));
             }
-            $filename = time() . '_' . Str::random(10) . '.' . $request->file('thumbnail')->getClientOriginalExtension();
-            $request->file('thumbnail')->move(public_path('uploads/projects'), $filename);
-            $data['thumbnail'] = 'uploads/projects/' . $filename;
+            $file = $request->file('thumbnail');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $uploadPath = '/home/joalacom/public_html/public/uploads/projects';
+            if (!is_dir($uploadPath)) { mkdir($uploadPath, 0755, true); }
+            $file->move($uploadPath, $filename);
+            $data['thumbnail'] = '/uploads/projects/' . $filename;
         }
 
         if ($request->hasFile('images')) {
             if ($project->images) {
-                foreach (json_decode($project->images) as $img) {
-                    if (file_exists(public_path($img))) {
-                        unlink(public_path($img));
-                    }
+                foreach ((array)json_decode($project->images) as $img) {
+                    if (file_exists(base_path($img))) { unlink(base_path($img)); }
                 }
             }
             $images = [];
-            foreach ($request->file('images') as $image) {
-                $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('uploads/projects/gallery'), $filename);
-                $images[] = 'uploads/projects/gallery/' . $filename;
+            $files = is_array($request->file('images')) ? $request->file('images') : [$request->file('images')];
+            foreach ($files as $idx => $file) {
+                $filename = time() . '_' . uniqid() . '_' . $idx . '.' . $file->getClientOriginalExtension();
+                $uploadPath = '/home/joalacom/public_html/public/uploads/projects/gallery';
+                if (!is_dir($uploadPath)) { mkdir($uploadPath, 0755, true); }
+                $file->move($uploadPath, $filename);
+                $images[] = '/uploads/projects/gallery/' . $filename;
             }
             $data['images'] = json_encode($images);
         }
@@ -106,22 +133,17 @@ class ProjectController extends Controller
         }
 
         $project->update($data);
-
         return redirect('/admin/projects')->with('success', 'Project updated.');
     }
 
-    public function destroy($id)
+    public function destroy(Project $project)
     {
-        $project = Project::findOrFail($id);
-        
-        if ($project->thumbnail && file_exists(public_path($project->thumbnail))) {
-            unlink(public_path($project->thumbnail));
+        if ($project->thumbnail && file_exists(base_path($project->thumbnail))) {
+            unlink(base_path($project->thumbnail));
         }
         if ($project->images) {
             foreach (json_decode($project->images) as $img) {
-                if (file_exists(public_path($img))) {
-                    unlink(public_path($img));
-                }
+                if (file_exists(base_path($img))) { unlink(base_path($img)); }
             }
         }
         $project->delete();

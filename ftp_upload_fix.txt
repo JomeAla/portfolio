@@ -1,0 +1,6 @@
+open joala.com.ng
+joalacom
+4fu359TgAMi-O+
+cd public_html/portfolio/app/Http/Controllers/Admin
+put "C:/Users/jomea/portfolio/app/Http/Controllers/Admin/MarketingController.php"
+bye

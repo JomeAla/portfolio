@@ -1,0 +1,7 @@
+MAILTO=""
+SHELL="/bin/bash"
+
+# Laravel Scheduler - runs ALL tasks: email sending, automation, segments, scores, etc.
+*/15 * * * * cd /home/joalacom/public_html && php artisan schedule:run >> /dev/null 2>&1
+
+# End of crontab

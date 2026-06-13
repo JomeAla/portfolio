@@ -1,0 +1,146 @@
+name: Deploy to Live Server
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+    inputs:
+      skip_build:
+        description: 'Skip npm build (for PHP-only changes)'
+        required: false
+        default: 'false'
+
+env:
+  DEPLOY_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, curl, zip, mysql
+          coverage: none
+      
+      - name: Validate PHP syntax
+        run: |
+          echo "Checking PHP files..."
+          find . -name "*.php" -not -path "./vendor/*" -not -path "./node_modules/*" > /tmp/phpfiles.txt
+          total=$(wc -l < /tmp/phpfiles.txt)
+          echo "Found $total PHP files"
+          
+          errors=""
+          while IFS read -r file; do
+            result=$(php -l "$file" 2>&1)
+            if ! echo "$result" | grep -q "No syntax errors"; then
+              errors="$errors$file: $result\n"
+            fi
+          done < /tmp/phpfiles.txt
+          
+          if [ -n "$errors" ]; then
+            echo "PHP SYNTAX ERRORS FOUND:"
+            echo -e "$errors"
+            exit 1
+          fi
+          echo "All PHP files have valid syntax"
+      
+      - name: Setup Node.js
+        if: inputs.skip_build != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies and build
+        if: inputs.skip_build != 'true'
+        run: |
+          npm install
+          npm run build
+      
+      - name: Prepare deployment files
+        run: |
+          rm -rf .git .github tests
+          rm -rf storage/framework/cache/* storage/framework/sessions/* storage/framework/views/*
+          rm -f storage/logs/*.log
+          
+          mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views storage/logs
+          touch storage/logs/.gitkeep storage/framework/cache/.gitkeep storage/framework/sessions/.gitkeep storage/framework/views/.gitkeep bootstrap/cache/.gitkeep
+          
+          echo "Files prepared"
+      
+      - name: Deploy via SSH
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          echo "=========================================="
+          echo "  SSH DEPLOYMENT"
+          echo "=========================================="
+          echo "Host: $SSH_HOST"
+          echo "User: $SSH_USERNAME"
+          echo "Path: $DEPLOY_PATH"
+          
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_USERNAME" ] || [ -z "$SSH_KEY" ]; then
+            echo "ERROR: SSH secrets not configured!"
+            echo "Please add these secrets in GitHub > Settings > Secrets:"
+            echo "  SSH_HOST: joala.com.ng"
+            echo "  SSH_USERNAME: joalacom"
+            echo "  SSH_KEY: <base64 encoded private key>"
+            echo "  DEPLOY_PATH: /home/joalacom/public_html/"
+            exit 1
+          fi
+          
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          
+          echo "$SSH_KEY" | base64 -d > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          
+          echo "Testing SSH connection..."
+          ssh -o ConnectTimeout=30 -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "echo 'SSH OK' && pwd"
+          
+          if [ $? -eq 0 ]; then
+            echo "SSH connection successful"
+            
+            echo "Checking remote directory..."
+            ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "mkdir -p $DEPLOY_PATH && ls -la $DEPLOY_PATH"
+            
+            echo "Creating deployment package..."
+            tar --exclude='.git' --exclude='vendor' --exclude='node_modules' --exclude='.env' -czf /tmp/deploy.tar.gz .
+            ls -la /tmp/deploy.tar.gz
+            
+            echo "Uploading files..."
+            scp -o StrictHostKeyChecking=no -o BatchMode=yes /tmp/deploy.tar.gz $SSH_USERNAME@$SSH_HOST:$DEPLOY_PATH/deploy.tar.gz
+            scp_status=$?
+            
+            echo "Verifying upload..."
+            ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "ls -la $DEPLOY_PATH/deploy.tar.gz 2>&1 || echo 'File not found'"
+            
+            if [ $scp_status -ne 0 ] || ! ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "test -f $DEPLOY_PATH/deploy.tar.gz"; then
+              echo "SCP failed, trying alternate upload method..."
+              tar -czf - . | ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "cd $DEPLOY_PATH && tar -xzf - --overwrite && echo 'Direct extraction complete'"
+              if [ $? -eq 0 ]; then
+                echo "Direct tar transfer succeeded"
+              else
+                echo "All upload methods failed"
+                exit 1
+              fi
+            else
+              echo "Extracting files on server..."
+              ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "cd $DEPLOY_PATH && tar -xzf deploy.tar.gz --overwrite && rm deploy.tar.gz && echo 'Extraction complete'"
+            fi
+            
+            echo "Deployment complete"
+          else
+            echo "SSH connection failed"
+            exit 1
+          fi
+          
+          echo "=========================================="

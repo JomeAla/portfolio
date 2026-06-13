@@ -2130,6 +2130,104 @@ Route::get('/setup-welcome-sequence', function () {
     }
 });
 
+// Test: Subscribe + auto-enroll in one call
+Route::get('/test-subscribe', function () {
+    $key = request('key', '');
+    if ($key !== 'joala2024') { return "Invalid key"; }
+
+    $email = request('email');
+    if (!$email) { return "Missing ?email parameter"; }
+    $name = request('name', 'Test User');
+
+    $lead = \App\Models\Lead::where('email', $email)->first();
+
+    if ($lead && $lead->confirmed) {
+        // Already confirmed — enroll directly
+        $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->where('is_active', true)->first();
+        if ($seq && !$lead->sequence_id) {
+            try {
+                app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
+            } catch (\Exception $e) {
+                return "<p style='color:red'>Error: " . $e->getMessage() . "</p>";
+            }
+        }
+    } else {
+        // Subscribe as new lead
+        $lead = \App\Models\Lead::subscribeToNewsletter($email, $name);
+        if ($lead->confirmed) {
+            $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->where('is_active', true)->first();
+            if ($seq && !$lead->sequence_id) {
+                try {
+                    app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
+                } catch (\Exception $e) {
+                    return "<p style='color:red'>Error: " . $e->getMessage() . "</p>";
+                }
+            }
+        } else {
+            // New lead — auto-confirm to simulate clicking confirmation link
+            $lead->confirm();
+            $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->where('is_active', true)->first();
+            if ($seq && !$lead->sequence_id) {
+                try {
+                    app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
+                } catch (\Exception $e) {
+                    return "<p style='color:red'>Error: " . $e->getMessage() . "</p>";
+                }
+            }
+        }
+    }
+
+    $out = "<h2>Result: {$lead->email}</h2>";
+    $out .= "<p>Lead ID: {$lead->id}</p>";
+    $out .= "<p>Confirmed: " . ($lead->confirmed ? 'yes' : 'no') . "</p>";
+    $out .= "<p>Sequence ID: " . ($lead->sequence_id ?? 'none') . "</p>";
+    $out .= "<p>Enrolled at: " . ($lead->enrolled_at ?? 'never') . "</p>";
+
+    $queue = \App\Models\EmailQueue::where('lead_id', $lead->id)->get();
+    $out .= "<p>Queue entries: {$queue->count()}</p>";
+    foreach ($queue as $q) {
+        $out .= "<p>Step #{$q->sequence_step_id}: status={$q->status}, scheduled={$q->scheduled_send_time}</p>";
+    }
+
+    return $out;
+});
+
+// Debug: Check welcome enrollment
+Route::get('/debug-enroll/{leadId?}', function ($leadId = null) {
+    $key = request('key', '');
+    if ($key !== 'joala2024') { return "Invalid key"; }
+
+    $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->first();
+    $lead = $leadId ? \App\Models\Lead::find($leadId) : null;
+
+    $out = "<h2>Welcome Sequence Status</h2>";
+    $out .= "<p>Found: " . ($seq ? "YES (ID: {$seq->id}, Active: " . ($seq->is_active ? 'yes' : 'no') . ")" : "NO") . "</p>";
+
+    if ($lead) {
+        $out .= "<h2>Lead #{$lead->id}: {$lead->email}</h2>";
+        $out .= "<p>Sequence ID: " . ($lead->sequence_id ?? 'none') . "</p>";
+        $out .= "<p>Confirmed: " . ($lead->confirmed ? 'yes' : 'no') . "</p>";
+        $queue = \App\Models\EmailQueue::where('lead_id', $lead->id)->get();
+        $out .= "<p>Queue entries: {$queue->count()}</p>";
+        foreach ($queue as $q) {
+            $out .= "<p>Step {$q->sequence_step_id}: status={$q->status}, scheduled={$q->scheduled_send_time}</p>";
+        }
+    }
+
+    // Test enrollment endpoint
+    $enroll = request('enroll');
+    if ($enroll && $lead && $seq) {
+        try {
+            app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
+            $out .= "<p style='color:green'>Enrollment attempted via MarketingService</p>";
+        } catch (\Exception $e) {
+            $out .= "<p style='color:red'>Error: " . $e->getMessage() . "</p>";
+        }
+    }
+
+    return $out;
+});
+
 // Check/Set Brevo API key
 Route::get('/check-brevo-key', function () {
     $key = request('key', '');

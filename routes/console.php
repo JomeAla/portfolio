@@ -13,10 +13,14 @@ Artisan::command('marketing:process-queue', function () {
     
     $this->info('Processing tweet queue...');
     $tweetResult = $service->processTweetQueue();
-    $this->info("Sent: {$tweetResult['sent']}, Failed: {$tweetResult['failed']}");
+    $this->info("Tweet queue - Sent: {$tweetResult['sent']}, Failed: {$tweetResult['failed']}");
     
     $this->info('Marketing queue processing complete.');
-})->purpose('Process tweet queue')->everyFifteenMinutes();
+})->purpose('Process market queue')->everyFifteenMinutes();
+
+Artisan::command('email:process', function () {
+    $this->call(\App\Console\Commands\ProcessEmailQueue::class);
+})->purpose('Process email queue via Brevo API')->everyFifteenMinutes();
 
 Artisan::command('blog:publish-scheduled', function () {
     $count = \App\Models\BlogPost::where('is_published', true)

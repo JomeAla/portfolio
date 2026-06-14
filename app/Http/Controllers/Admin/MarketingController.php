@@ -1122,11 +1122,11 @@ class MarketingController extends Controller
         
         $lead = Lead::subscribeToNewsletter($request->email, $request->name);
         
-        if ($lead->confirmed) {
-            $this->enrollInWelcomeSequence($lead);
-        } else {
-            $this->sendConfirmationEmail($lead);
+        if (!$lead->confirmed) {
+            $lead->confirm();
         }
+        
+        $this->enrollInWelcomeSequence($lead);
         
         if ($request->funnel_id) {
             $funnel = Funnel::find($request->funnel_id);
@@ -1153,10 +1153,7 @@ class MarketingController extends Controller
             }
         }
         
-        if ($lead->confirmed) {
-            return back()->with('success', 'Welcome! You are subscribed to our newsletter.');
-        }
-        return back()->with('success', 'Check your email to confirm your subscription!');
+        return back()->with('success', 'Welcome! You are subscribed to our newsletter.');
     }
 
     protected function sendConfirmationEmail(Lead $lead)

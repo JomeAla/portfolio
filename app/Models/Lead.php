@@ -200,6 +200,11 @@ class Lead extends Model
         return $this->hasMany(EmailAnalytics::class, 'lead_id');
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'lead_id');
+    }
+
     public function automationLogs(): HasMany
     {
         return $this->hasMany(\App\Models\AutomationLog::class);

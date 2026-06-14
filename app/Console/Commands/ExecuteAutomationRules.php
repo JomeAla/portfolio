@@ -108,6 +108,11 @@ class ExecuteAutomationRules extends Command
                     $query->where('campaign_id', $campaignId);
                 }
                 break;
+            case 'cart_abandoned':
+                $query->whereHas('orders', fn($q) =>
+                    $q->where('is_cart_abandoned', true)
+                );
+                break;
             default:
                 $query->whereRaw('1 = 0');
         }

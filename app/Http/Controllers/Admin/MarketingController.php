@@ -863,7 +863,7 @@ class MarketingController extends Controller
     public function showLandingPage($slug)
     {
         $page = LandingPage::where('slug', $slug)->where('is_active', true)->firstOrFail();
-        return view('front.landing_page', compact('page'));
+        return view('front.landing_page', compact('page') + ['slug' => $slug]);
     }
 
     // Public: Lead Submission
@@ -939,6 +939,10 @@ class MarketingController extends Controller
                     $marketingService->enrollLeadInFunnel($lead, $funnel);
                 }
             }
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Thanks for subscribing!']);
         }
 
         return back()->with('success', 'Thanks for subscribing!');

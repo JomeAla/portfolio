@@ -28,7 +28,7 @@
             
             <!-- Subtitle -->
             <p class="text-lg text-slate-400 mb-8">
-                Thank you for subscribing. Your WordPress Starter Kit is ready for download.
+                Thank you for subscribing. Your {{ $productName ?? 'eCommerce Starter Kit' }} is ready for download.
             </p>
             
             <!-- What's Inside -->
@@ -40,18 +40,25 @@
                 <ul class="space-y-3">
                     <li class="flex items-center gap-3 text-slate-300">
                         <span class="w-6 h-6 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-sm">1</span>
-                        Step-by-Step Setup Guide
+                        Complete 7-Step Launch Checklist
                     </li>
                     <li class="flex items-center gap-3 text-slate-300">
                         <span class="w-6 h-6 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-sm">2</span>
-                        SEO Optimization Checklist
+                        Payment Gateway Setup Guide
                     </li>
                     <li class="flex items-center gap-3 text-slate-300">
                         <span class="w-6 h-6 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-sm">3</span>
-                        Free Updates for Life
+                        SEO & Marketing Optimizations
                     </li>
                 </ul>
             </div>
+
+            @if(isset($productPrice))
+            <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-4 mb-8">
+                <p class="text-amber-400 text-sm font-medium">Upgrade to Premium</p>
+                <p class="text-white text-xl font-bold mt-1">{{ $productName ?? 'Full Platform' }} — {{ $productPrice }}</p>
+            </div>
+            @endif
             
             <!-- Download Button -->
             <a href="{{ $downloadUrl }}" 

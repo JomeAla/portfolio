@@ -56,6 +56,11 @@
                         @if(session('utm_content'))<input type="hidden" name="utm_content" value="{{ session('utm_content') }}">@endif
                         @if(session('referrer_url'))<input type="hidden" name="referrer_url" value="{{ session('referrer_url') }}">@endif
                         <div>
+                            <label class="block text-xs font-medium uppercase tracking-wider text-[#1a1a1a]/40 mb-2">Your name</label>
+                            <input type="text" name="name" placeholder="John Doe" required 
+                                class="w-full px-4 py-3 bg-[#F7F6F3] border border-[#EAEAEA] rounded-lg text-[#1a1a1a] placeholder-[#1a1a1a]/30 focus:ring-1 focus:ring-[#1a1a1a] focus:border-[#1a1a1a] transition-all">
+                        </div>
+                        <div>
                             <label class="block text-xs font-medium uppercase tracking-wider text-[#1a1a1a]/40 mb-2">Your email</label>
                             <input type="email" name="email" placeholder="name@example.com" required 
                                 class="w-full px-4 py-3 bg-[#F7F6F3] border border-[#EAEAEA] rounded-lg text-[#1a1a1a] placeholder-[#1a1a1a]/30 focus:ring-1 focus:ring-[#1a1a1a] focus:border-[#1a1a1a] transition-all">

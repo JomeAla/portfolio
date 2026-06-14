@@ -1202,6 +1202,172 @@ Route::get('/downloads/{file}', function ($file) {
     return response()->download($path);
 })->where('file', '[\w\-.]+');
 
+// Serve free product files from separate directory
+Route::get('/free-download/{slug}', function ($slug) {
+    $product = \App\Models\Product::where('slug', $slug)->where('price', 0)->firstOrFail();
+    $path = public_path($product->file_path);
+    if (!file_exists($path)) {
+        abort(404, 'File not found');
+    }
+    return response()->download($path);
+})->where('slug', '[\w\-]+');
+
+// Show download page after lead magnet signup
+Route::get('/download/{slug}', function ($slug) {
+    $landingPage = \App\Models\LandingPage::where('slug', $slug)->firstOrFail();
+    $premiumProduct = \App\Models\Product::where('slug', 'ecommerce-starter-kit')->first();
+    $freeProduct = \App\Models\Product::where('slug', 'free-ecommerce-starter-kit')->where('price', 0)->first();
+
+    $downloadUrl = $freeProduct
+        ? url('/free-download/' . $freeProduct->slug)
+        : '#';
+
+    $salesPageUrl = $premiumProduct
+        ? url('/ecommerce-starter-kit.php')
+        : url('/store');
+
+    $funnel = $landingPage->funnel;
+
+    $productName = 'eCommerce Starter Kit';
+    $productPrice = $premiumProduct ? '₦' . number_format($premiumProduct->current_price) : '';
+
+    return view('front.download-page', compact(
+        'downloadUrl', 'salesPageUrl', 'productName', 'productPrice', 'landingPage', 'funnel'
+    ));
+})->where('slug', '[\w\-]+');
+
+// Comprehensive E-Commerce Starter Kit Funnel Setup
+Route::get('/setup-ecommerce-funnel', function () {
+    try {
+        $out = [];
+
+        // 1. Create free lead magnet product
+        $freeProduct = \App\Models\Product::firstOrCreate(
+            ['slug' => 'free-ecommerce-starter-kit'],
+            [
+                'title' => 'Free eCommerce Starter Kit',
+                'slug' => 'free-ecommerce-starter-kit',
+                'short_description' => '7-step checklist to launch your online store',
+                'description' => 'Complete checklist covering store setup, product management, payment gateway, shipping, tax settings, SEO, and launch.',
+                'type' => 'ebook',
+                'price' => 0,
+                'sale_price' => 0,
+                'file_path' => 'uploads/free-products/files/free-ecommerce-starter-kit.html',
+                'is_active' => 1,
+                'is_featured' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        $out[] = "Free product ID: {$freeProduct->id}";
+
+        // 2. Create pre-sale email sequence
+        $presaleSeq = \App\Models\EmailSequence::updateOrCreate(
+            ['name' => 'E-Commerce Starter Kit Pre-Sale'],
+            [
+                'name' => 'E-Commerce Starter Kit Pre-Sale',
+                'description' => 'Nurture leads who got the free kit toward purchasing the premium Laravel e-commerce platform',
+                'trigger_type' => 'welcome',
+                'is_active' => true,
+            ]
+        );
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $presaleSeq->id)->delete();
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Free eCommerce Kit is ready!', 'body' => "Hi {{name}},\n\nYour free eCommerce Starter Kit checklist is ready.\n\nDownload it here: https://joala.com.ng/free-download/free-ecommerce-starter-kit\n\nInside this checklist, you'll find everything you need to launch your online store — from domain setup to payment gateways.\n\nBut if you're ready to skip the DIY and get a complete, ready-to-run e-commerce platform, check out the premium version:\nhttps://joala.com.ng/ecommerce-starter-kit.php\n\nIt includes Laravel installation, Paystack/Flutterwave/Stripe integration, admin dashboard, inventory management, and more.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 2, 'delay_days' => 2, 'subject' => 'Why most online stores fail (and how to avoid it)', 'body' => "Hi {{name}},\n\nDid you know that 80% of online stores fail within the first 3 months?\n\nThe #1 reason? They use complicated platforms that take months to set up.\n\nThat's exactly why I built the E-Commerce Starter Kit — a complete Laravel platform that you can launch in 48 hours.\n\nHere's what's included:\n✓ Paystack, Stripe & Flutterwave integration\n✓ Admin dashboard with real-time analytics\n✓ Inventory & order management\n✓ Physical & digital product support\n✓ Africa & worldwide shipping\n✓ Lifetime free updates\n\nSee it here: https://joala.com.ng/ecommerce-starter-kit.php\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 3, 'delay_days' => 4, 'subject' => 'Success story: From 0 to 50 orders in one week', 'body' => "Hi {{name}},\n\n\"We launched our online store in just 2 days. The admin panel makes managing orders effortless. Best investment we've made.\"\n— Adebola Kuti, Fashion Store Owner, Lagos\n\nAdebola used the E-Commerce Starter Kit to launch her fashion store. Within one week, she had processed 50 orders.\n\nWhat made the difference?\n- She didn't waste weeks on setup\n- The built-in payment integrations worked instantly\n- The dashboard gave her real-time insights into what was selling\n\nYou can get the same results: https://joala.com.ng/ecommerce-starter-kit.php\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 4, 'delay_days' => 6, 'subject' => 'Special offer: 15% off the E-Commerce Starter Kit', 'body' => "Hi {{name}},\n\nI'm giving you an exclusive 15% discount on the E-Commerce Starter Kit.\n\nUse code: LAUNCH15 at checkout\n\nThis brings the price down to just ₦85,000 — a one-time investment for a lifetime of sales.\n\nHere's exactly what you'll get:\n• Complete Laravel e-commerce platform\n• Paystack, Stripe & Flutterwave integration\n• Admin dashboard with analytics\n• Inventory & order management\n• Mobile responsive storefront\n• Physical & digital product support\n• Africa & worldwide shipping\n• Lifetime free updates\n• Priority support\n\nGet it now: https://joala.com.ng/ecommerce-starter-kit.php?coupon=LAUNCH15\n\nThis offer won't last forever. Grab it today.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 5, 'delay_days' => 9, 'subject' => 'Last chance: Your 15% discount expires soon', 'body' => "Hi {{name}},\n\nJust a friendly reminder that your 15% discount (code: LAUNCH15) is still available.\n\nBut I can't keep it open forever.\n\nIf you're serious about launching your online store, now is the time.\n\nThe E-Commerce Starter Kit gives you everything you need — no coding required, no complex setup, just a complete platform that works out of the box.\n\nGet started today: https://joala.com.ng/ecommerce-starter-kit.php\n\nIf you have any questions, just reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        $out[] = "Pre-sale sequence ID: {$presaleSeq->id} (5 steps)";
+
+        // Sync sequences table
+        $seq = \App\Models\Sequence::updateOrCreate(
+            ['id' => $presaleSeq->id],
+            ['name' => 'E-Commerce Starter Kit Pre-Sale', 'description' => 'Nurture leads toward the premium e-commerce platform', 'is_active' => true]
+        );
+        $out[] = "Sequences table synced ID: {$seq->id}";
+
+        // 3. Find premium product
+        $premiumProduct = \App\Models\Product::where('slug', 'ecommerce-starter-kit')->first();
+        $premiumId = $premiumProduct ? $premiumProduct->id : 0;
+        $out[] = "Premium product ID: " . ($premiumProduct ? $premiumProduct->id : 'NOT FOUND');
+
+        // 4. Create the funnel
+        $funnel = \App\Models\Funnel::updateOrCreate(
+            ['slug' => 'ecommerce-starter-kit-funnel'],
+            [
+                'name' => 'E-Commerce Starter Kit Funnel',
+                'slug' => 'ecommerce-starter-kit-funnel',
+                'description' => 'Lead magnet → download → checkout → pre-sale nurture',
+                'goal' => 'sales',
+                'funnel_type' => 'sales',
+                'product_id' => $premiumId ?: null,
+                'welcome_sequence_id' => $presaleSeq->id,
+                'environment' => 'production',
+                'is_active' => true,
+                'upsell_enabled' => false,
+                'countdown_enabled' => false,
+            ]
+        );
+        $out[] = "Funnel ID: {$funnel->id}";
+
+        // 5. Create funnel stages
+        \App\Models\FunnelStage::where('funnel_id', $funnel->id)->delete();
+
+        // Stage 1: Landing page (lead capture)
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Lead Magnet Page',
+            'type' => 'landing',
+            'content' => ['url' => '/l/free-e-commerce-starter-kit'],
+            'order' => 1,
+            'delay_days' => 0,
+            'is_required' => true,
+            'action_on_complete' => 'advance',
+        ]);
+        $out[] = "Stage 1: Lead Magnet Page";
+
+        // Stage 2: Download page
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Download Page',
+            'type' => 'thank_you',
+            'content' => ['url' => '/download/free-e-commerce-starter-kit'],
+            'order' => 2,
+            'delay_days' => 0,
+            'is_required' => false,
+            'action_on_complete' => 'advance',
+        ]);
+        $out[] = "Stage 2: Download Page";
+
+        // Stage 3: Premium checkout
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Premium Checkout',
+            'type' => 'checkout',
+            'content' => ['url' => '/ecommerce-starter-kit.php'],
+            'order' => 3,
+            'delay_days' => 0,
+            'sequence_id' => $presaleSeq->id,
+            'is_required' => false,
+            'action_on_complete' => 'email',
+        ]);
+        $out[] = "Stage 3: Premium Checkout";
+
+        $out[] = "---";
+        $out[] = "Landing page URL: https://joala.com.ng/l/free-e-commerce-starter-kit";
+        $out[] = "Download page URL: https://joala.com.ng/download/free-e-commerce-starter-kit";
+        $out[] = "Sales page URL: https://joala.com.ng/ecommerce-starter-kit.php";
+        $out[] = "Funnel edit: /admin/marketing/funnels/{$funnel->id}/edit";
+
+        return "<h2>E-Commerce Funnel Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
+
+    } catch (\Exception $e) {
+        return "<h2>ERROR</h2><pre>" . $e->getMessage() . "\n" . $e->getTraceAsString() . "</pre>";
+    }
+});
+
 // Course Creator Kit Product
 Route::get('/setup-course-kit', function () {
     try {

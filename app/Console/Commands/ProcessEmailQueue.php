@@ -30,7 +30,7 @@ class ProcessEmailQueue extends Command
     private function processTemplate($template, $lead)
     {
         $replacements = [
-            '{{name}}' => $lead->name ?? 'there',
+            '{{name}}' => (!empty($lead->name) ? $lead->name : explode('@', $lead->email)[0]),
             '{{email}}' => $lead->email,
             '{{date}}' => now()->format('F j, Y'),
         ];
@@ -91,7 +91,7 @@ class ProcessEmailQueue extends Command
                 ]);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
                     "sender" => ["name" => $fromName, "email" => $fromEmail],
-                    "to" => [["email" => $lead->email, "name" => $lead->name ?? '']],
+                    "to" => [["email" => $lead->email, "name" => (!empty($lead->name) ? $lead->name : explode('@', $lead->email)[0])]],
                     "subject" => $subject,
                     "htmlContent" => $body,
                 ]));

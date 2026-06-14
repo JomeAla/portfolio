@@ -29,16 +29,6 @@ use App\Http\Controllers\Admin\InvoiceController as AdminInvoiceController;
 use App\Http\Controllers\Admin\MarketingController;
 use App\Http\Controllers\Admin\FunnelDeployController;
 
-function marketing_pdo() {
-    $host = config('database.connections.mysql.host');
-    $dbname = config('database.connections.mysql.database');
-    $user = config('database.connections.mysql.username');
-    $pass = config('database.connections.mysql.password');
-    
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    return $pdo;
-}
 use App\Http\Controllers\Front\BlogController;
 use App\Http\Controllers\Front\CustomerController;
 use App\Http\Controllers\Admin\MembershipController;
@@ -293,18 +283,16 @@ Route::prefix('admin')->group(function () {
 
         // Dashboard Stats API
         Route::get('/stats', function () {
-            $db = marketing_pdo();
-
-            $visitorsDaily = (int)($db->query("SELECT COUNT(DISTINCT ip_address) FROM page_visits WHERE visited_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)")->fetchColumn() ?: 0);
-            $visitorsWeekly = (int)($db->query("SELECT COUNT(DISTINCT ip_address) FROM page_visits WHERE visited_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)")->fetchColumn() ?: 0);
-            $visitorsMonthly = (int)($db->query("SELECT COUNT(DISTINCT ip_address) FROM page_visits WHERE visited_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)")->fetchColumn() ?: 0);
-            $visitorsYearly = (int)($db->query("SELECT COUNT(DISTINCT ip_address) FROM page_visits WHERE visited_at >= DATE_SUB(NOW(), INTERVAL 365 DAY)")->fetchColumn() ?: 0);
+            $visitorsDaily = \App\Models\VisitorLog::where('visited_at', '>=', now()->subDay())->distinct('ip_address')->count('ip_address');
+            $visitorsWeekly = \App\Models\VisitorLog::where('visited_at', '>=', now()->subWeek())->distinct('ip_address')->count('ip_address');
+            $visitorsMonthly = \App\Models\VisitorLog::where('visited_at', '>=', now()->subDays(30))->distinct('ip_address')->count('ip_address');
+            $visitorsYearly = \App\Models\VisitorLog::where('visited_at', '>=', now()->subYear())->distinct('ip_address')->count('ip_address');
 
             return response()->json([
-                'leads' => (int)($db->query("SELECT COUNT(*) FROM leads")->fetchColumn() ?: 0),
-                'deals' => (int)($db->query("SELECT COUNT(*) FROM deals WHERE stage NOT IN ('won','lost')")->fetchColumn() ?: 0),
-                'orders' => (int)($db->query("SELECT COUNT(*) FROM orders WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)")->fetchColumn() ?: 0),
-                'revenue' => (float)($db->query("SELECT COALESCE(SUM(final_amount),0) FROM orders WHERE payment_status='success' AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)")->fetchColumn() ?: 0),
+                'leads' => \App\Models\Lead::count(),
+                'deals' => \App\Models\Deal::whereNotIn('stage', ['won', 'lost'])->count(),
+                'orders' => \App\Models\Order::where('created_at', '>=', now()->subDays(30))->count(),
+                'revenue' => (float) \App\Models\Order::where('payment_status', 'success')->where('created_at', '>=', now()->subDays(30))->sum('final_amount'),
                 'visitors_daily' => $visitorsDaily,
                 'visitors_weekly' => $visitorsWeekly,
                 'visitors_monthly' => $visitorsMonthly,
@@ -313,7 +301,6 @@ Route::prefix('admin')->group(function () {
         })->name('admin.stats');
 
         Route::get('/chart-data', function () {
-            $db = marketing_pdo();
             $months = [];
             $leadsData = [];
             $revenueData = [];
@@ -321,14 +308,19 @@ Route::prefix('admin')->group(function () {
                 $m = date('M', strtotime("-$i months"));
                 $ym = date('Y-m', strtotime("-$i months"));
                 $months[] = $m;
-                $leadsData[] = (int)($db->prepare("SELECT COUNT(*) FROM leads WHERE DATE_FORMAT(created_at,'%Y-%m') = ?")->execute([$ym]) ? $db->query("SELECT COUNT(*) FROM leads WHERE DATE_FORMAT(created_at,'%Y-%m') = '$ym'")->fetchColumn() : 0);
+                $leadsData[] = \App\Models\Lead::whereYear('created_at', substr($ym, 0, 4))
+                    ->whereMonth('created_at', substr($ym, 5, 2))
+                    ->count();
             }
-            $result = $db->query("SELECT DATE_FORMAT(created_at,'%Y-%m') as ym, COALESCE(SUM(final_amount),0) as total FROM orders WHERE payment_status='success' AND created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH) GROUP BY ym ORDER BY ym");
-            $revMap = [];
-            while ($row = $result->fetch()) { $revMap[$row['ym']] = (float)$row['total']; }
-            foreach ($months as $idx => $ym) {
-                $ymKey = date('Y-m', strtotime("-" . (5-$idx) . " months"));
-                $revenueData[] = $revMap[$ymKey] ?? 0;
+            $revenueMap = \App\Models\Order::selectRaw("DATE_FORMAT(created_at,'%Y-%m') as ym, SUM(final_amount) as total")
+                ->where('payment_status', 'success')
+                ->where('created_at', '>=', now()->subMonths(6))
+                ->groupBy('ym')
+                ->orderBy('ym')
+                ->pluck('total', 'ym');
+            for ($i = 5; $i >= 0; $i--) {
+                $ymKey = date('Y-m', strtotime("-$i months"));
+                $revenueData[] = (float)($revenueMap[$ymKey] ?? 0);
             }
             return response()->json([
                 'leads_labels' => $months,
@@ -644,20 +636,17 @@ Route::prefix('admin')->group(function () {
             return view('admin.marketing.automation.builder', compact('funnel', 'sequences', 'tags', 'webhooks'));
         })->name('admin.marketing.automation.builder');
         
-        // Quick migration runner - TEMPORARY
+        // Quick migration runner
         Route::get('/run-order-bumps', function() {
             try {
-                $pdo = marketing_pdo();
-                
-                // Check if columns exist
-                $columns = $pdo->query("SHOW COLUMNS FROM orders LIKE 'order_bumps'")->fetchAll();
-                if (count($columns) > 0) {
+                if (\Illuminate\Support\Facades\Schema::hasColumn('orders', 'order_bumps')) {
                     return "✅ order_bumps column already exists!";
                 }
                 
-                // Add columns
-                $pdo->exec("ALTER TABLE orders ADD COLUMN order_bumps JSON NULL AFTER checkout_abandoned_at");
-                $pdo->exec("ALTER TABLE orders ADD COLUMN order_bumps_total DECIMAL(10,2) NULL AFTER order_bumps");
+                \Illuminate\Support\Facades\Schema::table('orders', function ($table) {
+                    $table->json('order_bumps')->nullable()->after('checkout_abandoned_at');
+                    $table->decimal('order_bumps_total', 10, 2)->nullable()->after('order_bumps');
+                });
                 
                 return "✅ SUCCESS! Order Bumps columns added to orders table!";
             } catch (\Exception $e) {
@@ -672,8 +661,7 @@ Route::prefix('admin')->group(function () {
         // Refund Management Routes
         Route::get('/refunds', function() {
             try {
-                $pdo = marketing_pdo();
-                $refunds = $pdo->query("SELECT * FROM refund_requests ORDER BY created_at DESC LIMIT 50")->fetchAll(PDO::FETCH_ASSOC);
+                $refunds = \Illuminate\Support\Facades\DB::table('refund_requests')->orderBy('created_at', 'desc')->limit(50)->get()->map(function ($r) { return (array) $r; })->toArray();
                 return view('admin.refunds.index', compact('refunds'));
             } catch (\Exception $e) {
                 return "Error: " . $e->getMessage();
@@ -682,8 +670,7 @@ Route::prefix('admin')->group(function () {
         
         Route::post('/refunds/{id}/approve', function($id) {
             try {
-                $pdo = marketing_pdo();
-                $pdo->exec("UPDATE refund_requests SET status = 'approved', processed_at = NOW() WHERE id = $id");
+                \Illuminate\Support\Facades\DB::table('refund_requests')->where('id', $id)->update(['status' => 'approved', 'processed_at' => now()]);
                 return back()->with('success', 'Refund approved!');
             } catch (\Exception $e) {
                 return back()->with('error', $e->getMessage());
@@ -692,8 +679,7 @@ Route::prefix('admin')->group(function () {
         
         Route::post('/refunds/{id}/reject', function($id) {
             try {
-                $pdo = marketing_pdo();
-                $pdo->exec("UPDATE refund_requests SET status = 'rejected', processed_at = NOW() WHERE id = $id");
+                \Illuminate\Support\Facades\DB::table('refund_requests')->where('id', $id)->update(['status' => 'rejected', 'processed_at' => now()]);
                 return back()->with('success', 'Refund rejected!');
             } catch (\Exception $e) {
                 return back()->with('error', $e->getMessage());
@@ -703,8 +689,7 @@ Route::prefix('admin')->group(function () {
         // Affiliate Management Routes
         Route::get('/affiliates', function() {
             try {
-                $pdo = marketing_pdo();
-                $affiliates = $pdo->query("SELECT * FROM affiliates ORDER BY created_at DESC LIMIT 50")->fetchAll(PDO::FETCH_ASSOC);
+                $affiliates = \App\Models\Affiliate::latest()->limit(50)->get()->toArray();
                 return view('admin.affiliates.index', compact('affiliates'));
             } catch (\Exception $e) {
                 return "Error: " . $e->getMessage();
@@ -713,9 +698,7 @@ Route::prefix('admin')->group(function () {
         
         Route::delete('/affiliates/{id}', function($id) {
             try {
-                $pdo = marketing_pdo();
-                $stmt = $pdo->prepare("DELETE FROM affiliates WHERE id = ?");
-                $stmt->execute([$id]);
+                \App\Models\Affiliate::findOrFail($id)->delete();
                 return redirect()->route('admin.affiliates')->with('success', 'Affiliate deleted successfully');
             } catch (\Exception $e) {
                 return "Error: " . $e->getMessage();
@@ -908,19 +891,10 @@ Route::get('/affiliate/settings', [App\Http\Controllers\Front\AffiliateControlle
 // Generate affiliate link route
 Route::get('/ref/{code}', function($code) {
     try {
-        $pdo = marketing_pdo();
-        
-        // Find affiliate by referral code
-        $stmt = $pdo->prepare("SELECT id FROM affiliates WHERE referral_code = ? AND status = 'active'");
-        $stmt->execute([$code]);
-        $affiliate = $stmt->fetch(PDO::FETCH_ASSOC);
+        $affiliate = \App\Models\Affiliate::where('referral_code', $code)->where('status', 'active')->first();
         
         if ($affiliate) {
-            // Log the click
-            $clickStmt = $pdo->prepare("UPDATE affiliates SET total_clicks = total_clicks + 1 WHERE id = ?");
-            $clickStmt->execute([$affiliate['id']]);
-            
-            // Redirect to main page or landing page
+            $affiliate->increment('total_clicks');
             return redirect('/?ref=' . $code);
         }
         
@@ -937,19 +911,22 @@ Route::get('/refund/request/{orderId?}', function($orderId = null) {
 
 Route::post('/refund/request', function(\Illuminate\Http\Request $request) {
     try {
-        $pdo = marketing_pdo();
-        
-        // Get order amount if order_id provided
         $amount = null;
         if ($request->order_id) {
-            $order = $pdo->query("SELECT final_amount FROM orders WHERE id = " . intval($request->order_id))->fetch(PDO::FETCH_ASSOC);
+            $order = \App\Models\Order::find(intval($request->order_id));
             if ($order) {
-                $amount = $order['final_amount'];
+                $amount = $order->final_amount;
             }
         }
         
-        $stmt = $pdo->prepare("INSERT INTO refund_requests (order_id, user_email, reason, status, amount, created_at) VALUES (?, ?, ?, 'pending', ?, NOW())");
-        $stmt->execute([$request->order_id ?? null, $request->email, $request->reason, $amount]);
+        \Illuminate\Support\Facades\DB::table('refund_requests')->insert([
+            'order_id' => $request->order_id ?? null,
+            'user_email' => $request->email,
+            'reason' => $request->reason,
+            'status' => 'pending',
+            'amount' => $amount,
+            'created_at' => now(),
+        ]);
         
         return back()->with('success', 'Your refund request has been submitted!');
     } catch (\Exception $e) {
@@ -1893,8 +1870,14 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
 Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/affiliates/payouts', function() {
         try {
-            $pdo = marketing_pdo();
-            $payouts = $pdo->query("SELECT ap.*, a.name as affiliate_name, a.email FROM affiliate_payouts ap JOIN affiliates a ON ap.affiliate_id = a.id ORDER BY ap.created_at DESC LIMIT 50")->fetchAll(\PDO::FETCH_ASSOC);
+            $payouts = \Illuminate\Support\Facades\DB::table('affiliate_payouts')
+                ->join('affiliates', 'affiliate_payouts.affiliate_id', '=', 'affiliates.id')
+                ->select('affiliate_payouts.*', 'affiliates.name as affiliate_name', 'affiliates.email')
+                ->orderBy('affiliate_payouts.created_at', 'desc')
+                ->limit(50)
+                ->get()
+                ->map(function ($p) { return (array) $p; })
+                ->toArray();
             return view('admin.affiliates.payouts', compact('payouts'));
         } catch (\Exception $e) {
             return "Error: " . $e->getMessage();
@@ -1996,25 +1979,24 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
 // One-time setup endpoint for creating new feature tables
 Route::get('/setup-new-tables', function () {
     try {
-        $pdo = db_pdo();
         $out = [];
 
-        $pdo->exec("CREATE TABLE IF NOT EXISTS page_visits (
-            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            ip_address VARCHAR(45) DEFAULT NULL,
-            user_agent TEXT DEFAULT NULL,
-            url TEXT DEFAULT NULL,
-            referer TEXT DEFAULT NULL,
-            session_id VARCHAR(255) DEFAULT NULL,
-            visited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            INDEX idx_session (session_id),
-            INDEX idx_visited (visited_at)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        \Illuminate\Support\Facades\Schema::create('page_visits', function ($table) {
+            $table->bigIncrements('id');
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->text('url')->nullable();
+            $table->text('referer')->nullable();
+            $table->string('session_id')->nullable()->index();
+            $table->timestamp('visited_at')->useCurrent();
+            $table->index('visited_at');
+        });
         $out[] = "page_visits table OK";
 
-        $check = $pdo->query("SHOW COLUMNS FROM project_briefs LIKE 'is_read'")->fetch();
-        if (!$check) {
-            $pdo->exec("ALTER TABLE project_briefs ADD COLUMN is_read TINYINT(1) DEFAULT 0 AFTER notes");
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('project_briefs', 'is_read')) {
+            \Illuminate\Support\Facades\Schema::table('project_briefs', function ($table) {
+                $table->boolean('is_read')->default(false)->after('notes');
+            });
             $out[] = "project_briefs.is_read column added";
         } else {
             $out[] = "project_briefs.is_read already exists";
@@ -2022,38 +2004,7 @@ Route::get('/setup-new-tables', function () {
 
         return "<h2>Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
     } catch (\Exception $e) {
-        // Try marketing pdo as fallback
-        try {
-            $pdo = marketing_pdo();
-            $pdo->exec("CREATE TABLE IF NOT EXISTS page_visits (
-                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                ip_address VARCHAR(45) DEFAULT NULL,
-                user_agent TEXT DEFAULT NULL,
-                url TEXT DEFAULT NULL,
-                referer TEXT DEFAULT NULL,
-                session_id VARCHAR(255) DEFAULT NULL,
-                visited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                INDEX idx_session (session_id),
-                INDEX idx_visited (visited_at)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-            $out[] = "page_visits table OK";
-
-            try {
-                $check = $pdo->query("SHOW COLUMNS FROM project_briefs LIKE 'is_read'")->fetch();
-                if (!$check) {
-                    $pdo->exec("ALTER TABLE project_briefs ADD COLUMN is_read TINYINT(1) DEFAULT 0 AFTER notes");
-                    $out[] = "project_briefs.is_read column added";
-                } else {
-                    $out[] = "project_briefs.is_read already exists";
-                }
-            } catch (\Exception $e2) {
-                $out[] = "project_briefs.is_read: " . $e2->getMessage();
-            }
-
-            return "<h2>Setup Complete (marketing)</h2><pre>" . implode("\n", $out) . "</pre>";
-        } catch (\Exception $e2) {
-            return "<h2>Error</h2><pre>" . $e->getMessage() . "\n" . $e2->getMessage() . "</pre>";
-        }
+        return "<h2>Error</h2><pre>" . $e->getMessage() . "</pre>";
     }
 });
 

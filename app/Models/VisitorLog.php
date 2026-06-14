@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class VisitorLog extends Model
 {
+    protected $table = 'page_visits';
+
     public $timestamps = false;
 
     protected $fillable = [

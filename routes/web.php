@@ -955,7 +955,7 @@ Route::get('/newsletter/unsubscribe/{token}', [MarketingController::class, 'news
 // Email Open Tracking (public for tracking pixels)
 Route::get('/m/{emailQueue}', [MarketingController::class, 'trackOpen'])->name('marketing.track.open');
 Route::get('/mc/{emailQueue}', [MarketingController::class, 'trackClick'])->name('marketing.track.click');
-Route::get('/click/{emailQueueId}/{url}', [MarketingController::class, 'trackAndRedirect'])->name('marketing.track.redirect');
+Route::get('/click/{emailQueueId}', [MarketingController::class, 'trackAndRedirect'])->name('marketing.track.redirect');
 
 // A/B Test Tracking (public)
 Route::get('/ab/open/{test}/{variant}', [MarketingController::class, 'abTestsRecordOpen'])->name('ab.track.open');

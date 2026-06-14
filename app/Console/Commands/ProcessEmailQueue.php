@@ -21,7 +21,7 @@ class ProcessEmailQueue extends Command
             $scheme = parse_url($originalUrl, PHP_URL_SCHEME);
             if (in_array($scheme, ['http', 'https']) && !str_contains($originalUrl, '/click/') && !str_contains($originalUrl, '/mc/')) {
                 $encodedUrl = urlencode($originalUrl);
-                return 'href="' . url('/click/' . $emailQueueId . '/' . $encodedUrl) . '"';
+                return 'href="' . url('/click/' . $emailQueueId . '?url=' . $encodedUrl) . '"';
             }
             return $matches[0];
         }, $html);

@@ -1024,7 +1024,7 @@ class MarketingController extends Controller
         return response(base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'))->header('Content-Type', 'image/gif');
     }
 
-    public function trackAndRedirect($emailQueueId, $url)
+    public function trackAndRedirect(Request $request, $emailQueueId)
     {
         $emailQueue = EmailQueue::find($emailQueueId);
         
@@ -1035,7 +1035,12 @@ class MarketingController extends Controller
             ]);
         }
         
-        return redirect(urldecode($url));
+        $url = $request->query('url');
+        if ($url) {
+            return redirect(urldecode($url));
+        }
+        
+        return redirect('/');
     }
 
     public function twitterSettings()

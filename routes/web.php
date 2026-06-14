@@ -1215,7 +1215,7 @@ Route::get('/free-download/{slug}', function ($slug) {
 // Show download page after lead magnet signup
 Route::get('/download/{slug}', function ($slug) {
     $landingPage = \App\Models\LandingPage::where('slug', $slug)->firstOrFail();
-    $premiumProduct = \App\Models\Product::where('slug', 'ecommerce-starter-kit')->first();
+    $premiumProduct = \App\Models\Product::where('slug', 'e-commerce-starter-kit')->first();
     $freeProduct = \App\Models\Product::where('slug', 'free-ecommerce-starter-kit')->where('price', 0)->first();
 
     $downloadUrl = $freeProduct

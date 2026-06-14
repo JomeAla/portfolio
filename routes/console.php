@@ -22,6 +22,10 @@ Artisan::command('email:process', function () {
     $this->call(\App\Console\Commands\ProcessEmailQueue::class);
 })->purpose('Process email queue via Brevo API')->everyFifteenMinutes();
 
+Artisan::command('automation:process-workflows', function () {
+    $this->call(\App\Console\Commands\ProcessAutomationWorkflows::class);
+})->purpose('Process visual automation builder workflows')->everyFifteenMinutes();
+
 Artisan::command('blog:publish-scheduled', function () {
     $count = \App\Models\BlogPost::where('is_published', true)
         ->whereNotNull('published_at')

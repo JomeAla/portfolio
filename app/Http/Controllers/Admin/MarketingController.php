@@ -2929,11 +2929,15 @@ return view('admin.marketing.funnels.analytics',
                 return !empty($b['product_id']);
             }));
         }
-if (isset($data['automation_workflows']) && is_array($data['automation_workflows'])) {
-            $data['automation_workflows'] = array_filter($data['automation_workflows'], function($w) {
-                return !empty($w['type']);
-            });
-            $data['automation_workflows'] = array_values($data['automation_workflows']);
+if (isset($data['automation_workflows'])) {
+            if (is_string($data['automation_workflows'])) {
+                $decoded = json_decode($data['automation_workflows'], true);
+                $data['automation_workflows'] = is_array($decoded) ? $decoded : [];
+            } elseif (is_array($data['automation_workflows'])) {
+                $data['automation_workflows'] = array_values(array_filter($data['automation_workflows'], function($w) {
+                    return !empty($w['type']);
+                }));
+            }
         } else {
             $data['automation_workflows'] = [];
         }

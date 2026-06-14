@@ -9,10 +9,14 @@ use App\Models\SequenceStep;
 use App\Models\EmailQueue;
 use App\Models\TweetQueue;
 use App\Models\TwitterSetting;
+use App\Models\LandingPage;
+use App\Models\EmailOpen;
+use App\Models\Setting;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class MarketingService
 {
@@ -196,10 +200,8 @@ class MarketingService
         $welcomeSequenceId = $funnel->welcome_sequence_id;
         $followupSequenceId = $funnel->followup_sequence_id;
 
-        // Check if already enrolled in welcome sequence
         $alreadyEnrolled = $this->isLeadEnrolledInSequence($lead, $welcomeSequenceId);
 
-        // Check if already enrolled in follow-up sequence
         if (!$alreadyEnrolled) {
             $alreadyEnrolled = $this->isLeadEnrolledInSequence($lead, $followupSequenceId);
         }
@@ -239,6 +241,40 @@ class MarketingService
         }
         
         return $lead;
+    }
+
+    public function captureLead(string $email, ?string $name = null, ?int $landingPageId = null): Lead
+    {
+        $lead = Lead::firstOrCreate(
+            ['email' => $email],
+            [
+                'name' => $name,
+                'landing_page_id' => $landingPageId,
+            ]
+        );
+
+        if ($landingPageId) {
+            $landingPage = LandingPage::find($landingPageId);
+            if ($landingPage && $landingPage->sequence_id) {
+                $this->enrollLeadInSequence($lead, $landingPage->sequence_id);
+            }
+        }
+
+        return $lead;
+    }
+
+    public static function generateSlug(string $title): string
+    {
+        $slug = strtolower(trim(preg_replace('/[^a-z0-9-]+/', '-', $title)));
+        $originalSlug = $slug;
+        $counter = 0;
+        
+        while (BlogPost::where('slug', $slug)->exists() || LandingPage::where('slug', $slug)->exists()) {
+            $counter++;
+            $slug = $originalSlug . '-' . $counter;
+        }
+        
+        return $slug;
     }
 
     public function getTwitterAuthUrl()
@@ -422,11 +458,37 @@ class MarketingService
         ]);
     }
 
+    public function createTweetFromBlogPost(BlogPost $post): ?TweetQueue
+    {
+        $content = $post->title . ' - ' . url('/blog/' . $post->slug);
+        
+        if ($post->post_to_twitter) {
+            return TweetQueue::create([
+                'content' => $content,
+                'blog_post_id' => $post->id,
+                'status' => 'scheduled',
+                'scheduled_send_time' => $post->published_at ?? now(),
+            ]);
+        }
+        
+        return null;
+    }
+
+    public function recordEmailOpen(int $emailQueueId, ?string $ipAddress = null, ?string $userAgent = null): void
+    {
+        EmailOpen::create([
+            'email_queue_id' => $emailQueueId,
+            'opened_at' => now(),
+            'ip_address' => $ipAddress,
+            'user_agent' => $userAgent,
+        ]);
+    }
+
     public function getDashboardStats()
     {
         $totalLeads = Lead::count();
         $totalEmailsSent = EmailQueue::where('status', 'sent')->count();
-        $totalEmailsOpened = \App\Models\EmailOpen::count();
+        $totalEmailsOpened = EmailOpen::count();
         $openRate = $totalEmailsSent > 0 ? round(($totalEmailsOpened / $totalEmailsSent) * 100, 1) : 0;
         
         $tweetsPublished = TweetQueue::where('status', 'sent')->count();
@@ -439,6 +501,26 @@ class MarketingService
             'tweets_published' => $tweetsPublished,
             'pending_emails' => EmailQueue::where('status', 'pending')->count(),
             'pending_tweets' => TweetQueue::where('status', 'scheduled')->count(),
+        ];
+    }
+
+    public function getSequenceStats(int $sequenceId): array
+    {
+        $leads = Lead::where('sequence_id', $sequenceId)->count();
+        $emailsSent = EmailQueue::whereHas('step', function ($query) use ($sequenceId) {
+            $query->where('sequence_id', $sequenceId);
+        })->where('status', 'sent')->count();
+        
+        $emailsOpened = EmailQueue::whereHas('step', function ($query) use ($sequenceId) {
+            $query->where('sequence_id', $sequenceId);
+        })->where('status', 'sent')->with('emailOpens')->get()->sum(function ($eq) {
+            return $eq->emailOpens->count();
+        });
+        
+        return [
+            'leads' => $leads,
+            'emails_sent' => $emailsSent,
+            'emails_opened' => $emailsOpened,
         ];
     }
 }

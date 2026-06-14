@@ -2146,7 +2146,7 @@ Route::get('/test-subscribe', function () {
         $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->where('is_active', true)->first();
         if ($seq && !$lead->sequence_id) {
             try {
-                app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
+                app(\App\Services\Marketing\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
             } catch (\Exception $e) {
                 return "<p style='color:red'>Error: " . $e->getMessage() . "</p>";
             }
@@ -2158,7 +2158,7 @@ Route::get('/test-subscribe', function () {
             $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->where('is_active', true)->first();
             if ($seq && !$lead->sequence_id) {
                 try {
-                    app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
+                    app(\App\Services\Marketing\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
                 } catch (\Exception $e) {
                     return "<p style='color:red'>Error: " . $e->getMessage() . "</p>";
                 }
@@ -2169,7 +2169,7 @@ Route::get('/test-subscribe', function () {
             $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->where('is_active', true)->first();
             if ($seq && !$lead->sequence_id) {
                 try {
-                    app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
+                    app(\App\Services\Marketing\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
                 } catch (\Exception $e) {
                     return "<p style='color:red'>Error: " . $e->getMessage() . "</p>";
                 }
@@ -2218,7 +2218,7 @@ Route::get('/debug-enroll/{leadId?}', function ($leadId = null) {
     $enroll = request('enroll');
     if ($enroll && $lead && $seq) {
         try {
-            app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
+            app(\App\Services\Marketing\MarketingService::class)->enrollLeadInSequence($lead, $seq->id);
             $out .= "<p style='color:green'>Enrollment attempted via MarketingService</p>";
         } catch (\Exception $e) {
             $out .= "<p style='color:red'>Error: " . $e->getMessage() . "</p>";

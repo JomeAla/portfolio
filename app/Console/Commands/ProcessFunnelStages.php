@@ -249,7 +249,7 @@ class ProcessFunnelStages extends Command
         }
 
         $marketingService = app(MarketingService::class);
-        $marketingService->enrollLeadInSequence($lead, $sequence);
+        $marketingService->enrollLeadInSequence($lead, $sequence->id);
         $this->info("      Enrolled in sequence '{$sequence->name}'");
     }
 

@@ -146,7 +146,7 @@ class ExecuteAutomationRules extends Command
                         $sequence = \App\Models\EmailSequence::find($actionConfig['sequence_id']);
                         if ($sequence && $sequence->is_active) {
                             $marketingService = app(\App\Services\Marketing\MarketingService::class);
-                            $marketingService->enrollLeadInSequence($lead, $sequence);
+                            $marketingService->enrollLeadInSequence($lead, $sequence->id);
                         }
                     }
                     break;

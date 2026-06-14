@@ -1249,7 +1249,7 @@ class MarketingController extends Controller
                 ->where('is_active', true)
                 ->first();
             if ($welcomeSequence) {
-                app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $welcomeSequence->id);
+                app(\App\Services\Marketing\MarketingService::class)->enrollLeadInSequence($lead, $welcomeSequence->id);
             }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning('Failed to enroll in welcome sequence: ' . $e->getMessage());

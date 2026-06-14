@@ -51,7 +51,7 @@ class BriefController extends Controller
             $welcomeSequence = \App\Models\EmailSequence::where('name', 'Welcome Sequence')
                 ->where('is_active', true)->first();
             if ($welcomeSequence) {
-                app(\App\Services\MarketingService::class)->enrollLeadInSequence($lead, $welcomeSequence->id);
+                app(\App\Services\Marketing\MarketingService::class)->enrollLeadInSequence($lead, $welcomeSequence->id);
             }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::warning('Brief: Failed to enroll in welcome sequence: ' . $e->getMessage());

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
-use App\Services\MarketingService;
+use App\Services\Marketing\MarketingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 

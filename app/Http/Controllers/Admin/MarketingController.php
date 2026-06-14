@@ -783,7 +783,7 @@ class MarketingController extends Controller
 
     public function emailQueueIndex()
     {
-        $emails = EmailQueue::orderBy('created_at', 'desc')->paginate(10);
+        $emails = EmailQueue::whereHas('lead')->orderBy('created_at', 'desc')->paginate(10);
         return view('admin.marketing.email_queue.index', compact('emails'));
     }
 

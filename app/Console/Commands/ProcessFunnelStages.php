@@ -208,6 +208,18 @@ class ProcessFunnelStages extends Command
             }
         }
 
+        if ($nextStage->type === 'thank_you') {
+            $funnelLead->update(['converted' => true]);
+            Log::info("Lead {$lead->email} converted at thank_you stage '{$nextStage->name}' in funnel {$funnel->id}");
+        }
+
+        if ($nextStage->type === 'landing') {
+            if ($nextStage->sequence_id) {
+                $this->enrollLeadInSequence($lead, $nextStage);
+            }
+            Log::info("Lead {$lead->email} reached landing stage '{$nextStage->name}' in funnel {$funnel->id}");
+        }
+
         Log::info("Lead {$lead->email} advanced to stage '{$nextStage->name}' in funnel {$funnel->id}");
     }
 

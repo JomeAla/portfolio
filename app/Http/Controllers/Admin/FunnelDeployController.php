@@ -178,27 +178,49 @@ class FunnelDeployController extends Controller
             return back()->with('error', 'Invalid funnel data file.');
         }
 
-        if ($request->mode === 'new') {
-            $funnel = Funnel::create([
-                'name' => $data['name'] . ' (Imported)',
-                'description' => $data['description'] ?? null,
-                'goal' => $data['goal'] ?? 'lead_capture',
-                'environment' => 'staging',
-                'is_active' => false,
-            ]);
+        $funnelData = [
+            'description' => $data['description'] ?? null,
+            'goal' => $data['goal'] ?? 'lead_capture',
+            'environment' => 'staging',
+            'is_active' => false,
+        ];
 
-            $this->createStagesFromImport($funnel, $data);
-        } else {
-            $funnel = Funnel::create([
-                'name' => $data['name'],
-                'description' => $data['description'] ?? null,
-                'goal' => $data['goal'] ?? 'lead_capture',
-                'environment' => 'staging',
-                'is_active' => false,
-            ]);
+        $exportedFields = [
+            'funnel_type', 'product_id', 'service_id',
+            'automation_enabled', 'welcome_sequence_id', 'followup_sequence_id',
+            'automation_workflows', 'webhook_url', 'webhook_enabled', 'notify_email',
+            'upsell_enabled', 'upsell_product_id', 'upsell_discount', 'upsell_timer',
+            'order_bumps_enabled', 'order_bumps',
+            'facebook_pixel', 'google_pixel',
+            'countdown_enabled', 'countdown_hours',
+            'thank_you_title', 'thank_you_message', 'thank_you_video',
+            'upsell_button_text',
+            'exit_popup_enabled', 'exit_popup_offer', 'exit_popup_discount',
+            'starts_at', 'ends_at',
+            'refund_policy', 'refund_period_days',
+            'affiliate_enabled', 'affiliate_commission', 'affiliate_cookie_days',
+            'score_per_page', 'score_per_email', 'score_per_checkout', 'score_per_click',
+            'score_hot_threshold', 'hot_lead_tag',
+            'ab_testing_enabled', 'ab_variants', 'ab_traffic_split', 'ab_winner',
+            'ab_started_at', 'ab_min_sample_size', 'ab_confidence_level',
+            'is_template', 'template_category',
+            'stage_order',
+        ];
 
-            $this->createStagesFromImport($funnel, $data);
+        foreach ($exportedFields as $field) {
+            if (array_key_exists($field, $data)) {
+                $funnelData[$field] = $data[$field];
+            }
         }
+
+        if ($request->mode === 'new') {
+            $funnelData['name'] = $data['name'] . ' (Imported)';
+        } else {
+            $funnelData['name'] = $data['name'];
+        }
+
+        $funnel = Funnel::create($funnelData);
+        $this->createStagesFromImport($funnel, $data);
 
         return redirect("/admin/marketing/funnels/{$funnel->id}/edit")
             ->with('success', 'Funnel imported successfully!');
@@ -209,14 +231,30 @@ class FunnelDeployController extends Controller
         if (!isset($data['stages'])) return;
 
         foreach ($data['stages'] as $index => $stageData) {
-            FunnelStage::create([
+            $stageFields = [
                 'funnel_id' => $funnel->id,
                 'name' => $stageData['name'],
                 'type' => $stageData['type'] ?? 'landing',
                 'content' => $stageData['content'] ?? [],
                 'order' => $index + 1,
                 'delay_days' => $stageData['delay_days'] ?? 0,
-            ]);
+            ];
+
+            $stageExportedFields = [
+                'is_required', 'sequence_id', 'email_template', 'delay_hours',
+                'condition_type', 'condition_value', 'is_skippable',
+                'action_on_complete', 'action_config', 'points_to_award',
+                'wait_duration_hours', 'wait_until_type', 'wait_until_value',
+                'redirect_type', 'conditional_stages',
+            ];
+
+            foreach ($stageExportedFields as $field) {
+                if (array_key_exists($field, $stageData)) {
+                    $stageFields[$field] = $stageData[$field];
+                }
+            }
+
+            FunnelStage::create($stageFields);
         }
     }
 }

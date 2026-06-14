@@ -1920,12 +1920,10 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
         $service = app(\App\Services\CartAbandonmentService::class);
         $stats = $service->getAbandonmentStats();
         
-        try {
-            $pdo = marketing_pdo();
-            $orders = $pdo->query("SELECT * FROM orders WHERE is_cart_abandoned = 1 ORDER BY cart_abandoned_at DESC LIMIT 20")->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $e) {
-            $orders = [];
-        }
+        $orders = \App\Models\Order::where('is_cart_abandoned', 1)
+            ->latest('cart_abandoned_at')
+            ->limit(20)
+            ->get();
         
         return view('admin.marketing.cart_abandonment.index', compact('stats', 'orders'));
     })->name('admin.marketing.cart-abandonment');

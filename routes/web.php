@@ -1289,7 +1289,7 @@ Route::get('/setup-ecommerce-funnel', function () {
         $out[] = "Sequences table synced ID: {$seq->id}";
 
         // 3. Find premium product
-        $premiumProduct = \App\Models\Product::where('slug', 'ecommerce-starter-kit')->first();
+        $premiumProduct = \App\Models\Product::where('slug', 'e-commerce-starter-kit')->first();
         $premiumId = $premiumProduct ? $premiumProduct->id : 0;
         $out[] = "Premium product ID: " . ($premiumProduct ? $premiumProduct->id : 'NOT FOUND');
 
@@ -1312,7 +1312,23 @@ Route::get('/setup-ecommerce-funnel', function () {
         );
         $out[] = "Funnel ID: {$funnel->id}";
 
-        // 5. Create funnel stages
+        // 5. Link landing page to funnel and pre-sale sequence
+        try {
+            $landingPage = \App\Models\LandingPage::where('slug', 'free-e-commerce-starter-kit')->first();
+            if ($landingPage) {
+                $landingPage->update([
+                    'funnel_id' => $funnel->id,
+                    'sequence_id' => $presaleSeq->id,
+                ]);
+                $out[] = "Landing page linked: ID {$landingPage->id}";
+            } else {
+                $out[] = "WARNING: Landing page 'free-e-commerce-starter-kit' not found in DB";
+            }
+        } catch (\Exception $e) {
+            $out[] = "WARNING: Could not link landing page: " . $e->getMessage();
+        }
+
+        // 5b. Create funnel stages
         \App\Models\FunnelStage::where('funnel_id', $funnel->id)->delete();
 
         // Stage 1: Landing page (lead capture)

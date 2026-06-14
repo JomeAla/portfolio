@@ -2606,23 +2606,37 @@ $existingLead = \App\Models\FunnelLead::where('funnel_id', $funnel->id)
             } catch (\Exception $e) { }
         }
         
-        // Send email notification if enabled OR fallback to default
         $notifyEmail = $funnel->notify_email ?: 'support@joala.com.ng';
-        if ($funnel->notify_email || true) {
-            try {
-                \Illuminate\Support\Facades\Mail::raw(
-                    "🎉 New Funnel Conversion!\n\n" .
-                    "Funnel: {$funnel->name}\n" .
-                    "Email: {$email}\n" .
-                    "Product: {$funnel->product?->title}\n" .
-                    "Revenue: N" . number_format($revenue) . "\n" .
-                    "Time: {$convertTime}"
-                , function($message) use ($funnel) {
-                    $message->to($funnel->notify_email)
-                        ->subject('🎉 New Sale - ' . $funnel->name);
-                });
-            } catch (\Exception $e) { }
-        }
+        try {
+            $apiKey = \App\Models\Setting::get('brevo_api_key');
+            if ($apiKey) {
+                $fromEmail = \App\Models\Setting::get('mail_from_address', 'campaigns@joala.com.ng');
+                $fromName = \App\Models\Setting::get('mail_from_name', 'JoAla');
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, "https://api.brevo.com/v3/smtp/email");
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    "accept: application/json",
+                    "api-key: $apiKey",
+                    "content-type: application/json",
+                ]);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+                    "sender" => ["name" => $fromName, "email" => $fromEmail],
+                    "to" => [["email" => $notifyEmail, "name" => "Admin"]],
+                    "subject" => "New Sale - {$funnel->name}",
+                    "htmlContent" => "<h2>New Funnel Conversion!</h2>
+                        <p><strong>Funnel:</strong> {$funnel->name}</p>
+                        <p><strong>Email:</strong> {$email}</p>
+                        <p><strong>Product:</strong> {$funnel->product?->title}</p>
+                        <p><strong>Revenue:</strong> N" . number_format($revenue) . "</p>
+                        <p><strong>Time:</strong> {$convertTime}</p>",
+                ]));
+                curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+                curl_exec($ch);
+                curl_close($ch);
+            }
+        } catch (\Exception $e) { }
     }
 
     private function checkAndTagHotLead(Funnel $funnel, string $email, int $newScore): void
@@ -2821,39 +2835,30 @@ return view('admin.marketing.funnels.analytics',
     
     public function runMigration()
     {
-        $host = 'localhost';
-        $dbname = 'joalacom_joala';
-        $user = 'joalacom_joala';
-        $pass = 'joala@2025@';
-        
         try {
-            $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            \Illuminate\Support\Facades\DB::connection()->getPdo();
             
             echo "Connected to database.\n\n";
             
-            $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
-            if (!in_array('funnel_leads', $tables)) {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('funnel_leads')) {
                 echo "Creating funnel_leads table...\n";
-                $pdo->exec("CREATE TABLE IF NOT EXISTS `funnel_leads` (
-                    `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-                    `funnel_id` bigint(20) UNSIGNED NULL,
-                    `lead_id` bigint(20) UNSIGNED NULL,
-                    `stage_id` bigint(20) UNSIGNED NULL,
-                    `email` varchar(255) NULL,
-                    `source` varchar(255) NULL,
-                    `converted` tinyint(1) DEFAULT 0,
-                    `entered_at` datetime NULL,
-                    `exited_at` datetime NULL,
-                    `score` int DEFAULT 0,
-                    `last_activity` datetime NULL,
-                    `times_visited` int DEFAULT 0,
-                    `pages_viewed` int DEFAULT 0,
-                    `email_opens` int DEFAULT 0,
-                    PRIMARY KEY (`id`),
-                    KEY `funnel_id` (`funnel_id`),
-                    KEY `lead_id` (`lead_id`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+                \Illuminate\Support\Facades\Schema::create('funnel_leads', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->id();
+                    $table->unsignedBigInteger('funnel_id')->nullable()->index();
+                    $table->unsignedBigInteger('lead_id')->nullable()->index();
+                    $table->unsignedBigInteger('stage_id')->nullable();
+                    $table->string('email')->nullable();
+                    $table->string('source')->nullable();
+                    $table->boolean('converted')->default(false);
+                    $table->datetime('entered_at')->nullable();
+                    $table->datetime('exited_at')->nullable();
+                    $table->integer('score')->default(0);
+                    $table->datetime('last_activity')->nullable();
+                    $table->integer('times_visited')->default(0);
+                    $table->integer('pages_viewed')->default(0);
+                    $table->integer('email_opens')->default(0);
+                    $table->timestamps();
+                });
                 echo "Created funnel_leads table.\n";
             } else {
                 echo "funnel_leads table already exists.\n";
@@ -2862,11 +2867,12 @@ return view('admin.marketing.funnels.analytics',
             echo "\nAdding columns to funnels table...\n";
             
             $funnelColumns = [
-                'order_bumps' => 'JSON NULL',
-                'refund_policy' => "VARCHAR(50) DEFAULT 'days'",
-                'refund_period_days' => 'INT DEFAULT 30',
-                'affiliate_enabled' => 'TINYINT(1) DEFAULT 0',
-                'affiliate_commission' => 'DECIMAL(5,2) DEFAULT 20.00',
+                'order_bumps' => 'json',
+                'refund_policy' => 'string',
+                'refund_period_days' => 'integer',
+                'affiliate_enabled' => 'boolean',
+                'affiliate_commission' => 'decimal',
+                'affiliate_cookie_days' => 'integer',
                 'affiliate_cookie_days' => 'INT DEFAULT 30',
                 'score_per_page' => 'INT DEFAULT 5',
                 'score_per_email' => 'INT DEFAULT 10',
@@ -2874,45 +2880,60 @@ return view('admin.marketing.funnels.analytics',
                 'score_hot_threshold' => 'INT DEFAULT 100',
             ];
             
-            foreach ($funnelColumns as $col => $def) {
+            foreach ($funnelColumns as $col => $type) {
                 try {
-                    $pdo->exec("ALTER TABLE `funnels` ADD COLUMN `$col` $def");
-                    echo "Added $col\n";
-                } catch (PDOException $e) {
-                    if (str_contains($e->getMessage(), 'Duplicate')) {
-                        echo "Column $col already exists, skipping.\n";
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('funnels', $col)) {
+                        \Illuminate\Support\Facades\Schema::table('funnels', function ($table) use ($col, $type) {
+                            match ($type) {
+                                'json' => $table->json($col)->nullable(),
+                                'string' => $table->string($col, 50)->nullable(),
+                                'integer' => $table->integer($col)->default(0),
+                                'boolean' => $table->boolean($col)->default(false),
+                                'decimal' => $table->decimal($col, 5, 2)->default(0),
+                                default => null,
+                            };
+                        });
+                        echo "Added $col\n";
                     } else {
-                        echo "Error adding $col: " . $e->getMessage() . "\n";
+                        echo "Column $col already exists, skipping.\n";
                     }
+                } catch (\Exception $e) {
+                    echo "Error adding $col: " . $e->getMessage() . "\n";
                 }
             }
             
             echo "\nAdding columns to funnel_leads table...\n";
             
             $leadColumns = [
-                'score' => 'INT DEFAULT 0',
-                'last_activity' => 'DATETIME NULL',
-                'times_visited' => 'INT DEFAULT 0',
-                'pages_viewed' => 'INT DEFAULT 0',
-                'email_opens' => 'INT DEFAULT 0',
+                'score',
+                'last_activity',
+                'times_visited',
+                'pages_viewed',
+                'email_opens',
             ];
             
-            foreach ($leadColumns as $col => $def) {
+            foreach ($leadColumns as $col) {
                 try {
-                    $pdo->exec("ALTER TABLE `funnel_leads` ADD COLUMN `$col` $def");
-                    echo "Added $col\n";
-                } catch (PDOException $e) {
-                    if (str_contains($e->getMessage(), 'Duplicate')) {
-                        echo "Column $col already exists, skipping.\n";
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('funnel_leads', $col)) {
+                        \Illuminate\Support\Facades\Schema::table('funnel_leads', function ($table) use ($col) {
+                            if (in_array($col, ['score', 'times_visited', 'pages_viewed', 'email_opens'])) {
+                                $table->integer($col)->default(0);
+                            } elseif ($col === 'last_activity') {
+                                $table->datetime($col)->nullable();
+                            }
+                        });
+                        echo "Added $col\n";
                     } else {
-                        echo "Error adding $col: " . $e->getMessage() . "\n";
+                        echo "Column $col already exists, skipping.\n";
                     }
+                } catch (\Exception $e) {
+                    echo "Error adding $col: " . $e->getMessage() . "\n";
                 }
             }
             
             echo "\nDone! Migration complete.\n";
             
-        } catch (PDOException $e) {
+        } catch (\Exception $e) {
             echo "Database error: " . $e->getMessage() . "\n";
         }
     }
@@ -3008,6 +3029,46 @@ if (isset($data['automation_workflows'])) {
         return back()->with('success', 'A/B test settings saved.');
     }
 
+    public function funnelAbTestWinner(Request $request, Funnel $funnel)
+    {
+        $variant = $request->input('variant');
+        if (!$variant || !$funnel->ab_variants || !isset($funnel->ab_variants[$variant])) {
+            return back()->with('error', 'Invalid variant.');
+        }
+        $funnel->update(['ab_winner' => $variant]);
+        return back()->with('success', 'Winner set to ' . ($funnel->ab_variants[$variant]['name'] ?? $variant));
+    }
+
+    public function funnelAbTestStop(Request $request, Funnel $funnel)
+    {
+        $funnel->update(['ab_testing_enabled' => false]);
+        return back()->with('success', 'A/B test stopped.');
+    }
+
+    public function funnelAbTestReset(Request $request, Funnel $funnel)
+    {
+        $funnel->update([
+            'ab_testing_enabled' => false,
+            'ab_winner' => null,
+            'ab_variants' => null,
+            'ab_traffic_split' => null,
+            'ab_started_at' => null,
+        ]);
+        \App\Models\FunnelLead::where('funnel_id', $funnel->id)->update(['ab_variant' => null]);
+        return back()->with('success', 'A/B test reset.');
+    }
+
+    public function funnelAbTestTraffic(Request $request, Funnel $funnel)
+    {
+        $funnel->update([
+            'ab_traffic_split' => [
+                'a' => (int)$request->input('traffic_a', 50),
+                'b' => (int)$request->input('traffic_b', 50),
+            ],
+        ]);
+        return back()->with('success', 'Traffic split updated.');
+    }
+
     public function funnelStagesStore(Request $request, Funnel $funnel)
     {
         $stages = $request->stages ?? [];
@@ -3020,7 +3081,7 @@ if (isset($data['automation_workflows'])) {
                     'funnel_id' => $funnel->id,
                     'name' => $stage['name'],
                     'type' => $stage['type'] ?? 'page',
-                    'content' => json_encode(['url' => $stage['content'] ?? '']),
+                    'content' => ['url' => $stage['content'] ?? ''],
                     'order' => $index,
                     'delay_days' => $stage['delay_days'] ?? 0,
                     'is_required' => $stage['is_required'] ?? false,
@@ -3076,17 +3137,52 @@ public function migrateAutomation()
     // Health Score
     public function calculateFunnelHealth(Funnel $funnel)
     {
-        
         try {
-            // Add workflow_state to funnel_leads
-            \Illuminate\Support\Facades\DB::statement('ALTER TABLE funnel_leads ADD COLUMN workflow_state JSON NULL');
-        } catch (\Exception $e) {}
-        
-        try {
-            // Add status to funnel_leads
-            \Illuminate\Support\Facades\DB::statement("ALTER TABLE funnel_leads ADD COLUMN status VARCHAR(50) DEFAULT 'active'");
-        } catch (\Exception $e) {}
-        
-        return back()->with('success', 'Automation migrations completed!');
+            $totalLeads = \App\Models\FunnelLead::where('funnel_id', $funnel->id)->count();
+            $converted = \App\Models\FunnelLead::where('funnel_id', $funnel->id)->where('converted', true)->count();
+            $activeLeads = \App\Models\FunnelLead::where('funnel_id', $funnel->id)->whereNull('exited_at')->count();
+            
+            $conversionRate = $totalLeads > 0 ? ($converted / $totalLeads) * 100 : 0;
+            
+            $issues = [];
+            
+            if ($totalLeads === 0) {
+                $issues[] = 'No leads in funnel';
+            }
+            if ($conversionRate < 5 && $totalLeads > 50) {
+                $issues[] = 'Low conversion rate (' . round($conversionRate, 1) . '%)';
+            }
+            if (!$funnel->welcome_sequence_id) {
+                $issues[] = 'No welcome sequence configured';
+            }
+            if ($funnel->stages()->count() < 2) {
+                $issues[] = 'Less than 2 stages — funnel may be too short';
+            }
+            if (!$funnel->product_id && !$funnel->service_id) {
+                $issues[] = 'No product or service assigned';
+            }
+            if (!$funnel->notify_email) {
+                $issues[] = 'No notification email set';
+            }
+            
+            $score = max(0, min(100, 100
+                - ($totalLeads === 0 ? 30 : 0)
+                - ($conversionRate < 5 && $totalLeads > 50 ? 20 : 0)
+                - (!$funnel->welcome_sequence_id ? 15 : 0)
+                - ($funnel->stages()->count() < 2 ? 10 : 0)
+                - (!$funnel->product_id && !$funnel->service_id ? 15 : 0)
+                - (!$funnel->notify_email ? 10 : 0)
+            ));
+            
+            $funnel->update([
+                'health_score' => $score,
+                'health_issues' => $issues,
+                'last_health_check' => now(),
+            ]);
+            
+            return back()->with('success', "Health check complete. Score: {$score}/100" . ($issues ? ' — Issues: ' . implode(', ', $issues) : ''));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Health check failed: ' . $e->getMessage());
+        }
     }
 }

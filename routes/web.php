@@ -534,8 +534,13 @@ Route::prefix('admin')->group(function () {
         Route::get('/marketing/funnels/create', [MarketingController::class, 'funnelsCreate'])->name('admin.marketing.funnels.create');
         Route::post('/marketing/funnels', [MarketingController::class, 'funnelsStore'])->name('admin.marketing.funnels.store');
         Route::post('/marketing/funnels/health-all', [MarketingController::class, 'funnelsHealthAll'])->name('admin.marketing.funnels.health-all');
+        Route::post('/marketing/funnels/{funnel}/health', [MarketingController::class, 'calculateFunnelHealth'])->name('admin.marketing.funnels.health');
         Route::get('/marketing/funnels/{funnel}/ab-test', [MarketingController::class, 'funnelAbTest'])->name('admin.marketing.funnels.ab-test');
         Route::post('/marketing/funnels/{funnel}/ab-test', [MarketingController::class, 'funnelAbTestStore'])->name('admin.marketing.funnels.ab-test.store');
+        Route::post('/marketing/funnels/{funnel}/ab-test/winner', [MarketingController::class, 'funnelAbTestWinner'])->name('admin.marketing.funnels.ab-test.winner');
+        Route::post('/marketing/funnels/{funnel}/ab-test/stop', [MarketingController::class, 'funnelAbTestStop'])->name('admin.marketing.funnels.ab-test.stop');
+        Route::post('/marketing/funnels/{funnel}/ab-test/reset', [MarketingController::class, 'funnelAbTestReset'])->name('admin.marketing.funnels.ab-test.reset');
+        Route::post('/marketing/funnels/{funnel}/ab-test/traffic', [MarketingController::class, 'funnelAbTestTraffic'])->name('admin.marketing.funnels.ab-test.traffic');
         Route::get('/marketing/funnels/{funnel}/edit', [MarketingController::class, 'funnelsEdit'])->name('admin.marketing.funnels.edit');
         Route::put('/marketing/funnels/{funnel}', [MarketingController::class, 'funnelsUpdate'])->name('admin.marketing.funnels.update');
         Route::delete('/marketing/funnels/{funnel}', [MarketingController::class, 'funnelsDestroy'])->name('admin.marketing.funnels.destroy');
@@ -544,6 +549,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/marketing/funnels/{funnel}/product', [MarketingController::class, 'updateFunnelProduct'])->name('admin.marketing.funnels.product');
         Route::get('/marketing/funnels/{funnel}/analytics', [MarketingController::class, 'getFunnelAnalytics'])->name('admin.marketing.funnels.analytics');
         Route::get('/marketing/funnels/{funnel}/leads', [MarketingController::class, 'getFunnelLeads'])->name('admin.marketing.funnels.leads');
+        Route::get('/marketing/funnels/{funnel}/leads/export', [MarketingController::class, 'exportFunnelLeads'])->name('admin.marketing.funnels.leads.export');
         Route::get('/marketing/funnels/{funnel}/export', [FunnelDeployController::class, 'exportFunnelData'])->name('admin.marketing.funnels.export');
         Route::get('/marketing/funnels/{funnel}/deploy', [FunnelDeployController::class, 'showDeployForm'])->name('admin.marketing.funnels.deploy');
         Route::post('/marketing/funnels/{funnel}/deploy', [FunnelDeployController::class, 'deployToProduction'])->name('admin.marketing.funnels.deploy');
@@ -625,16 +631,17 @@ Route::prefix('admin')->group(function () {
         // Automation Builder
         Route::get('/marketing/automation/builder', function() {
             try {
-                $pdo = marketing_pdo();
-                $funnelData = $pdo->query("SELECT id, name FROM funnels LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-                if (!$funnelData) {
-                    $funnelData = ['id' => 0, 'name' => 'No Funnel - Create one first'];
+                $funnel = \App\Models\Funnel::where('is_active', true)->latest()->first();
+                if (!$funnel) {
+                    $funnel = (object) ['id' => 0, 'name' => 'No Funnel — Create one first'];
                 }
-                $funnel = (object) $funnelData;
             } catch (\Exception $e) {
                 $funnel = (object) ['id' => 0, 'name' => 'Demo Funnel'];
             }
-            return view('admin.marketing.automation.builder', compact('funnel'));
+            $sequences = \App\Models\EmailSequence::where('is_active', true)->get(['id', 'name']);
+            $tags = \App\Models\Tag::orderBy('name')->get(['id', 'name']);
+            $webhooks = \App\Models\Webhook::where('is_active', true)->get(['id', 'name']);
+            return view('admin.marketing.automation.builder', compact('funnel', 'sequences', 'tags', 'webhooks'));
         })->name('admin.marketing.automation.builder');
         
         // Quick migration runner - TEMPORARY

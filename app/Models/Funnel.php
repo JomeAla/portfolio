@@ -54,6 +54,7 @@ class Funnel extends Model
         'score_per_click',
         'score_hot_threshold',
         'hot_lead_tag',
+        'order_bumps_enabled',
         'automation_workflows',
         'ab_testing_enabled',
         'ab_variants',
@@ -103,6 +104,11 @@ protected $casts = [
     public function product()
     {
         return $this->belongsTo(\App\Models\Product::class);
+    }
+
+    public function upsellProduct()
+    {
+        return $this->belongsTo(\App\Models\Product::class, 'upsell_product_id');
     }
 
     public function service()

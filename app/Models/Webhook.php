@@ -39,6 +39,13 @@ class Webhook extends Model
             'order_completed' => 'Order Completed',
             'invoice_created' => 'Invoice Created',
             'invoice_paid' => 'Invoice Paid',
+            'cart_created' => 'Cart Created',
+            'cart_abandoned' => 'Cart Abandoned',
+            'checkout_started' => 'Checkout Started',
+            'checkout_completed' => 'Checkout Completed',
+            'subscription_created' => 'Subscription Created',
+            'subscription_renewed' => 'Subscription Renewed',
+            'subscription_cancelled' => 'Subscription Cancelled',
         ];
     }
 

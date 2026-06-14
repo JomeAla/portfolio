@@ -82,6 +82,7 @@ class AutomationRule extends Model
                 break;
             case 'notify_admin':
                 $lead->increment('score', 1);
+                $this->sendAdminNotification($lead);
                 break;
         }
 
@@ -114,5 +115,43 @@ class AutomationRule extends Model
             'notify_admin' => 'Notify Admin',
             'webhook' => 'Trigger Webhook',
         ];
+    }
+
+    private function sendAdminNotification(Lead $lead): void
+    {
+        try {
+            $apiKey = \App\Models\Setting::get('brevo_api_key');
+            if (empty($apiKey)) {
+                return;
+            }
+            $fromEmail = \App\Models\Setting::get('mail_from_address', 'campaigns@joala.com.ng');
+            $fromName = \App\Models\Setting::get('mail_from_name', 'JoAla');
+            $adminEmail = \App\Models\Setting::get('contact_email', 'jomealawuru@hotmail.com');
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://api.brevo.com/v3/smtp/email");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "accept: application/json",
+                "api-key: $apiKey",
+                "content-type: application/json",
+            ]);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+                "sender" => ["name" => $fromName, "email" => $fromEmail],
+                "to" => [["email" => $adminEmail, "name" => "Admin"]],
+                "subject" => "Automation Rule Triggered: {$this->name}",
+                "htmlContent" => "<h2>Automation Rule Triggered</h2>
+                    <p><strong>Rule:</strong> {$this->name}</p>
+                    <p><strong>Lead:</strong> " . e($lead->name ?? $lead->email) . "</p>
+                    <p><strong>Email:</strong> {$lead->email}</p>
+                    <p><strong>Action:</strong> {$this->action_type}</p>
+                    <p><strong>Time:</strong> " . now() . "</p>",
+            ]));
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            curl_exec($ch);
+            curl_close($ch);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Admin notification failed: ' . $e->getMessage());
+        }
     }
 }

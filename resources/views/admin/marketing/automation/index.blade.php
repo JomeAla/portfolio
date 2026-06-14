@@ -41,7 +41,7 @@
                         
                         <select name="trigger_type" id="triggerType" onchange="updateTriggerFields()"
                             class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm mb-2">
-                            @foreach(['email_opened' => 'Email Opened', 'email_clicked' => 'Email Clicked', 'link_clicked' => 'Specific Link Clicked', 'score_reached' => 'Lead Score Reached', 'tag_added' => 'Tag Added', 'page_visited' => 'Page Visited', 'form_submitted' => 'Form Submitted', 'campaign_enrolled' => 'Campaign Enrolled', 'lead_created' => 'New Lead Created'] as $value => $label)
+                            @foreach(['email_opened' => 'Email Opened', 'email_clicked' => 'Email Clicked', 'link_clicked' => 'Specific Link Clicked', 'score_reached' => 'Lead Score Reached', 'tag_added' => 'Tag Added', 'page_visited' => 'Page Visited', 'form_submitted' => 'Form Submitted', 'campaign_enrolled' => 'Campaign Enrolled', 'lead_created' => 'New Lead Created', 'cart_abandoned' => 'Cart Abandoned'] as $value => $label)
                                 <option value="{{ $value }}">{{ $label }}</option>
                             @endforeach
                         </select>

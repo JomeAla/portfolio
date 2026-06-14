@@ -52,6 +52,13 @@ class AutomationRule extends Model
         switch ($this->action_type) {
             case 'enroll_sequence':
                 if ($sequenceId = $config['sequence_id'] ?? null) {
+                    $seq = EmailSequence::find($sequenceId);
+                    if ($seq) {
+                        \App\Models\Sequence::firstOrCreate(['id' => $sequenceId], [
+                            'name' => $seq->name,
+                            'is_active' => true,
+                        ]);
+                    }
                     $lead->update(['sequence_id' => $sequenceId]);
                 }
                 break;

@@ -206,6 +206,10 @@ class ProcessAutomationWorkflows extends Command
                     $sequence = EmailSequence::with('steps')->find($sequenceId);
                     if ($sequence && $sequence->is_active) {
                         if (!$lead->sequence_id) {
+                            \App\Models\Sequence::firstOrCreate(['id' => $sequence->id], [
+                                'name' => $sequence->name,
+                                'is_active' => true,
+                            ]);
                             $lead->sequence_id = $sequence->id;
                             $lead->enrolled_at = now();
                             $lead->save();

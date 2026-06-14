@@ -4,7 +4,7 @@ namespace App\Services\Marketing;
 
 use App\Models\BlogPost;
 use App\Models\Lead;
-use App\Models\Sequence;
+use App\Models\EmailSequence;
 use App\Models\SequenceStep;
 use App\Models\EmailQueue;
 use App\Models\TweetQueue;
@@ -143,13 +143,24 @@ class MarketingService
         return str_replace(array_keys($replacements), array_values($replacements), $template);
     }
 
-    public function enrollLeadInSequence(Lead $lead, Sequence $sequence)
+    public function enrollLeadInSequence(Lead $lead, int $sequenceId)
     {
-        $steps = $sequence->steps()->orderBy('step_order')->get();
-        
-        foreach ($steps as $index => $step) {
+        $sequence = EmailSequence::with('steps')->find($sequenceId);
+        if (!$sequence || !$sequence->is_active) {
+            return;
+        }
+
+        \App\Models\Sequence::firstOrCreate(['id' => $sequenceId], [
+            'name' => $sequence->name,
+            'is_active' => true,
+        ]);
+        $lead->sequence_id = $sequenceId;
+        $lead->enrolled_at = now();
+        $lead->save();
+
+        foreach ($sequence->steps as $step) {
             $scheduledTime = now()->addDays($step->delay_days);
-            
+
             EmailQueue::create([
                 'lead_id' => $lead->id,
                 'sequence_step_id' => $step->id,
@@ -197,20 +208,12 @@ class MarketingService
             return;
         }
 
-        // Enroll in welcome sequence
         if ($welcomeSequenceId) {
-            $sequence = Sequence::find($welcomeSequenceId);
-            if ($sequence && $sequence->is_active) {
-                $this->enrollLeadInSequence($lead, $sequence);
-            }
+            $this->enrollLeadInSequence($lead, $welcomeSequenceId);
         }
 
-        // Enroll in follow-up sequence
         if ($followupSequenceId) {
-            $sequence = Sequence::find($followupSequenceId);
-            if ($sequence && $sequence->is_active) {
-                $this->enrollLeadInSequence($lead, $sequence);
-            }
+            $this->enrollLeadInSequence($lead, $followupSequenceId);
         }
     }
 
@@ -232,14 +235,7 @@ class MarketingService
         );
         
         if ($sequenceId) {
-            $sequence = Sequence::find($sequenceId);
-            if ($sequence && $sequence->is_active) {
-                $alreadyEnrolled = $this->isLeadEnrolledInSequence($lead, $sequenceId);
-                
-                if (!$alreadyEnrolled) {
-                    $this->enrollLeadInSequence($lead, $sequence);
-                }
-            }
+            $this->enrollLeadInSequence($lead, $sequenceId);
         }
         
         return $lead;

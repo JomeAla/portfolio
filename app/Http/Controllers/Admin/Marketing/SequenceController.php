@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Admin\Marketing;
 
 use App\Http\Controllers\Controller;
-use App\Models\Marketing\Sequence;
-use App\Models\Marketing\SequenceStep;
-use App\Services\Marketing\MarketingService;
+use App\Models\EmailSequence;
+use App\Models\Sequence;
+use App\Models\SequenceStep;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SequenceController extends Controller
 {
     public function index()
     {
-        $sequences = Sequence::with('steps')->get();
+        $sequences = EmailSequence::withCount('steps')->orderBy('created_at', 'desc')->get();
         return view('admin.marketing.sequences.index', compact('sequences'));
     }
 
@@ -28,44 +29,62 @@ class SequenceController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $sequence = Sequence::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'is_active' => $request->has('is_active'),
-        ]);
+        DB::transaction(function () use ($request) {
+            $emailSeq = EmailSequence::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'is_active' => $request->has('is_active'),
+            ]);
+            Sequence::create([
+                'id' => $emailSeq->id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'is_active' => $request->has('is_active'),
+            ]);
+        });
 
-        return redirect()->route('admin.marketing.sequences.edit', $sequence)->with('success', 'Sequence created. Add email steps below.');
+        return redirect()->route('admin.marketing.sequences.edit', $emailSeq)->with('success', 'Sequence created. Add email steps below.');
     }
 
-    public function edit(Sequence $sequence)
+    public function edit(EmailSequence $sequence)
     {
         $sequence->load('steps');
         return view('admin.marketing.sequences.edit', compact('sequence'));
     }
 
-    public function update(Request $request, Sequence $sequence)
+    public function update(Request $request, EmailSequence $sequence)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
-        $sequence->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'is_active' => $request->has('is_active'),
-        ]);
+        DB::transaction(function () use ($request, $sequence) {
+            $sequence->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'is_active' => $request->has('is_active'),
+            ]);
+            Sequence::where('id', $sequence->id)->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'is_active' => $request->has('is_active'),
+            ]);
+        });
 
         return redirect()->route('admin.marketing.sequences.index')->with('success', 'Sequence updated.');
     }
 
-    public function destroy(Sequence $sequence)
+    public function destroy(EmailSequence $sequence)
     {
-        $sequence->delete();
+        DB::transaction(function () use ($sequence) {
+            Sequence::where('id', $sequence->id)->delete();
+            $sequence->delete();
+        });
         return redirect()->route('admin.marketing.sequences.index')->with('success', 'Sequence deleted.');
     }
 
-    public function addStep(Request $request, Sequence $sequence)
+    public function addStep(Request $request, EmailSequence $sequence)
     {
         $request->validate([
             'subject' => 'required|string|max:255',
@@ -86,12 +105,12 @@ class SequenceController extends Controller
         return back()->with('success', 'Step added.');
     }
 
-    public function editStep(Sequence $sequence, SequenceStep $step)
+    public function editStep(EmailSequence $sequence, SequenceStep $step)
     {
         return view('admin.marketing.sequences.edit-step', compact('sequence', 'step'));
     }
 
-    public function updateStep(Request $request, Sequence $sequence, SequenceStep $step)
+    public function updateStep(Request $request, EmailSequence $sequence, SequenceStep $step)
     {
         $request->validate([
             'subject' => 'required|string|max:255',
@@ -108,13 +127,13 @@ class SequenceController extends Controller
         return redirect()->route('admin.marketing.sequences.edit', $sequence)->with('success', 'Step updated.');
     }
 
-    public function destroyStep(Sequence $sequence, SequenceStep $step)
+    public function destroyStep(EmailSequence $sequence, SequenceStep $step)
     {
         $step->delete();
         return back()->with('success', 'Step deleted.');
     }
 
-    public function reorderSteps(Request $request, Sequence $sequence)
+    public function reorderSteps(Request $request, EmailSequence $sequence)
     {
         foreach ($request->order as $index => $stepId) {
             SequenceStep::where('id', $stepId)->update(['step_order' => $index + 1]);

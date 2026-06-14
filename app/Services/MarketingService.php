@@ -76,6 +76,10 @@ class MarketingService
             return;
         }
 
+        \App\Models\Sequence::firstOrCreate(['id' => $sequenceId], [
+            'name' => $sequence->name,
+            'is_active' => true,
+        ]);
         $lead->sequence_id = $sequenceId;
         $lead->enrolled_at = now();
         $lead->save();

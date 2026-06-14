@@ -480,10 +480,17 @@ class MarketingController extends Controller
     public function sequencesStore(Request $request)
     {
         $request->validate(['name' => 'required|string|max:255']);
-        $sequence = EmailSequence::create([
-            'name' => $request->name,
-            'is_active' => $request->has('is_active'),
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request) {
+            $seq = EmailSequence::create([
+                'name' => $request->name,
+                'is_active' => $request->has('is_active'),
+            ]);
+            \App\Models\Sequence::create([
+                'id' => $seq->id,
+                'name' => $request->name,
+                'is_active' => $request->has('is_active'),
+            ]);
+        });
         return redirect('/admin/marketing/sequences')->with('success', 'Sequence created.');
     }
 
@@ -495,16 +502,25 @@ class MarketingController extends Controller
     public function sequencesUpdate(Request $request, EmailSequence $sequence)
     {
         $request->validate(['name' => 'required|string|max:255']);
-        $sequence->update([
-            'name' => $request->name,
-            'is_active' => $request->has('is_active'),
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $sequence) {
+            $sequence->update([
+                'name' => $request->name,
+                'is_active' => $request->has('is_active'),
+            ]);
+            \App\Models\Sequence::where('id', $sequence->id)->update([
+                'name' => $request->name,
+                'is_active' => $request->has('is_active'),
+            ]);
+        });
         return redirect('/admin/marketing/sequences')->with('success', 'Sequence updated.');
     }
 
     public function sequencesDestroy(EmailSequence $sequence)
     {
-        $sequence->delete();
+        \Illuminate\Support\Facades\DB::transaction(function () use ($sequence) {
+            \App\Models\Sequence::where('id', $sequence->id)->delete();
+            $sequence->delete();
+        });
         return redirect('/admin/marketing/sequences')->with('success', 'Sequence deleted.');
     }
 

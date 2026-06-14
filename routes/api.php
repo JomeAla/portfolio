@@ -37,6 +37,10 @@ Route::post('/submit-lead', function (Request $request) {
         if (!$lead->sequence_id) {
             $sequence = \App\Models\EmailSequence::where('name', 'Checklist Lead Magnet Nurture')->first();
             if ($sequence) {
+                \App\Models\Sequence::firstOrCreate(['id' => $sequence->id], [
+                    'name' => $sequence->name,
+                    'is_active' => true,
+                ]);
                 $lead->sequence_id = $sequence->id;
                 $lead->save();
                 

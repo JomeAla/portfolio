@@ -35,7 +35,7 @@ class LandingPage extends Model
 
     public function sequence(): BelongsTo
     {
-        return $this->belongsTo(EmailSequence::class, 'sequence_id');
+        return $this->belongsTo(\App\Models\Sequence::class, 'sequence_id');
     }
 
     public function funnel(): BelongsTo

@@ -31,27 +31,37 @@
                 Thank you for subscribing. Your {{ $productName ?? 'eCommerce Starter Kit' }} is ready for download.
             </p>
             
-            <!-- What's Inside -->
-            <div class="bg-white/5 rounded-2xl p-6 mb-8 text-left">
-                <h3 class="text-white font-semibold mb-4 flex items-center gap-2">
-                    <i class="ph-fill ph-package text-emerald-500"></i>
-                    What's Inside
-                </h3>
-                <ul class="space-y-3">
-                    <li class="flex items-center gap-3 text-slate-300">
-                        <span class="w-6 h-6 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-sm">1</span>
-                        Complete 7-Step Launch Checklist
-                    </li>
-                    <li class="flex items-center gap-3 text-slate-300">
-                        <span class="w-6 h-6 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-sm">2</span>
-                        Payment Gateway Setup Guide
-                    </li>
-                    <li class="flex items-center gap-3 text-slate-300">
-                        <span class="w-6 h-6 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-sm">3</span>
-                        SEO & Marketing Optimizations
-                    </li>
-                </ul>
-            </div>
+             <!-- What's Inside -->
+             @php
+                 $features = [
+                     'e-commerce-starter-kit' => [
+                         'Complete 7-Step Launch Checklist',
+                         'Payment Gateway Setup Guide',
+                         'SEO & Marketing Optimizations',
+                     ],
+                     'default' => [
+                         'Step-by-Step Implementation Guide',
+                         'Ready-to-Use Templates & Resources',
+                         'Pro Tips & Best Practices',
+                     ],
+                 ];
+                 $productKey = isset($premiumProduct) && $premiumProduct ? $premiumProduct->slug : 'default';
+                 $items = $features[$productKey] ?? $features['default'];
+             @endphp
+             <div class="bg-white/5 rounded-2xl p-6 mb-8 text-left">
+                 <h3 class="text-white font-semibold mb-4 flex items-center gap-2">
+                     <i class="ph-fill ph-package text-emerald-500"></i>
+                     What's Inside
+                 </h3>
+                 <ul class="space-y-3">
+                     @foreach($items as $i => $item)
+                     <li class="flex items-center gap-3 text-slate-300">
+                         <span class="w-6 h-6 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center text-sm flex-shrink-0">{{ $i + 1 }}</span>
+                         {{ $item }}
+                     </li>
+                     @endforeach
+                 </ul>
+             </div>
 
             @if(isset($productPrice))
             <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-4 mb-8">

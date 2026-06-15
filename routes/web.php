@@ -1212,23 +1212,26 @@ Route::get('/free-download/{slug}', function ($slug) {
     return response()->download($path);
 })->where('slug', '[\w\-]+');
 
-// Show download page after lead magnet signup
+// Show download page after lead magnet signup (dynamic for any product)
 Route::get('/download/{slug}', function ($slug) {
     $landingPage = \App\Models\LandingPage::where('slug', $slug)->firstOrFail();
-    $premiumProduct = \App\Models\Product::where('slug', 'e-commerce-starter-kit')->first();
-    $freeProduct = \App\Models\Product::where('slug', 'free-ecommerce-starter-kit')->where('price', 0)->first();
-
-    $downloadUrl = $freeProduct
-        ? url('/free-download/' . $freeProduct->slug)
-        : '#';
-
-    $salesPageUrl = $premiumProduct
-        ? url('/ecommerce-starter-kit.php')
-        : url('/store');
-
     $funnel = $landingPage->funnel;
 
-    $productName = 'eCommerce Starter Kit';
+    $premiumProduct = null;
+    if ($funnel && $funnel->product_id) {
+        $premiumProduct = \App\Models\Product::find($funnel->product_id);
+    }
+
+    // Free product uses the same slug as the landing page
+    $freeProduct = \App\Models\Product::where('slug', $slug)->where('price', 0)->first();
+    // Backward compat: e-commerce free product slug differs from landing page slug
+    if (!$freeProduct && $slug === 'free-e-commerce-starter-kit') {
+        $freeProduct = \App\Models\Product::where('slug', 'free-ecommerce-starter-kit')->where('price', 0)->first();
+    }
+
+    $downloadUrl = $freeProduct ? url('/free-download/' . $freeProduct->slug) : '#';
+    $salesPageUrl = $premiumProduct ? url('/store/' . $premiumProduct->slug) : url('/store');
+    $productName = $premiumProduct ? $premiumProduct->title : 'Premium Product';
     $productPrice = $premiumProduct ? '₦' . number_format($premiumProduct->current_price) : '';
 
     return view('front.download-page', compact(
@@ -1378,6 +1381,297 @@ Route::get('/setup-ecommerce-funnel', function () {
         $out[] = "Funnel edit: /admin/marketing/funnels/{$funnel->id}/edit";
 
         return "<h2>E-Commerce Funnel Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
+
+    } catch (\Exception $e) {
+        return "<h2>ERROR</h2><pre>" . $e->getMessage() . "\n" . $e->getTraceAsString() . "</pre>";
+    }
+});
+
+// Comprehensive WhatsApp Funnel Setup
+Route::get('/setup-whatsapp-funnel', function () {
+    try {
+        $out = [];
+
+        // 1. Create free lead magnet product
+        $freeProduct = \App\Models\Product::firstOrCreate(
+            ['slug' => 'free-whatsapp-marketing-bundle'],
+            [
+                'title' => 'Free WhatsApp Marketing Guide',
+                'slug' => 'free-whatsapp-marketing-bundle',
+                'short_description' => 'Complete guide to using WhatsApp for business growth',
+                'description' => 'Learn WhatsApp broadcast setup, automation, CRM integration, templates, business profile optimization, and analytics tracking.',
+                'type' => 'ebook',
+                'price' => 0,
+                'sale_price' => 0,
+                'file_path' => 'uploads/free-products/files/free-whatsapp-marketing-bundle.html',
+                'is_active' => 1,
+                'is_featured' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        $out[] = "Free product ID: {$freeProduct->id}";
+
+        // 2. Create pre-sale email sequence
+        $presaleSeq = \App\Models\EmailSequence::updateOrCreate(
+            ['name' => 'WhatsApp Marketing Bundle Pre-Sale'],
+            [
+                'name' => 'WhatsApp Marketing Bundle Pre-Sale',
+                'description' => 'Nurture leads who got the free WhatsApp guide toward purchasing the premium bundle',
+                'trigger_type' => 'welcome',
+                'is_active' => true,
+            ]
+        );
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $presaleSeq->id)->delete();
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Free WhatsApp Marketing Guide is ready!', 'body' => "Hi {{name}},\n\nYour free WhatsApp Marketing Guide is ready.\n\nDownload it here: https://joala.com.ng/free-download/free-whatsapp-marketing-bundle\n\nInside this guide, you'll learn the fundamentals of using WhatsApp for business — from broadcast setup to analytics tracking.\n\nBut if you're ready to go beyond the basics and get a complete WhatsApp marketing system with done-for-you templates, check out the premium bundle:\nhttps://joala.com.ng/store/whatsapp-marketing-bundle\n\nIt includes broadcast templates, automation workflows, CRM integration guides, and more.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 2, 'delay_days' => 2, 'subject' => 'Why most WhatsApp campaigns fail (and how to avoid it)', 'body' => "Hi {{name}},\n\nDid you know that 70% of business WhatsApp messages go unread?\n\nThe #1 reason? Lack of strategy and proper setup.\n\nMost businesses jump straight into broadcasting without:\n- A clean, segmented contact list\n- Proper broadcast timing and frequency\n- Follow-up automation\n- Performance tracking\n\nThat's exactly what the WhatsApp Marketing Bundle solves — a complete system with:\n✓ Broadcast templates that get replies\n✓ Automation workflows for follow-ups\n✓ CRM integration to track conversations\n✓ Analytics templates to measure ROI\n\nSee it here: https://joala.com.ng/store/whatsapp-marketing-bundle\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 3, 'delay_days' => 4, 'subject' => 'Success story: How a boutique grew sales 3x with WhatsApp', 'body' => "Hi {{name}},\n\n\"We went from 10 orders a week to 35 after implementing a proper WhatsApp broadcast system. The templates alone saved us hours.\"\n— Chioma O., Boutique Owner, Abuja\n\nChioma had been using WhatsApp the same way most businesses do — sending random messages whenever she remembered. After implementing a structured broadcast + automation system, here's what changed:\n- Messages actually got read (78% open rate)\n- Customers started replying and ordering\n- She saved 10+ hours per week on manual messaging\n\nThe WhatsApp Marketing Bundle gives you everything Chioma used, including:\n- Done-for-you broadcast scripts\n- Automation workflow templates\n- CRM tracking templates\n- Business profile optimization guide\n\nGet the same results: https://joala.com.ng/store/whatsapp-marketing-bundle\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 4, 'delay_days' => 6, 'subject' => 'Special offer: 15% off the WhatsApp Marketing Bundle', 'body' => "Hi {{name}},\n\nI'm giving you an exclusive 15% discount on the WhatsApp Marketing Bundle.\n\nUse code: WHATSAPP15 at checkout\n\nThis brings the price down to just ₦6,800 — a one-time investment for a complete WhatsApp marketing system.\n\nHere's exactly what you'll get:\n• 20+ Broadcast Templates (sales, announcements, follow-ups)\n• Automation Workflow Guide\n• CRM Integration Templates\n• Business Profile Optimization Checklist\n• Analytics & Reporting Templates\n• Customer Support Scripts\n• Product Catalogue Setup Guide\n• WhatsApp Business vs API Comparison\n• Broadcast Timing & Frequency Guide\n• Lifetime free updates\n• Priority support\n\nGet it now: https://joala.com.ng/store/whatsapp-marketing-bundle?coupon=WHATSAPP15\n\nThis offer won't last forever. Grab it today.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 5, 'delay_days' => 9, 'subject' => 'Last chance: Your 15% discount on WhatsApp Bundle expires soon', 'body' => "Hi {{name}},\n\nJust a friendly reminder that your 15% discount (code: WHATSAPP15) is still available.\n\nBut I can't keep it open forever.\n\nIf you're serious about using WhatsApp to grow your business, now is the time.\n\nThe WhatsApp Marketing Bundle gives you everything you need — ready-to-use templates, automation workflows, CRM guides, and more. No guesswork, no trial-and-error.\n\nGet started today: https://joala.com.ng/store/whatsapp-marketing-bundle?coupon=WHATSAPP15\n\nIf you have any questions, just reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        $out[] = "Pre-sale sequence ID: {$presaleSeq->id} (5 steps)";
+
+        // Sync sequences table
+        $seq = \App\Models\Sequence::updateOrCreate(
+            ['id' => $presaleSeq->id],
+            ['name' => 'WhatsApp Marketing Bundle Pre-Sale', 'description' => 'Nurture leads toward the premium WhatsApp bundle', 'is_active' => true]
+        );
+        $out[] = "Sequences table synced ID: {$seq->id}";
+
+        // 3. Create post-purchase sequence
+        $postSeq = \App\Models\EmailSequence::updateOrCreate(
+            ['name' => 'WhatsApp Marketing Bundle Post-Purchase'],
+            [
+                'name' => 'WhatsApp Marketing Bundle Post-Purchase',
+                'description' => 'Onboard and engage buyers of the WhatsApp Marketing Bundle',
+                'trigger_type' => 'post_purchase',
+                'is_active' => true,
+            ]
+        );
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $postSeq->id)->delete();
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
+            ['sequence_id' => $postSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your WhatsApp Marketing Bundle is ready!', 'body' => "Hi {{name}},\n\nThank you for purchasing the WhatsApp Marketing Bundle!\n\nYour download link: https://joala.com.ng/order/download/{{download_token}}\n\nGetting started fast:\n1. Download the ZIP file\n2. Extract all templates to your computer\n3. Open the README file for setup instructions\n4. Start with the Broadcast Templates — pick one and customize it\n5. Use the Automation Guide to set up your first workflow\n\nInside your bundle:\n✓ 20+ Broadcast Templates\n✓ Automation Workflow Guide\n✓ CRM Integration Templates\n✓ Business Profile Optimization Checklist\n✓ Analytics & Reporting Templates\n✓ Customer Support Scripts\n✓ Product Catalogue Setup Guide\n\nPro tip: Start with the \"Welcome Broadcast\" template — it's the highest-converting template in the pack.\n\nIf you need help, just reply to this email.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 2, 'delay_days' => 3, 'subject' => 'Quick start: Set up your first WhatsApp broadcast', 'body' => "Hi {{name}},\n\nReady to send your first broadcast? Here's a quick 3-step process using your bundle:\n\n1. Open the Broadcast Templates folder\n2. Choose the \"Promotional Offer\" template\n3. Customize it with your product/service details\n4. Send to your contact list via WhatsApp Broadcast\n\nBest practices:\n- Send between 10am-2pm for highest open rates\n- Keep messages under 200 characters\n- Always include a call-to-action\n- Track replies as leads\n\nThe Broadcast Templates folder includes templates for:\n✓ Sales & Promotions\n✓ Announcements & Launches\n✓ Customer Follow-ups\n✓ Abandoned Cart Recovery\n✓ Re-engagement Campaigns\n\nStart with one campaign this week and track your results.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 3, 'delay_days' => 5, 'subject' => 'Master WhatsApp Automation & CRM tracking', 'body' => "Hi {{name}},\n\nNow that you've sent your first broadcast, let's level up with automation.\n\nThe Automation Workflow Guide in your bundle shows you how to:\n- Set up auto-replies for common questions\n- Create follow-up sequences for leads\n- Tag and segment your contacts\n- Track conversations in a CRM\n\nQuick tip: Use the \"Abandoned Cart Recovery\" template for customers who showed interest but didn't buy. Set it to send 24 hours after the initial inquiry.\n\nCRM tracking tip: Create a simple spreadsheet (template included) to track:\n- Date of first contact\n- Product/service they asked about\n- Follow-up status\n- Deal value\n\nThis simple system can double your conversion rate.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 4, 'delay_days' => 7, 'subject' => 'Optimize your WhatsApp Business Profile for more sales', 'body' => "Hi {{name}},\n\nYour WhatsApp Business Profile is your storefront — is it optimized?\n\nUse the Business Profile Optimization Checklist in your bundle to:\n✓ Complete your profile with high-quality images\n✓ Write a compelling business description\n✓ Set up your product catalogue\n✓ Configure quick replies for FAQs\n✓ Set business hours and location\n✓ Add your website and social links\n✓ Create greeting and away messages\n\nBusinesses with complete profiles get 3x more customer inquiries.\n\nTake 15 minutes today to run through the checklist. Every field you complete is another reason for a customer to trust you.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 5, 'delay_days' => 10, 'subject' => 'WhatsApp Business API vs WhatsApp Business App — which is right for you?', 'body' => "Hi {{name}},\n\nAs your business grows, you might wonder if you need the WhatsApp Business API.\n\nHere's a quick comparison (full guide in your bundle):\n\nWhatsApp Business App (Free):\n✓ Great for small businesses with <50 daily conversations\n✓ Manual broadcast to 256 contacts at a time\n✓ Basic quick replies and labels\n✓ Free to use\n\nWhatsApp Business API (Paid):\n✓ For businesses with 50+ daily conversations\n✓ Unlimited broadcast reach\n✓ CRM integration for automation\n✓ Multiple agents can reply\n✓ Analytics dashboard\n\nTips:\n- Start with the free Business App\n- When you hit 30+ conversations/day, consider the API\n- Use the CRM templates in your bundle regardless of which option you choose\n\nYou already have everything you need to start making sales with WhatsApp today.\n\nIf you ever need help, reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        $out[] = "Post-purchase sequence ID: {$postSeq->id} (5 steps)";
+
+        // Sync sequences table
+        $seq2 = \App\Models\Sequence::updateOrCreate(
+            ['id' => $postSeq->id],
+            ['name' => 'WhatsApp Marketing Bundle Post-Purchase', 'description' => 'Onboard new buyers of WhatsApp bundle', 'is_active' => true]
+        );
+        $out[] = "Sequences table synced ID: {$seq2->id}";
+
+        // 4. Find premium product
+        $premiumProduct = \App\Models\Product::where('slug', 'whatsapp-marketing-bundle')->first();
+        $premiumId = $premiumProduct ? $premiumProduct->id : 0;
+        $out[] = "Premium product ID: " . ($premiumProduct ? $premiumProduct->id : 'NOT FOUND');
+
+        // 5. Create the funnel
+        $funnel = \App\Models\Funnel::updateOrCreate(
+            ['slug' => 'whatsapp-marketing-bundle-funnel'],
+            [
+                'name' => 'WhatsApp Marketing Bundle Funnel',
+                'slug' => 'whatsapp-marketing-bundle-funnel',
+                'description' => 'Lead magnet → download → checkout → pre-sale nurture',
+                'goal' => 'sales',
+                'funnel_type' => 'sales',
+                'product_id' => $premiumId ?: null,
+                'welcome_sequence_id' => $presaleSeq->id,
+                'environment' => 'production',
+                'is_active' => true,
+                'upsell_enabled' => false,
+                'countdown_enabled' => false,
+            ]
+        );
+        $out[] = "Funnel ID: {$funnel->id}";
+
+        // 6. Link landing page to funnel and pre-sale sequence
+        try {
+            $landingPage = \App\Models\LandingPage::where('slug', 'free-whatsapp-marketing-bundle')->first();
+            if ($landingPage) {
+                $landingPage->update([
+                    'funnel_id' => $funnel->id,
+                    'sequence_id' => $presaleSeq->id,
+                ]);
+                $out[] = "Landing page linked: ID {$landingPage->id}";
+            } else {
+                $out[] = "WARNING: Landing page 'free-whatsapp-marketing-bundle' not found in DB";
+            }
+        } catch (\Exception $e) {
+            $out[] = "WARNING: Could not link landing page: " . $e->getMessage();
+        }
+
+        // 7. Create funnel stages
+        \App\Models\FunnelStage::where('funnel_id', $funnel->id)->delete();
+
+        // Stage 1: Landing page (lead capture)
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Lead Magnet Page',
+            'type' => 'landing',
+            'content' => ['url' => '/l/free-whatsapp-marketing-bundle'],
+            'order' => 1,
+            'delay_days' => 0,
+            'is_required' => true,
+            'action_on_complete' => 'advance',
+        ]);
+        $out[] = "Stage 1: Lead Magnet Page";
+
+        // Stage 2: Download page
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Download Page',
+            'type' => 'thank_you',
+            'content' => ['url' => '/download/free-whatsapp-marketing-bundle'],
+            'order' => 2,
+            'delay_days' => 0,
+            'is_required' => false,
+            'action_on_complete' => 'advance',
+        ]);
+        $out[] = "Stage 2: Download Page";
+
+        // Stage 3: Premium checkout
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Premium Checkout',
+            'type' => 'checkout',
+            'content' => ['url' => '/store/whatsapp-marketing-bundle'],
+            'order' => 3,
+            'delay_days' => 0,
+            'sequence_id' => $presaleSeq->id,
+            'is_required' => false,
+            'action_on_complete' => 'email',
+        ]);
+        $out[] = "Stage 3: Premium Checkout";
+
+        // 8. Write free product deliverable HTML file
+        $freeFilePath = public_path('uploads/free-products/files/free-whatsapp-marketing-bundle.html');
+        $dir = dirname($freeFilePath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        file_put_contents($freeFilePath, '<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free WhatsApp Marketing Guide - JoAla Ventures</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7;padding:40px 20px}
+.container{max-width:720px;margin:0 auto}
+h1{font-size:2em;margin-bottom:8px;color:#0f172a}
+.lead{font-size:1.15em;color:#64748b;margin-bottom:32px}
+h2{font-size:1.4em;margin:32px 0 12px;color:#075985;border-bottom:2px solid #e2e8f0;padding-bottom:6px}
+h3{font-size:1.1em;margin:20px 0 8px;color:#0c4a6e}
+p{margin-bottom:12px}
+ul{list-style:none;padding:0;margin:0 0 16px}
+ul li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid #f1f5f9}
+ul li:before{content:"\\2713";position:absolute;left:0;color:#059669;font-weight:bold}
+.badge{display:inline-block;background:#dbeafe;color:#1e40af;padding:2px 12px;border-radius:20px;font-size:.85em;font-weight:600}
+.footer{margin-top:40px;padding-top:24px;border-top:2px solid #e2e8f0;text-align:center;color:#94a3b8;font-size:.9em}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>WhatsApp Marketing Guide</h1>
+<p class="lead">Your complete guide to using WhatsApp for business growth — broadcast, automation, CRM, and more.</p>
+
+<h2>1. WhatsApp Broadcast Setup</h2>
+<p>WhatsApp Broadcast allows you to send messages to multiple contacts at once while keeping each conversation private. Unlike groups, recipients only see your message — not who else received it.</p>
+<ul>
+<li>Use broadcast lists for announcements, promotions, and updates</li>
+<li>Keep broadcasts to 256 recipients per list (Business App limit)</li>
+<li>Always personalise the first line with the recipient\'s name</li>
+<li>Send between 10am-2pm for optimal open rates</li>
+<li>Track replies manually and follow up within 24 hours</li>
+<li>Segment your audience before broadcasting (e.g., customers vs prospects)</li>
+</ul>
+
+<h2>2. Automation Strategies</h2>
+<p>Save hours with smart automation. The key is to automate repetitive tasks while keeping the personal touch.</p>
+<ul>
+<li>Set up quick replies for FAQs (pricing, hours, location)</li>
+<li>Use away messages for after-hours inquiries</li>
+<li>Create greeting messages that capture lead info</li>
+<li>Build follow-up sequences for new leads</li>
+<li>Automate abandoned cart recovery messages</li>
+<li>Schedule broadcast messages during peak engagement times</li>
+</ul>
+
+<h2>3. CRM Integration</h2>
+<p>Turn WhatsApp from a messaging app into a sales engine by tracking every conversation.</p>
+<ul>
+<li>Tag contacts by source, interest, and purchase stage</li>
+<li>Track conversation history per customer</li>
+<li>Log deals and follow-ups in a simple spreadsheet or CRM</li>
+<li>Set reminders for follow-ups based on lead response</li>
+<li>Measure conversion rate from message to sale</li>
+<li>Export your contact list for backup and analysis</li>
+</ul>
+
+<h2>4. Ready-to-Use Templates</h2>
+<p>Copy, paste, and customise these proven templates:</p>
+
+<h3 class="badge">Sales Broadcast</h3>
+<p>"Hi [Name], we have a special offer just for you! Get [discount]% off on [product] this week only. Reply YES to claim yours."</p>
+
+<h3 class="badge">Follow-Up</h3>
+<p>"Hi [Name], just checking in! Did you have a chance to review the [product] we discussed? Happy to answer any questions."</p>
+
+<h3 class="badge">Abandoned Cart</h3>
+<p>"Hi [Name], you left [product] in your cart! Complete your order now and get free delivery. Reply ORDER to proceed."</p>
+
+<h3 class="badge">Re-engagement</h3>
+<p>"Hi [Name], it\'s been a while! We\'ve added new products you might like. Check them out here: [link]"</p>
+
+<h2>5. Business Profile Optimization</h2>
+<p>Your WhatsApp Business profile is your digital storefront.</p>
+<ul>
+<li>Use a professional logo as your profile picture</li>
+<li>Write a clear business description (3-4 lines max)</li>
+<li>Add your business address, hours, and website</li>
+<li>Set up your product catalogue with photos and prices</li>
+<li>Create quick replies for top 5 FAQs</li>
+<li>Enable greeting and away messages</li>
+<li>Link your Instagram and Facebook accounts</li>
+<li>Verify your business if eligible</li>
+</ul>
+
+<h2>6. Analytics & Tracking</h2>
+<p>Track these metrics to optimise your WhatsApp marketing:</p>
+<ul>
+<li>Message delivery rate (aim for 95%+)</li>
+<li>Read rate (aim for 70%+)</li>
+<li>Reply rate (aim for 30%+)</li>
+<li>Conversion rate (from message to sale)</li>
+<li>Average response time (aim for under 1 hour)</li>
+<li>Best sending days and times</li>
+<li>Most engaging message types</li>
+</ul>
+
+<div class="footer">
+<p><strong>Want the complete system?</strong> Get the WhatsApp Marketing Bundle with 20+ ready-to-use templates, automation workflows, CRM guides, and more.</p>
+<p>Visit joala.com.ng/store/whatsapp-marketing-bundle</p>
+<p>&copy; 2026 JoAla Ventures. All rights reserved.</p>
+</div>
+</div>
+</body>
+</html>');
+        $out[] = "Free product deliverable HTML created at: uploads/free-products/files/free-whatsapp-marketing-bundle.html";
+
+        $out[] = "---";
+        $out[] = "Landing page URL: https://joala.com.ng/l/free-whatsapp-marketing-bundle";
+        $out[] = "Download page URL: https://joala.com.ng/download/free-whatsapp-marketing-bundle";
+        $out[] = "Sales page URL: https://joala.com.ng/store/whatsapp-marketing-bundle";
+        $out[] = "Funnel edit: /admin/marketing/funnels/{$funnel->id}/edit";
+
+        return "<h2>WhatsApp Funnel Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
 
     } catch (\Exception $e) {
         return "<h2>ERROR</h2><pre>" . $e->getMessage() . "\n" . $e->getTraceAsString() . "</pre>";

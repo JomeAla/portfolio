@@ -1230,7 +1230,17 @@ Route::get('/download/{slug}', function ($slug) {
     }
 
     $downloadUrl = $freeProduct ? url('/free-download/' . $freeProduct->slug) : '#';
-    $salesPageUrl = $premiumProduct ? url('/store/' . $premiumProduct->slug) : url('/store');
+    // Check for a custom sales page URL from the funnel's checkout stage
+    $salesPageUrl = url('/store');
+    if ($funnel) {
+        $checkoutStage = $funnel->stages()->where('type', 'checkout')->first();
+        if ($checkoutStage && isset($checkoutStage->content['url'])) {
+            $salesPageUrl = url($checkoutStage->content['url']);
+        }
+    }
+    if (!$salesPageUrl || $salesPageUrl === url('/store')) {
+        $salesPageUrl = $premiumProduct ? url('/store/' . $premiumProduct->slug) : url('/store');
+    }
     $productName = $premiumProduct ? $premiumProduct->title : 'Premium Product';
     $productPrice = $premiumProduct ? '₦' . number_format($premiumProduct->current_price) : '';
 

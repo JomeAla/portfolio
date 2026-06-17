@@ -188,6 +188,7 @@ Route::get('/setup-whatsapp-sequence', [SetupController::class, 'setupWhatsAppSe
 Route::get('/add-whatsapp-upsell', [SetupController::class, 'addWhatsAppUpsell']);
 Route::post('/store/validate-coupon', [StoreController::class, 'validateCoupon'])->name('store.coupon');
 Route::get('/store/validate-coupon', [StoreController::class, 'validateCoupon'])->name('store.coupon.get');
+Route::get('/order/validate-coupon', [OrderController::class, 'validateCoupon'])->name('order.validate.coupon');
 Route::post('/store/initiate-payment', [OrderController::class, 'initiatePayment'])->name('order.initiate');
 Route::post('/ecom-init-payment', [OrderController::class, 'ecomInitPayment'])->name('ecom.init.payment');
 Route::get('/order/success', [OrderController::class, 'success'])->name('order.success');

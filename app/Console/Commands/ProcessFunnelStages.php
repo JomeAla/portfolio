@@ -91,20 +91,27 @@ class ProcessFunnelStages extends Command
             return 'skip';
         }
 
-        if ($currentStage->isWaitStage() || $currentStage->hasCondition()) {
-            $canAdvance = $this->evaluateConditions($lead, $leadRecord, $currentStage, $funnel);
-
-            if ($canAdvance) {
-                $this->advanceLead($lead, $leadRecord, $funnel, $stages, $currentStage);
-                return 'advanced';
-            } else {
-                $waitDesc = $currentStage->getWaitDescription();
-                $this->info("    Lead {$lead->email}: waiting at '{$currentStage->name}' ({$waitDesc})");
-                return 'waiting';
+        // Auto-advance if stage has no conditions and is not the last stage
+        if (!$currentStage->isWaitStage() && !$currentStage->hasCondition()) {
+            $lastStage = $stages->last();
+            if ($currentStage->id === $lastStage->id) {
+                return 'skip';
             }
+            $this->advanceLead($lead, $leadRecord, $funnel, $stages, $currentStage);
+            return 'advanced';
         }
 
-        return 'skip';
+        // Stage has conditions/wait — evaluate before advancing
+        $canAdvance = $this->evaluateConditions($lead, $leadRecord, $currentStage, $funnel);
+
+        if ($canAdvance) {
+            $this->advanceLead($lead, $leadRecord, $funnel, $stages, $currentStage);
+            return 'advanced';
+        } else {
+            $waitDesc = $currentStage->getWaitDescription();
+            $this->info("    Lead {$lead->email}: waiting at '{$currentStage->name}' ({$waitDesc})");
+            return 'waiting';
+        }
     }
 
     protected function evaluateConditions(FunnelLead $funnelLead, Lead $lead, FunnelStage $stage, Funnel $funnel): bool
@@ -169,13 +176,80 @@ class ProcessFunnelStages extends Command
 
     protected function advanceLead(FunnelLead $funnelLead, Lead $lead, Funnel $funnel, $stages, FunnelStage $currentStage): void
     {
+        // Check for conditional branching
+        if ($currentStage->redirect_type === 'conditional' && !empty($currentStage->conditional_stages)) {
+            $branchResult = $this->resolveBranch($funnelLead, $lead, $currentStage, $funnel);
+            if ($branchResult === 'complete') {
+                // Branch matched with 'complete' action — already handled in resolveBranch
+                return;
+            }
+            if (is_int($branchResult)) {
+                $nextStage = $stages->firstWhere('id', $branchResult);
+                if ($nextStage) {
+                    $this->moveLeadToStage($funnelLead, $lead, $funnel, $currentStage, $nextStage);
+                    return;
+                }
+            }
+            // If no branch matched, fall through to linear default
+        }
+
+        // Default: linear advancement to next stage
         $currentIndex = $stages->search(fn($s) => $s->id === $currentStage->id);
         if ($currentIndex === false || ($currentIndex + 1) >= $stages->count()) {
             return;
         }
 
         $nextStage = $stages[$currentIndex + 1];
+        $this->moveLeadToStage($funnelLead, $lead, $funnel, $currentStage, $nextStage);
+    }
 
+    protected function resolveBranch(FunnelLead $funnelLead, Lead $lead, FunnelStage $stage, Funnel $funnel): null|int|string
+    {
+        $branches = $stage->conditional_stages ?? [];
+
+        foreach ($branches as $branch) {
+            $condition = $branch['condition'] ?? '';
+            $targetStageId = $branch['stage_id'] ?? null;
+
+            $matched = false;
+
+            if ($condition === 'converted') {
+                $matched = $funnelLead->converted === true;
+            } elseif ($condition === 'not_converted') {
+                if ($funnelLead->converted === true) {
+                    $matched = false;
+                } else {
+                    $purchased = \App\Models\Order::where('email', $lead->email)
+                        ->where('status', 'completed')
+                        ->where('product_id', $funnel->product_id)
+                        ->exists();
+                    $matched = $purchased;
+                    if ($purchased) {
+                        $funnelLead->update(['converted' => true]);
+                    }
+                }
+            } elseif ($condition === 'default') {
+                $matched = true;
+            }
+
+            if ($matched) {
+                if (($branch['action'] ?? null) === 'complete') {
+                    $funnelLead->update(['exited_at' => now(), 'converted' => $condition === 'converted']);
+                    $this->info("    Lead {$lead->email}: funnel complete (branch: '{$condition}')");
+                    return 'complete';
+                }
+                if ($targetStageId) {
+                    $this->info("    Lead {$lead->email}: branch '{$condition}' -> stage {$targetStageId}");
+                    return (int) $targetStageId;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function moveLeadToStage(FunnelLead $funnelLead, Lead $lead, Funnel $funnel, FunnelStage $currentStage, FunnelStage $nextStage): void
+    {
         $funnelLead->update([
             'stage_id' => $nextStage->id,
             'last_activity' => now(),

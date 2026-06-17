@@ -2957,6 +2957,141 @@ Route::get('/debug-enroll/{leadId?}', function ($leadId = null) {
     return $out;
 });
 
+// Setup branching for all 3 funnels (adds re-engagement stage + conditional checkout)
+Route::get('/setup-branching', function () {
+    try {
+        $out = [];
+        $funnels = [
+            'ecommerce-starter-kit-funnel' => [
+                'name' => 'E-Commerce Starter Kit',
+                'presale_seq_name' => 'E-Commerce Starter Kit Pre-Sale',
+                'slug' => 'ecommerce-starter-kit',
+                're_seq_name' => 'E-Commerce Starter Kit Re-Engagement',
+                're_seq_desc' => 'Re-engage leads who haven\'t purchased the E-Commerce Starter Kit',
+            ],
+            'whatsapp-marketing-bundle-funnel' => [
+                'name' => 'WhatsApp Marketing Bundle',
+                'presale_seq_name' => 'WhatsApp Marketing Bundle Pre-Sale',
+                'slug' => 'whatsapp-marketing-bundle',
+                're_seq_name' => 'WhatsApp Marketing Bundle Re-Engagement',
+                're_seq_desc' => 'Re-engage leads who haven\'t purchased the WhatsApp Bundle',
+            ],
+            'email-sequence-templates-funnel' => [
+                'name' => 'Email Sequence Templates',
+                'presale_seq_name' => 'Email Sequence Templates Pre-Sale',
+                'slug' => 'email-sequence-templates-pack',
+                're_seq_name' => 'Email Sequence Templates Re-Engagement',
+                're_seq_desc' => 'Re-engage leads who haven\'t purchased the Email Templates Pack',
+            ],
+        ];
+
+        foreach ($funnels as $funnelSlug => $config) {
+            $funnel = \App\Models\Funnel::where('slug', $funnelSlug)->first();
+            if (!$funnel) {
+                $out[] = "Funnel '{$funnelSlug}' not found — skipping";
+                continue;
+            }
+            $out[] = "--- Processing: {$config['name']} (ID {$funnel->id}) ---";
+
+            // 1. Create re-engagement sequence
+            $reSeq = \App\Models\EmailSequence::updateOrCreate(
+                ['name' => $config['re_seq_name']],
+                [
+                    'name' => $config['re_seq_name'],
+                    'description' => $config['re_seq_desc'],
+                    'trigger_type' => 'welcome',
+                    'is_active' => true,
+                ]
+            );
+            \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $reSeq->id)->delete();
+            \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
+                ['sequence_id' => $reSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Did you get your free guide? + Special offer inside', 'body' => "Hi {{name}},\n\nI noticed you downloaded the free guide recently but haven't grabbed the premium version yet.\n\nI wanted to check in — do you have any questions about what's included?\n\nHere's what you're getting with the premium pack:\n✓ Everything in the free guide, supercharged\n✓ Done-for-you templates ready to use\n✓ Step-by-step implementation guides\n✓ Lifetime access + free updates\n\nCheck it out: https://joala.com.ng/store/{$config['slug']}\n\nReply if you have any questions!\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+                ['sequence_id' => $reSeq->id, 'step_order' => 2, 'delay_days' => 1, 'subject' => 'Still thinking about it? Here\'s what you\'ll miss', 'body' => "Hi {{name}},\n\nStill on the fence? I get it — you want to make sure it's worth it.\n\nHere's what customers say they wish they'd done sooner:\n\n1. Stop guessing — use proven templates instead of reinventing the wheel\n2. Save 20+ hours with ready-to-use workflows\n3. Start seeing results in days, not weeks\n\nThe free guide gives you the foundation. The premium pack gives you the complete system — and that's where the real results come from.\n\nSee what's inside: https://joala.com.ng/store/{$config['slug']}\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+                ['sequence_id' => $reSeq->id, 'step_order' => 3, 'delay_days' => 2, 'subject' => 'How one customer got 3x ROI in the first month', 'body' => "Hi {{name}},\n\n\"I was skeptical at first, but the templates saved me weeks of work. I implemented the system in one weekend and saw 3x ROI in the first month.\"\n— A recent customer\n\nThis is what happens when you stop piecing things together and use a complete, proven system.\n\nThe premium pack includes everything you need:\n✓ Ready-to-use templates\n✓ Implementation guides\n✓ Best practices from years of experience\n✓ Lifetime updates\n✓ Priority support\n\nDon't wait — start seeing results today.\n\nGet it here: https://joala.com.ng/store/{$config['slug']}\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+                ['sequence_id' => $reSeq->id, 'step_order' => 4, 'delay_days' => 3, 'subject' => 'Special offer: 20% off — just for you', 'body' => "Hi {{name}},\n\nI'm giving you an exclusive 20% discount to make this an easy yes.\n\nUse code: REENGAGE20 at checkout\n\nThis is a limited offer, so grab it while it's available:\nhttps://joala.com.ng/store/{$config['slug']}?coupon=REENGAGE20\n\nHere's why this is a no-brainer:\n- Proven templates that work\n- Complete system, not just fragments\n- Save hours of work\n- Lifetime access\n- 20% off right now\n\nDon't let this opportunity pass.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+                ['sequence_id' => $reSeq->id, 'step_order' => 5, 'delay_days' => 4, 'subject' => 'Last call: This offer won\'t last', 'body' => "Hi {{name}},\n\nThis is your last chance to grab the {$config['name']} with 20% off.\n\nAfter today, the discount code REENGAGE20 expires.\n\nIf you're serious about growing your business, now is the time. The templates, workflows, and systems in this pack will save you weeks of work and help you get results faster.\n\nGet it now: https://joala.com.ng/store/{$config['slug']}?coupon=REENGAGE20\n\nIf money is tight, reply to this email and let me know. I might be able to work something out.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ]);
+            $out[] = "Re-engagement sequence ID: {$reSeq->id} (5 steps)";
+
+            // Sync sequences table
+            \App\Models\Sequence::updateOrCreate(
+                ['id' => $reSeq->id],
+                ['name' => $config['re_seq_name'], 'description' => $config['re_seq_desc'], 'is_active' => true]
+            );
+            $out[] = "Sequences table synced: {$reSeq->id}";
+
+            // 2. Get existing stages to find Stage 3
+            $stages = $funnel->stages()->orderBy('order')->get();
+            $stage3 = $stages->where('order', 3)->first();
+            if (!$stage3) {
+                // Try by name
+                $stage3 = $stages->firstWhere('type', 'checkout');
+            }
+
+            // 3. Update Stage 3 (checkout) with condition + branching
+            if ($stage3) {
+                $stage3->update([
+                    'condition_type' => 'wait',
+                    'wait_duration_hours' => 216, // 9 days (pre-sale duration)
+                    'redirect_type' => 'conditional',
+                    'conditional_stages' => [
+                        ['condition' => 'converted', 'stage_id' => null, 'action' => 'complete'],
+                        ['condition' => 'not_converted', 'stage_id' => null], // will be set after Stage 4 is created
+                        ['condition' => 'default', 'stage_id' => null],
+                    ],
+                ]);
+                $out[] = "Stage 3 '{$stage3->name}' updated with wait (9d) + conditional branching";
+            } else {
+                $out[] = "WARNING: No checkout stage found for funnel {$funnel->id}";
+            }
+
+            // 4. Create Stage 4 (Re-engagement)
+            $stage4 = \App\Models\FunnelStage::updateOrCreate(
+                ['funnel_id' => $funnel->id, 'order' => 4],
+                [
+                    'funnel_id' => $funnel->id,
+                    'name' => 'Re-engagement',
+                    'type' => 'email',
+                    'order' => 4,
+                    'delay_days' => 0,
+                    'sequence_id' => $reSeq->id,
+                    'is_required' => false,
+                    'action_on_complete' => 'email',
+                    'condition_type' => 'wait',
+                    'wait_duration_hours' => 120, // 5 days for re-engagement sequence
+                    'redirect_type' => 'conditional',
+                    'conditional_stages' => [
+                        ['condition' => 'converted', 'stage_id' => null, 'action' => 'complete'],
+                        ['condition' => 'default', 'stage_id' => null, 'action' => 'complete'],
+                    ],
+                ]
+            );
+            $out[] = "Stage 4 '{$stage4->name}' created with re-engagement sequence {$reSeq->id}";
+
+            // 5. Update Stage 3's conditional_stages to point to Stage 4
+            if ($stage3) {
+                $stage3->update([
+                    'conditional_stages' => [
+                        ['condition' => 'converted', 'stage_id' => null, 'action' => 'complete'],
+                        ['condition' => 'not_converted', 'stage_id' => $stage4->id],
+                        ['condition' => 'default', 'stage_id' => $stage4->id],
+                    ],
+                ]);
+                $out[] = "Stage 3 conditional_stages updated → converted=complete, not_converted=Stage {$stage4->id}";
+            }
+        }
+
+        $out[] = "========================================";
+        $out[] = "Branching setup complete for all 3 funnels!";
+        $out[] = "Flow: Stage 1 → Stage 2 → Stage 3 (wait 9d) → branch → Stage 4 (wait 5d) → exit";
+
+        return "<h2>Branching Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
+
+    } catch (\Exception $e) {
+        return "<h2>ERROR</h2><pre>" . $e->getMessage() . "\n" . $e->getTraceAsString() . "</pre>";
+    }
+});
+
 // Check/Set Brevo API key
 Route::get('/check-brevo-key', function () {
     $key = request('key', '');

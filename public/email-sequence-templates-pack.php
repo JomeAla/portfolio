@@ -1,96 +1,18 @@
 <?php
 error_reporting(0);
-require __DIR__ . '/../vendor/autoload.php';
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-$app->make('Illuminate\Contracts\Http\Kernel')->bootstrap();
-
-session_start();
-
-use Illuminate\Support\Facades\DB;
-use App\Models\Product;
-use App\Models\Coupon;
-use App\Models\Order;
 
 $baseUrl = 'https://joala.com.ng';
-$productSlug = 'email-sequence-templates-pack';
-$productId = 15;
-$funnelId = 21;
+$productPriceRaw = 15000;
+$productOldRaw = 35000;
+$productTitle = 'Email Sequence Templates Pack';
+$productImage = '';
 
-$product = Product::where('slug', $productSlug)->first();
-$productImage = $product && $product->image ? $product->image : '';
-$productTitle = $product ? $product->title : 'Email Sequence Templates Pack';
-$productPriceRaw = $product ? (float)($product->sale_price ?? $product->price) : 12000;
-$productOldRaw = $product ? (float)$product->price : 15000;
-
-$pageKey = "email_seq_viewed";
-if (!isset($_SESSION[$pageKey])) { $_SESSION[$pageKey] = true; }
-
-$timerOffset = isset($_SESSION['email_seq_timer']) ? (int)$_SESSION['email_seq_timer'] : rand(20000, 40000);
-$_SESSION['email_seq_timer'] = $timerOffset;
-
-$email = $_SESSION['checkout_email'] ?? '';
-$step = $_GET['step'] ?? 'landing';
-
-$price = $step === 'checkout' ? $productPriceRaw : $productOldRaw;
+$timerOffset = rand(20000, 40000);
+$step = 'landing';
+$price = $productOldRaw;
+$finalPrice = $productPriceRaw;
+$email = '';
 $couponMsg = '';
-$finalPrice = $price;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] ?? '' === 'init_payment') {
-    header('Content-Type: application/json');
-    $email = trim($_POST['email'] ?? '');
-    $amount = (float)($_POST['amount'] ?? 0);
-    $coupon = trim($_POST['coupon'] ?? '');
-    $couponApplied = null;
-    if ($coupon) {
-        $c = Coupon::where('code', $coupon)->first();
-        if ($c && $c->isValid()) {
-            $couponApplied = $coupon;
-            if ($c->discount_type === 'percentage') {
-                $disc = $amount * ($c->discount_value / 100);
-                $maxD = $c->max_discount ?? PHP_INT_MAX;
-                $disc = min($disc, $maxD);
-            } else {
-                $disc = min((float)$c->discount_value, $amount);
-            }
-            $amount = max(0.01, $amount - $disc);
-        }
-    }
-    $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
-    $order = Order::create([
-        'user_id' => $userId, 'product_id' => $productId, 'amount' => $amount,
-        'original_amount' => $price, 'coupon_used' => $couponApplied,
-        'payment_status' => 'pending',
-        'order_number' => 'ESP-' . strtoupper(substr(md5(uniqid()), 0, 8)),
-        'funnel_id' => $funnelId,
-    ]);
-    $ref = 'ESP_' . uniqid() . '_' . time();
-    echo json_encode([
-        'order_id' => $order->id, 'paystack_key' => 'pk_live_xxxx',
-        'amount' => (int)($amount * 100), 'email' => $email, 'reference' => $ref,
-    ]);
-    exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_coupon'])) {
-    $couponCode = trim($_POST['coupon_code'] ?? '');
-    if ($couponCode) {
-        $c = Coupon::where('code', $couponCode)->first();
-        if ($c && $c->isValid()) {
-            if ($c->discount_type === 'percentage') {
-                $disc = $price * ($c->discount_value / 100);
-                $maxD = $c->max_discount ?? PHP_INT_MAX;
-                $disc = min($disc, $maxD);
-            } else {
-                $disc = min((float)$c->discount_value, $price);
-            }
-            $finalPrice = $price - $disc;
-            $couponMsg = "<span style='color:#16a34a'>✓ You save &#x20A6;".number_format($disc)."</span>";
-            $_SESSION['email_seq_coupon'] = $couponCode;
-        } else {
-            $couponMsg = "<span style='color:#dc2626'>✗ Invalid or expired coupon</span>";
-        }
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -1087,9 +1009,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_coupon'])) {
                 <div class="price-header">
                     <p class="price-label">Email Sequence Templates Pack</p>
                     <div class="price-amount">
-                        <span class="price-current">₦12,000</span>
-                        <span class="price-original">₦15,000</span>
-                        <span class="price-discount">-20%</span>
+                        <span class="price-current">₦15,000</span>
+                        <span class="price-original">₦35,000</span>
+                        <span class="price-discount">-57%</span>
                     </div>
                 </div>
                 
@@ -1112,7 +1034,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_coupon'])) {
                     <button type="button" id="applyCoupon" class="apply-btn">Apply</button>
                 </div>
                 
-                <button type="button" id="payBtn" class="pay-btn">Pay ₦12,000</button>
+                <button type="button" id="payBtn" class="pay-btn">Pay ₦15,000</button>
                 
                 <p class="guarantee">🔒 Secure payment via Paystack • 30-day money-back guarantee</p>
             </div>
@@ -1151,8 +1073,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_coupon'])) {
 
     <div class="sticky-cta" id="timerSticky">
         <div class="sticky-price">
-            <span class="sticky-current">₦12,000</span>
-            <span class="sticky-original">₦15,000</span>
+            <span class="sticky-current">₦15,000</span>
+            <span class="sticky-original">₦35,000</span>
             <span id="stickyTimer" style="font-weight: 600; color: var(--primary);"></span>
         </div>
         <button type="button" class="sticky-btn" id="stickyPayBtn">Buy Now</button>
@@ -1162,12 +1084,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_coupon'])) {
         (function(){
             var timerOffset = <?= $timerOffset ?>;
             var endTime = Date.now() + timerOffset;
-            var currentAmount = 12000;
+            var currentAmount = 15000;
             var appliedCoupon = null;
             
             var currentAmount = <?= $finalPrice ?>;
-            var appliedCoupon = <?= isset($_SESSION['email_seq_coupon']) ? "'" . $_SESSION['email_seq_coupon'] . "'" : 'null' ?>;
-            var isCheckout = <?= $step === 'checkout' ? 'true' : 'false' ?>;
+            var appliedCoupon = null;
+            var isCheckout = false;
 
             function updateTimers(){
                 var now = Date.now();
@@ -1212,73 +1134,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_coupon'])) {
             var stickyPayBtn = document.getElementById('stickyPayBtn');
             var applyCouponBtn = document.getElementById('applyCoupon');
 
-            function doPayment(emailEl) {
-                var email = emailEl ? emailEl.value.trim() : '';
-                if(!email || !email.includes('@')){
-                    if(emailEl) emailEl.focus();
-                    alert('Please enter a valid email');
-                    return;
-                }
-                if(!payBtn) return;
-                payBtn.disabled = true;
-                payBtn.innerHTML = '<span style="font-size:14px">Processing...</span>';
-                var formData = new FormData();
-                formData.append('action','init_payment');
-                formData.append('email', email);
-                formData.append('amount', currentAmount);
-                if(appliedCoupon) formData.append('coupon', appliedCoupon);
-                fetch(window.location.pathname, {method:'POST',body:formData})
-                .then(function(r){return r.json()})
-                .then(function(data){
-                    if(data.order_id){
-                        var PaystackPop = window.PaystackPop;
-                        if(PaystackPop){
-                            var paystack = PaystackPop.setup({
-                                key: data.paystack_key,
-                                email: data.email,
-                                amount: data.amount,
-                                reference: data.reference,
-                                onClose: function(){
-                                    payBtn.disabled = false;
-                                    payBtn.innerHTML = 'Pay ₦'+currentAmount.toLocaleString();
-                                },
-                                callback: function(response){
-                                    window.location.href = '<?= $baseUrl ?>/order/success?ref='+response.reference+'&order_id='+data.order_id;
-                                }
-                            });
-                            paystack.openIframe();
-                        } else {
-                            alert('Payment system loading... Please refresh and try again.');
-                            payBtn.disabled = false;
-                            payBtn.innerHTML = 'Pay ₦'+currentAmount.toLocaleString();
-                        }
-                    } else {
-                        alert('Payment setup failed. Please try again.');
-                        payBtn.disabled = false;
-                        payBtn.innerHTML = 'Pay ₦'+currentAmount.toLocaleString();
-                    }
-                })
-                .catch(function(err){
-                    console.error('Payment error:', err);
-                    payBtn.disabled = false;
-                    payBtn.innerHTML = 'Pay ₦'+currentAmount.toLocaleString();
-                    alert('Payment setup failed. Please try again.');
-                });
-            }
+            var checkoutUrl = '<?= $baseUrl ?>/buy/email-sequence-templates-pack';
 
             if(payBtn) {
                 payBtn.addEventListener('click', function(){
-                    doPayment(emailInput);
+                    window.location.href = checkoutUrl;
                 });
             }
 
             if(ctaPayBtn) {
                 ctaPayBtn.addEventListener('click', function(){
-                    if(!isCheckout){
-                        window.location.href = '?step=checkout';
-                    } else {
-                        doPayment(emailInput);
-                    }
+                    window.location.href = checkoutUrl;
                 });
             }
 
@@ -1286,56 +1152,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['apply_coupon'])) {
                 exitPayBtn.addEventListener('click', function(){
                     var exitP = document.getElementById('exitPopup');
                     if(exitP) exitP.classList.remove('active');
-                    var couponEl = document.getElementById('coupon');
-                    if(couponEl) couponEl.value = 'LAUNCH15';
-                    if(applyCouponBtn) applyCouponBtn.click();
+                    window.location.href = checkoutUrl;
                 });
             }
 
             if(stickyPayBtn) {
                 stickyPayBtn.addEventListener('click', function(){
-                    if(!isCheckout){
-                        window.location.href = '?step=checkout';
-                    } else {
-                        doPayment(emailInput);
-                    }
+                    window.location.href = checkoutUrl;
                 });
             }
 
             if(applyCouponBtn) {
                 applyCouponBtn.addEventListener('click', function(){
-                    var code = (document.getElementById('coupon') || document.getElementById('couponInput') || {value:''}).value.trim().toUpperCase();
-                    if(!code) return;
-                    var formData = new FormData();
-                    formData.append('apply_coupon','1');
-                    formData.append('coupon_code', code);
-                    fetch(window.location.pathname + window.location.search, {method:'POST',body:formData})
-                    .then(function(r){return r.text()})
-                    .then(function(text){
-                        if(text.indexOf('color:#16a34a') !== -1 || text.indexOf('✓') !== -1){
-                            appliedCoupon = code;
-                            var formData2 = new FormData();
-                            formData2.append('action','init_payment');
-                            formData2.append('email', (emailInput ? emailInput.value.trim() : 'test@test.com'));
-                            formData2.append('amount', <?= $price ?>);
-                            formData2.append('coupon', code);
-                            fetch(window.location.pathname, {method:'POST',body:formData2})
-                            .then(function(r){return r.json()})
-                            .then(function(data){
-                                if(data.order_id){
-                                    currentAmount = data.amount / 100;
-                                    if(payBtn) payBtn.innerHTML = 'Pay ₦'+currentAmount.toLocaleString();
-                                    var priceEls = document.querySelectorAll('.price-current,.price-new,.pricing-price .current');
-                                    priceEls.forEach(function(el){el.textContent = '₦'+currentAmount.toLocaleString()});
-                                    alert('Coupon applied! ' + Math.round((1 - currentAmount/<?= $price ?>) * 100) + '% off');
-                                } else {
-                                    alert('Invalid coupon code');
-                                }
-                            });
-                        } else {
-                            alert('Invalid or expired coupon');
-                        }
-                    });
+                    window.location.href = checkoutUrl;
                 });
             }
         })();

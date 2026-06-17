@@ -41,8 +41,8 @@ Stop writing emails from scratch. This comprehensive pack gives you 6 complete e
 - Pro tips for maximum results
 - Tested subject lines included",
         'type' => 'ebook',
-        'price' => 15000.00,
-        'sale_price' => 12000.00,
+        'price' => 35000.00,
+        'sale_price' => 15000.00,
         'file_path' => 'uploads/products/files/email-sequence-templates-pack.html',
         'is_active' => 1,
         'is_featured' => 1,

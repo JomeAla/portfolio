@@ -594,7 +594,7 @@ body {
                         <div style="font-family: 'Clash Display', sans-serif; font-size: 32px; font-weight: 700; margin-bottom: 12px;">Email Sequence<br>Templates Pack</div>
                         <div style="font-size: 16px; opacity: 0.9; margin-bottom: 24px;">24 Professional Templates<br>6 Complete Sequences</div>
                         <div style="background: rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 100px; display: inline-block;">
-                            ₦15,000 <span style="text-decoration: line-through; opacity: 0.7;">₦18,000</span>
+                            ₦15,000 <span style="text-decoration: line-through; opacity: 0.7;">₦35,000</span>
                         </div>
                     </div>
                 </div>
@@ -770,7 +770,7 @@ body {
                     <div style="font-size: 12px; text-transform: uppercase; opacity: 0.8;">Seconds</div>
                 </div>
             </div>
-            <p style="font-size: 16px; font-weight: 600; color: var(--espresso);">Get <strong style="color: var(--ember);">₦3,000 off</strong> when timer ends!</p>
+            <p style="font-size: 16px; font-weight: 600; color: var(--espresso);">Get <strong style="color: var(--ember);">₦20,000 off</strong> when timer ends!</p>
         </div>
     </div>
 </section>

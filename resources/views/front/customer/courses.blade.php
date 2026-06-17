@@ -50,9 +50,9 @@
     </div>
     <p class="text-slate-600 mb-2">No courses yet</p>
     <p class="text-sm text-slate-500 mb-6">When you purchase courses, they'll appear here</p>
-    <a href="/" class="inline-flex items-center gap-2 text-blue-600 font-medium">
-        Browse Courses <i class="fas fa-arrow-right"></i>
-    </a>
+                <a href="/store" class="inline-flex items-center gap-2 text-blue-600 font-medium">
+                    Browse Courses <i class="fas fa-arrow-right"></i>
+                </a>
 </div>
 @endif
 @endsection

@@ -40,7 +40,12 @@ class CustomerController extends Controller
         return $customer;
     }
 
-    public function showLogin() { return view('front.customer.login'); }
+    public function showLogin() {
+        if (session()->has('customer_id')) {
+            return redirect('/customer/dashboard');
+        }
+        return view('front.customer.login');
+    }
     
     public function login(Request $request)
     {

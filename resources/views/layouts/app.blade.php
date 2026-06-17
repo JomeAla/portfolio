@@ -52,7 +52,11 @@
                     <a href="{{ route('about') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">About</a>
                     <a href="{{ route('contact') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Contact</a>
                     <a href="{{ route('brief.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Start a Project</a>
-                    <a href="/customer/login" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">My Account</a>
+                    @if(session()->has('customer_id'))
+                        <a href="/customer/dashboard" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">My Account</a>
+                    @else
+                        <a href="/customer/login" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">My Account</a>
+                    @endif
                 </div>
             </div>
         </div>

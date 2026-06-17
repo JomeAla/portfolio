@@ -2610,7 +2610,11 @@ Route::get('/my-achievements', function() {
         }
     }
     
-    return view('front.customer.achievements', compact('customer', 'achievements', 'totalPoints', 'progressData'));
+    try {
+        return view('front.customer.achievements', compact('customer', 'achievements', 'totalPoints', 'progressData'));
+    } catch (\Exception $e) {
+        return '<h2>View Error: ' . $e->getMessage() . '</h2>';
+    }
 });
 
 // Fix lesson_progress table - add customer_email column

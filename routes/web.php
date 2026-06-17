@@ -1688,6 +1688,293 @@ ul li:before{content:"\\2713";position:absolute;left:0;color:#059669;font-weight
     }
 });
 
+// Comprehensive Email Sequence Templates Pack Funnel Setup
+Route::get('/setup-email-funnel', function () {
+    try {
+        $out = [];
+
+        // 1. Create free lead magnet product
+        $freeProduct = \App\Models\Product::firstOrCreate(
+            ['slug' => 'free-email-sequence-templates-pack'],
+            [
+                'title' => 'Free Email Sequence Templates',
+                'slug' => 'free-email-sequence-templates-pack',
+                'short_description' => '24 proven email templates to automate your marketing',
+                'description' => 'Get ready-to-use email sequences for welcome, sales funnel, cart abandonment, re-engagement, upsell, and follow-up campaigns.',
+                'type' => 'ebook',
+                'price' => 0,
+                'sale_price' => 0,
+                'file_path' => 'uploads/free-products/files/free-email-sequence-templates-pack.html',
+                'is_active' => 1,
+                'is_featured' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        $out[] = "Free product ID: {$freeProduct->id}";
+
+        // 2. Create pre-sale email sequence
+        $presaleSeq = \App\Models\EmailSequence::updateOrCreate(
+            ['name' => 'Email Sequence Templates Pre-Sale'],
+            [
+                'name' => 'Email Sequence Templates Pre-Sale',
+                'description' => 'Nurture leads who got the free email templates toward purchasing the premium pack',
+                'trigger_type' => 'welcome',
+                'is_active' => true,
+            ]
+        );
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $presaleSeq->id)->delete();
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Free Email Sequence Templates are ready!', 'body' => "Hi {{name}},\n\nYour free Email Sequence Templates are ready.\n\nDownload them here: https://joala.com.ng/free-download/free-email-sequence-templates-pack\n\nInside this pack, you'll find ready-to-use templates for welcome emails, sales funnels, cart abandonment, re-engagement, upsells, and follow-ups.\n\nBut if you're ready to go beyond templates and get a complete system of 6 full sequences with 24 tested templates, check out the premium pack:\nhttps://joala.com.ng/email-sequence-templates-pack.php\n\nIt includes complete email sequences you can copy, paste, and send — with subject lines, preview text, body copy, and timing recommendations.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 2, 'delay_days' => 2, 'subject' => 'Why most email sequences fail (and how to make yours convert)', 'body' => "Hi {{name}},\n\nDid you know that the average email open rate across industries is just 21%?\n\nThe difference between a sequence that converts and one that gets ignored often comes down to three things:\n\n1. The right sequence structure\n2. Compelling subject lines\n3. Strategic timing\n\nMost people write emails randomly — one today, one next week, no real system. That's why they don't see results.\n\nThe Email Sequence Templates Pack gives you a proven framework:\n✓ Welcome Sequence (5 emails)\n✓ Launch Sequence (4 emails)\n✓ Abandoned Cart Recovery (3 emails)\n✓ Post-Purchase Thank You (3 emails)\n✓ Re-engagement Campaign (4 emails)\n✓ Weekly Newsletter Template\n\nEach template includes subject line, preview text, body, CTA, and timing. Just copy, customize, and send.\n\nSee it here: https://joala.com.ng/email-sequence-templates-pack.php\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 3, 'delay_days' => 4, 'subject' => 'Case study: How a coach doubled email revenue with proper sequences', 'body' => "Hi {{name}},\n\n\"I was emailing my list randomly — sending promos whenever I remembered. When I switched to a structured sequence system, my revenue from email doubled in one month.\"\n— Tunde A., Business Coach, Lagos\n\nTunde was where most business owners are — sending emails without a plan. After implementing the welcome, launch, and follow-up sequences, here's what changed:\n- Open rates went from 15% to 38%\n- Click-through rates tripled\n- Revenue from email campaigns doubled\n\nThe Email Sequence Templates Pack gives you the exact same system Tunde used:\n- 6 complete sequences\n- 24 tested templates\n- Subject lines, body copy, and CTAs included\n- Timing and frequency recommendations\n\nGet the same results: https://joala.com.ng/email-sequence-templates-pack.php\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 4, 'delay_days' => 6, 'subject' => 'Special offer: 15% off the Email Sequence Templates Pack', 'body' => "Hi {{name}},\n\nI'm giving you an exclusive 15% discount on the Email Sequence Templates Pack.\n\nUse code: EMAIL15 at checkout\n\nThis brings the price down to just ₦10,200 — a one-time investment for a complete email marketing system.\n\nHere's exactly what you'll get:\n• Welcome Sequence (5 emails)\n• Launch Sequence (4 emails)\n• Abandoned Cart Recovery (3 emails)\n• Post-Purchase Thank You (3 emails)\n• Re-engagement Campaign (4 emails)\n• Weekly Newsletter Template\n• Subject line swipe file\n• CTA placement guide\n• Timing & frequency recommendations\n• Lifetime free updates\n• Priority support\n\nGet it now: https://joala.com.ng/email-sequence-templates-pack.php?coupon=EMAIL15\n\nThis offer won't last forever. Grab it today.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 5, 'delay_days' => 9, 'subject' => 'Last chance: Your 15% discount on Email Templates expires soon', 'body' => "Hi {{name}},\n\nJust a friendly reminder that your 15% discount (code: EMAIL15) on the Email Sequence Templates Pack is still available.\n\nBut I can't keep it open forever.\n\nIf you're serious about building an email system that converts subscribers into customers, now is the time.\n\nThe Email Sequence Templates Pack gives you everything you need — 6 complete sequences, 24 tested templates, ready to copy, paste, and send.\n\nGet started today: https://joala.com.ng/email-sequence-templates-pack.php?coupon=EMAIL15\n\nIf you have any questions, just reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        $out[] = "Pre-sale sequence ID: {$presaleSeq->id} (5 steps)";
+
+        // Sync sequences table
+        $seq = \App\Models\Sequence::updateOrCreate(
+            ['id' => $presaleSeq->id],
+            ['name' => 'Email Sequence Templates Pre-Sale', 'description' => 'Nurture leads toward the premium email templates pack', 'is_active' => true]
+        );
+        $out[] = "Sequences table synced ID: {$seq->id}";
+
+        // 3. Create post-purchase sequence
+        $postSeq = \App\Models\EmailSequence::updateOrCreate(
+            ['name' => 'Email Sequence Templates Post-Purchase'],
+            [
+                'name' => 'Email Sequence Templates Post-Purchase',
+                'description' => 'Onboard and engage buyers of the Email Sequence Templates Pack',
+                'trigger_type' => 'post_purchase',
+                'is_active' => true,
+            ]
+        );
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $postSeq->id)->delete();
+        \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
+            ['sequence_id' => $postSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Email Sequence Templates Pack is ready!', 'body' => "Hi {{name}},\n\nThank you for purchasing the Email Sequence Templates Pack!\n\nYour download link: https://joala.com.ng/order/download/{{download_token}}\n\nGetting started fast:\n1. Download the ZIP file\n2. Extract to your computer\n3. Open the Welcome Sequence folder\n4. Read the quick-start guide\n5. Customize your first template\n6. Upload to your email marketing platform\n\nInside your pack:\n✓ Welcome Sequence (5 emails)\n✓ Launch Sequence (4 emails)\n✓ Abandoned Cart Recovery (3 emails)\n✓ Post-Purchase Thank You (3 emails)\n✓ Re-engagement Campaign (4 emails)\n✓ Weekly Newsletter Template\n✓ Subject line swipe file\n\nPro tip: Start with the Welcome Sequence — it's the highest-impact sequence and sets the tone for all future emails.\n\nIf you need help, just reply to this email.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 2, 'delay_days' => 3, 'subject' => 'Quick start: Setting up your welcome sequence', 'body' => "Hi {{name}},\n\nYour welcome sequence is the most important email sequence you'll ever set up. It's where first impressions are made.\n\nHere's a quick setup guide:\n\n1. Open the Welcome Sequence folder\n2. Review the 5-email structure:\n   - Email 1: Welcome + what to expect\n   - Email 2: Free value (your best content)\n   - Email 3: Social proof + testimonials\n   - Email 4: Soft offer\n   - Email 5: Hard offer + urgency\n3. Copy each template into your email platform\n4. Set delays: 1 day between each email\n5. Personalize with merge tags\n\nBest practices:\n- Send email 1 immediately after signup\n- Send emails in the morning (8-10am)\n- Test subject lines for high open rates\n- Track which emails get the most clicks\n\nThe templates include subject line options for each email — pick the one that fits your brand voice.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 3, 'delay_days' => 5, 'subject' => 'Advanced: Crafting high-converting sales sequences', 'body' => "Hi {{name}},\n\nNow that your welcome sequence is running, let's talk about sales sequences.\n\nThe Launch Sequence in your pack is designed to promote product launches, promotions, and special offers.\n\nStructure (4 emails):\n1. Teaser — Build anticipation\n2. Announce — The big reveal\n3. Social proof — Show who's buying\n4. Urgency — Last chance\n\nQuick tips:\n- Email 1: Use curiosity-driven subject lines\n- Email 2: Lead with the biggest benefit\n- Email 3: Include customer testimonials or case studies\n- Email 4: Create genuine scarcity (limited time/quantity)\n\nThe templates are ready to go — just add your product details and launch date.\n\nRemember: Not everyone who wants to buy is ready today. The Abandoned Cart Recovery sequence handles those who showed interest but didn't purchase. Set it to trigger 24 hours after abandoned interest.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 4, 'delay_days' => 7, 'subject' => 'Re-engagement strategies to win back cold subscribers', 'body' => "Hi {{name}},\n\nEvery email list has inactive subscribers — people who signed up but stopped opening emails.\n\nThe Re-engagement Campaign in your pack is designed specifically to win them back.\n\nStructure (4 emails):\n1. \"We miss you\" — Friendly reconnection\n2. \"Here's what you missed\" — Best content roundup\n3. \"Is this still relevant?\" — Survey/feedback\n4. \"Last chance to stay\" — Final re-engagement or unsubscribe option\n\nWhat if they don't re-engage?\nIt's better to remove inactive subscribers. A smaller engaged list outperforms a large disengaged list every time.\n\nThe Post-Purchase Thank You sequence is equally important — it turns one-time buyers into repeat customers.\n\nTake 30 minutes this week to set up the Re-engagement sequence. It could re-activate 10-15% of your cold list.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 5, 'delay_days' => 10, 'subject' => 'Email marketing best practices to maximize your results', 'body' => "Hi {{name}},\n\nHere are some proven email marketing tips to get the most out of your templates:\n\nSubject Lines:\n✓ Keep under 50 characters\n✓ Use personalization (name, location)\n✓ Create curiosity without being clickbait\n✓ Test 3-5 subject lines per email\n✓ Avoid spam trigger words\n\nSend Timing:\n✓ Tuesday-Thursday: Best open rates\n✓ 8-11am: Optimal send time\n✓ Test different days/times for your audience\n\nList Health:\n✓ Clean your list every 3 months\n✓ Remove non-openers after 6 months\n✓ Segment by behavior (openers, clickers, buyers)\n✓ Use re-engagement sequences before removing\n\nTemplates:\n✓ Customize each template to your brand voice\n✓ Add your own testimonials and case studies\n✓ Test different CTAs (button vs text link)\n✓ Track and optimize based on data\n\nYou have everything you need in the Email Sequence Templates Pack. The templates are proven — now it's up to you to implement them.\n\nIf you ever need help, reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        $out[] = "Post-purchase sequence ID: {$postSeq->id} (5 steps)";
+
+        // Sync sequences table
+        $seq2 = \App\Models\Sequence::updateOrCreate(
+            ['id' => $postSeq->id],
+            ['name' => 'Email Sequence Templates Post-Purchase', 'description' => 'Onboard new buyers of email templates pack', 'is_active' => true]
+        );
+        $out[] = "Sequences table synced ID: {$seq2->id}";
+
+        // 4. Find premium product
+        $premiumProduct = \App\Models\Product::where('slug', 'email-sequence-templates-pack')->first();
+        $premiumId = $premiumProduct ? $premiumProduct->id : 0;
+        $out[] = "Premium product ID: " . ($premiumProduct ? $premiumProduct->id : 'NOT FOUND');
+
+        // 5. Create the funnel
+        $funnel = \App\Models\Funnel::updateOrCreate(
+            ['slug' => 'email-sequence-templates-funnel'],
+            [
+                'name' => 'Email Sequence Templates Funnel',
+                'slug' => 'email-sequence-templates-funnel',
+                'description' => 'Lead magnet → download → checkout → pre-sale nurture',
+                'goal' => 'sales',
+                'funnel_type' => 'sales',
+                'product_id' => $premiumId ?: null,
+                'welcome_sequence_id' => $presaleSeq->id,
+                'environment' => 'production',
+                'is_active' => true,
+                'upsell_enabled' => false,
+                'countdown_enabled' => false,
+            ]
+        );
+        $out[] = "Funnel ID: {$funnel->id}";
+
+        // 6. Link landing page to funnel and pre-sale sequence
+        try {
+            $landingPage = \App\Models\LandingPage::where('slug', 'free-email-sequence-templates-pack')->first();
+            if ($landingPage) {
+                $landingPage->update([
+                    'funnel_id' => $funnel->id,
+                    'sequence_id' => $presaleSeq->id,
+                ]);
+                $out[] = "Landing page linked: ID {$landingPage->id}";
+            } else {
+                $out[] = "WARNING: Landing page 'free-email-sequence-templates-pack' not found in DB";
+            }
+        } catch (\Exception $e) {
+            $out[] = "WARNING: Could not link landing page: " . $e->getMessage();
+        }
+
+        // 7. Create funnel stages
+        \App\Models\FunnelStage::where('funnel_id', $funnel->id)->delete();
+
+        // Stage 1: Landing page (lead capture)
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Lead Magnet Page',
+            'type' => 'landing',
+            'content' => ['url' => '/l/free-email-sequence-templates-pack'],
+            'order' => 1,
+            'delay_days' => 0,
+            'is_required' => true,
+            'action_on_complete' => 'advance',
+        ]);
+        $out[] = "Stage 1: Lead Magnet Page";
+
+        // Stage 2: Download page
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Download Page',
+            'type' => 'thank_you',
+            'content' => ['url' => '/download/free-email-sequence-templates-pack'],
+            'order' => 2,
+            'delay_days' => 0,
+            'is_required' => false,
+            'action_on_complete' => 'advance',
+        ]);
+        $out[] = "Stage 2: Download Page";
+
+        // Stage 3: Premium checkout
+        \App\Models\FunnelStage::create([
+            'funnel_id' => $funnel->id,
+            'name' => 'Premium Checkout',
+            'type' => 'checkout',
+            'content' => ['url' => '/email-sequence-templates-pack.php'],
+            'order' => 3,
+            'delay_days' => 0,
+            'sequence_id' => $presaleSeq->id,
+            'is_required' => false,
+            'action_on_complete' => 'email',
+        ]);
+        $out[] = "Stage 3: Premium Checkout";
+
+        // 8. Write free product deliverable HTML file
+        $freeFilePath = public_path('uploads/free-products/files/free-email-sequence-templates-pack.html');
+        $dir = dirname($freeFilePath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        file_put_contents($freeFilePath, '<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Email Sequence Templates - JoAla Ventures</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7;padding:40px 20px}
+.container{max-width:720px;margin:0 auto}
+h1{font-size:2em;margin-bottom:8px;color:#0f172a}
+.lead{font-size:1.15em;color:#64748b;margin-bottom:32px}
+h2{font-size:1.4em;margin:32px 0 12px;color:#075985;border-bottom:2px solid #e2e8f0;padding-bottom:6px}
+h3{font-size:1.1em;margin:20px 0 8px;color:#0c4a6e}
+p{margin-bottom:12px}
+ul{list-style:none;padding:0;margin:0 0 16px}
+ul li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid #f1f5f9}
+ul li:before{content:"\\2713";position:absolute;left:0;color:#059669;font-weight:bold}
+.badge{display:inline-block;background:#dbeafe;color:#1e40af;padding:2px 12px;border-radius:20px;font-size:.85em;font-weight:600}
+.footer{margin-top:40px;padding-top:24px;border-top:2px solid #e2e8f0;text-align:center;color:#94a3b8;font-size:.9em}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Email Sequence Templates</h1>
+<p class="lead">24 proven email templates to automate your marketing — welcome, sales, cart recovery, re-engagement, and more.</p>
+
+<h2>1. Welcome Sequence Template</h2>
+<p>First impressions matter. A well-crafted welcome sequence builds trust and sets expectations.</p>
+<ul>
+<li>Email 1: Warm welcome + what subscribers can expect</li>
+<li>Email 2: Deliver on your promise (free resource/guide)</li>
+<li>Email 3: Share your story + brand values</li>
+<li>Email 4: Social proof + customer testimonials</li>
+<li>Email 5: Soft CTA leading to your main offer</li>
+</ul>
+
+<h2>2. Sales Funnel / Launch Sequence</h2>
+<p>Promote products, services, or launches with a structured approach that builds excitement and drives conversions.</p>
+<ul>
+<li>Email 1: Teaser — spark curiosity about what\'s coming</li>
+<li>Email 2: Announcement — the big reveal + key benefits</li>
+<li>Email 3: Social proof — share early adopter results</li>
+<li>Email 4: Urgency — limited time offer + CTA</li>
+</ul>
+
+<h2>3. Cart Abandonment Recovery</h2>
+<p>Recover lost sales with timely follow-ups that remind and persuade.</p>
+<ul>
+<li>Email 1: Friendly reminder about what they left behind</li>
+<li>Email 2: Highlight benefits + address objections</li>
+<li>Email 3: Offer incentive (discount/free shipping) + urgency</li>
+</ul>
+
+<h2>4. Re-engagement Campaign</h2>
+<p>Win back inactive subscribers before they churn forever.</p>
+<ul>
+<li>Email 1: "We miss you" — gentle reconnection</li>
+<li>Email 2: Show what they\'ve missed (best content roundup)</li>
+<li>Email 3: Survey — ask what they want to see</li>
+<li>Email 4: Final re-engagement or unsubscribe option</li>
+</ul>
+
+<h2>5. Upsell / Follow-Up Sequence</h2>
+<p>Maximize customer lifetime value with strategic follow-ups after purchase.</p>
+<ul>
+<li>Email 1: Thank you + confirm purchase details</li>
+<li>Email 2: Deliver additional value (tips, guides)</li>
+<li>Email 3: Recommend complementary products/services</li>
+<li>Email 4: Request review or testimonial</li>
+</ul>
+
+<h2>6. Newsletter Template Framework</h2>
+<p>An ongoing content framework to stay top-of-mind with your audience.</p>
+<ul>
+<li>Opening: Personal note from founder/team</li>
+<li>Main Content: 1-2 valuable insights or tips</li>
+<li>Feature: Spotlight a customer, product, or case study</li>
+<li>CTA: Guide readers to the next step</li>
+<li>Closing: Warm sign-off + social links</li>
+</ul>
+
+<h2>Email Marketing Best Practices</h2>
+<ul>
+<li>Keep subject lines under 50 characters</li>
+<li>Personalize with subscriber name and preferences</li>
+<li>Send between 8-11am for optimal open rates</li>
+<li>Test subject lines (A/B test 3-5 options)</li>
+<li>Track open rates, click rates, and conversions</li>
+<li>Clean your list quarterly — remove non-openers</li>
+<li>Segment subscribers by behavior and interests</li>
+<li>Always include a clear call-to-action</li>
+<li>Use preview text to complement subject lines</li>
+<li>Maintain consistent sending frequency</li>
+</ul>
+
+<div class="footer">
+<p><strong>Want the complete system?</strong> Get the Email Sequence Templates Pack with 6 full sequences, 24 tested templates, subject line swipe file, and timing guide.</p>
+<p>Visit joala.com.ng/email-sequence-templates-pack.php</p>
+<p>&copy; 2026 JoAla Ventures. All rights reserved.</p>
+</div>
+</div>
+</body>
+</html>');
+        $out[] = "Free product deliverable HTML created at: uploads/free-products/files/free-email-sequence-templates-pack.html";
+
+        $out[] = "---";
+        $out[] = "Landing page URL: https://joala.com.ng/l/free-email-sequence-templates-pack";
+        $out[] = "Download page URL: https://joala.com.ng/download/free-email-sequence-templates-pack";
+        $out[] = "Sales page URL: https://joala.com.ng/email-sequence-templates-pack.php";
+        $out[] = "Funnel edit: /admin/marketing/funnels/{$funnel->id}/edit";
+
+        return "<h2>Email Sequences Funnel Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
+
+    } catch (\Exception $e) {
+        return "<h2>ERROR</h2><pre>" . $e->getMessage() . "\n" . $e->getTraceAsString() . "</pre>";
+    }
+});
+
 // Course Creator Kit Product
 Route::get('/setup-course-kit', function () {
     try {

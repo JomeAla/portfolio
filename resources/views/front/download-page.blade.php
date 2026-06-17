@@ -44,6 +44,11 @@
                          'Ready-to-Use Templates & Resources',
                          'Pro Tips & Best Practices',
                      ],
+                     'email-sequence-templates-pack' => [
+                         '6 Complete Email Sequences',
+                         '24 Tested Email Templates',
+                         'Subject Lines & Timing Guide',
+                     ],
                  ];
                  $productKey = isset($premiumProduct) && $premiumProduct ? $premiumProduct->slug : 'default';
                  $items = $features[$productKey] ?? $features['default'];

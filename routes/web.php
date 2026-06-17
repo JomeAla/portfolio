@@ -2586,6 +2586,32 @@ Route::get('/create-customer-tables', function() {
     }
 });
 
+// Direct achievements test page
+Route::get('/test-achievements-page', function() {
+    if (!session()->has('customer_id')) {
+        return redirect('/customer/login');
+    }
+    $pdo = DB::connection()->getPdo();
+    $stmt = $pdo->prepare("SELECT * FROM customer_accounts WHERE id = ?");
+    $stmt->execute([session('customer_id')]);
+    $customer = $stmt->fetch();
+    if (!$customer) {
+        return redirect('/customer/login');
+    }
+    
+    $svc = app(\App\Services\AchievementService::class);
+    $achievements = $svc->getAchievementsForCustomer($customer['email']);
+    $totalPoints = $svc->getTotalPoints($customer['email']);
+    $progressData = [];
+    foreach ($achievements as $a) {
+        if (!$a['is_awarded'] && $a['trigger_type']) {
+            $progressData[$a['id']] = $svc->getProgressForTrigger($customer['email'], $a['trigger_type']);
+        }
+    }
+    
+    return view('front.customer.achievements', compact('customer', 'achievements', 'totalPoints', 'progressData'));
+});
+
 // Fix lesson_progress table - add customer_email column
 Route::get('/fix-lesson-progress', function() {
     try {

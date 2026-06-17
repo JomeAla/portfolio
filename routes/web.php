@@ -3183,3 +3183,5 @@ Route::get('/check-brevo-key', function () {
     }
     return "Brevo API key is configured (masked): " . substr($apiKey, 0, 8) . '...';
 });
+
+

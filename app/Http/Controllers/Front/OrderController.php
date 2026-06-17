@@ -94,7 +94,14 @@ class OrderController extends Controller
             Log::info('ecomInitPayment product query', ['slug' => $productSlug, 'found' => $product ? $product->id : null]);
             if (!$product) {
                 $product = Product::where('slug', str_replace('-', '_', $productSlug))->first();
-                Log::info('ecomInitPayment fallback product', ['slug' => str_replace('-', '_', $productSlug), 'found' => $product ? $product->id : null]);
+                Log::info('ecomInitPayment fallback 1', ['slug' => str_replace('-', '_', $productSlug), 'found' => $product ? $product->id : null]);
+            }
+            if (!$product) {
+                $altSlug = preg_replace('/^ecommerce-/', 'e-commerce-', $productSlug);
+                if ($altSlug !== $productSlug) {
+                    $product = Product::where('slug', $altSlug)->first();
+                    Log::info('ecomInitPayment fallback 2', ['slug' => $altSlug, 'found' => $product ? $product->id : null]);
+                }
             }
             if (!$product) {
                 Log::info('ecomInitPayment ALL products', ['products' => Product::select(['id','title','slug'])->limit(5)->get()->toArray()]);

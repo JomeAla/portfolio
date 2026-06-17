@@ -2603,18 +2603,44 @@ Route::get('/my-achievements', function() {
     $svc = app(\App\Services\AchievementService::class);
     $achievements = $svc->getAchievementsForCustomer($customer['email']);
     $totalPoints = $svc->getTotalPoints($customer['email']);
-    $progressData = [];
+    
+    $cards = '';
     foreach ($achievements as $a) {
-        if (!$a['is_awarded'] && $a['trigger_type']) {
-            $progressData[$a['id']] = $svc->getProgressForTrigger($customer['email'], $a['trigger_type']);
-        }
+        $awarded = $a['is_awarded'];
+        $border = $awarded ? 'border-emerald-300 bg-emerald-50/30' : 'border-slate-200';
+        $badge = $awarded ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-400';
+        $cards .= '<div class="bg-white rounded-2xl border ' . $border . ' p-6">
+            <div class="flex items-start gap-4">
+                <div class="w-14 h-14 rounded-xl flex items-center justify-center ' . $badge . '">
+                    <i class="fas ' . $a['icon'] . ' text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900">' . $a['name'] . ' ' . ($awarded ? '<i class="fas fa-check-circle text-emerald-500 ml-1"></i>' : '') . '</h3>
+                    <p class="text-sm text-slate-600 mt-1">' . $a['description'] . '</p>
+                    <span class="inline-flex items-center gap-1 text-xs font-medium mt-2 px-2 py-1 rounded-full ' . ($awarded ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600') . '">
+                        <i class="fas fa-star"></i> ' . $a['points'] . ' pts
+                    </span>
+                </div>
+            </div>
+        </div>';
     }
     
-    try {
-        return view('front.customer.achievements', compact('customer', 'achievements', 'totalPoints', 'progressData'));
-    } catch (\Exception $e) {
-        return '<h2>View Error: ' . $e->getMessage() . '</h2>';
-    }
+    return '<link href="https://cdn.tailwindcss.com" rel="stylesheet">
+        <div class="min-h-screen bg-slate-50 p-8">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold text-slate-900">Achievements</h1>
+                        <p class="text-slate-600">Track your progress and unlock rewards</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-3xl font-bold text-amber-600">' . $totalPoints . '</div>
+                        <p class="text-sm text-slate-500">Total Points</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">' . $cards . '</div>
+            </div>
+        </div>';
 });
 
 // Fix lesson_progress table - add customer_email column

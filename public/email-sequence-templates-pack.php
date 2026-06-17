@@ -5,7 +5,7 @@ $baseUrl = 'https://joala.com.ng';
 $productPriceRaw = 15000;
 $productOldRaw = 35000;
 $productTitle = 'Email Sequence Templates Pack';
-$productImage = '';
+$productImage = '/uploads/products/email-sequence-templates-pack-cover.svg';
 
 $timerOffset = rand(20000, 40000);
 $step = 'landing';

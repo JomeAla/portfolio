@@ -588,16 +588,7 @@ body {
         </div>
         <div class="hero-visual">
             <div style="position: relative;">
-                <div style="background: linear-gradient(135deg, #4a5d52 0%, #3d4f45 100%); border-radius: 24px; padding: 40px; height: 400px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 30px 60px rgba(26, 20, 16, 0.15);">
-                    <div style="color: white; text-align: center;">
-                        <div style="font-size: 48px; margin-bottom: 16px;">📧</div>
-                        <div style="font-family: 'Clash Display', sans-serif; font-size: 32px; font-weight: 700; margin-bottom: 12px;">Email Sequence<br>Templates Pack</div>
-                        <div style="font-size: 16px; opacity: 0.9; margin-bottom: 24px;">24 Professional Templates<br>6 Complete Sequences</div>
-                        <div style="background: rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 100px; display: inline-block;">
-                            ₦15,000 <span style="text-decoration: line-through; opacity: 0.7;">₦35,000</span>
-                        </div>
-                    </div>
-                </div>
+                <img src="/uploads/products/email-sequence-templates-pack-cover.svg" alt="Email Sequence Templates Pack" style="width: 100%; border-radius: 24px; box-shadow: 0 30px 60px rgba(26, 20, 16, 0.15);">
                 <div style="position: absolute; bottom: -20px; left: -20px; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 20px 40px rgba(26, 20, 16, 0.15);">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div style="width: 48px; height: 48px; background: var(--sage); border-radius: 12px; display: flex; align-items: center; justify-content: center;">

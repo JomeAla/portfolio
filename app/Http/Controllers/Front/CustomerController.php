@@ -363,6 +363,11 @@ class CustomerController extends Controller
         
         try {
             $achievementService = app(AchievementService::class);
+            
+            $achievements = [];
+            $totalPoints = 0;
+            $progressData = [];
+            
             try {
                 $achievedIds = $achievementService->checkAndAward($customer['email']);
             } catch (\Exception $e) {
@@ -381,7 +386,6 @@ class CustomerController extends Controller
                 return redirect('/customer/dashboard')->with('error', 'getTotalPoints: ' . $e->getMessage());
             }
             
-            $progressData = [];
             foreach ($achievements as $a) {
                 if (!$a['is_awarded'] && $a['trigger_type']) {
                     try {

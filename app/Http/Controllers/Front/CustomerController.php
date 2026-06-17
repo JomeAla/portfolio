@@ -361,20 +361,25 @@ class CustomerController extends Controller
         $customer = $this->requireCustomer();
         if (is_a($customer, '\Illuminate\Http\RedirectResponse')) return $customer;
         
-        $achievementService = app(AchievementService::class);
-        $achievedIds = $achievementService->checkAndAward($customer['email']);
-        
-        $achievements = $achievementService->getAchievementsForCustomer($customer['email']);
-        $totalPoints = $achievementService->getTotalPoints($customer['email']);
-        
-        $progressData = [];
-        foreach ($achievements as $a) {
-            if (!$a['is_awarded'] && $a['trigger_type']) {
-                $progressData[$a['id']] = $achievementService->getProgressForTrigger($customer['email'], $a['trigger_type']);
+        try {
+            $achievementService = app(AchievementService::class);
+            $achievedIds = $achievementService->checkAndAward($customer['email']);
+            
+            $achievements = $achievementService->getAchievementsForCustomer($customer['email']);
+            $totalPoints = $achievementService->getTotalPoints($customer['email']);
+            
+            $progressData = [];
+            foreach ($achievements as $a) {
+                if (!$a['is_awarded'] && $a['trigger_type']) {
+                    $progressData[$a['id']] = $achievementService->getProgressForTrigger($customer['email'], $a['trigger_type']);
+                }
             }
+            
+            return view('front.customer.achievements', compact('customer', 'achievements', 'totalPoints', 'progressData'));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Achievements error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            return back()->with('error', $e->getMessage());
         }
-        
-        return view('front.customer.achievements', compact('customer', 'achievements', 'totalPoints', 'progressData'));
     }
 
     public function affiliate()

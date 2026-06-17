@@ -1,3 +1,5 @@
+@extends('layouts.app')
+
 @section('title', 'Checkout - ' . $product->title)
 
 @section('styles')

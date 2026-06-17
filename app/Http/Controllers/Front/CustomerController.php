@@ -363,22 +363,39 @@ class CustomerController extends Controller
         
         try {
             $achievementService = app(AchievementService::class);
-            $achievedIds = $achievementService->checkAndAward($customer['email']);
+            try {
+                $achievedIds = $achievementService->checkAndAward($customer['email']);
+            } catch (\Exception $e) {
+                return redirect('/customer/dashboard')->with('error', 'checkAndAward: ' . $e->getMessage());
+            }
             
-            $achievements = $achievementService->getAchievementsForCustomer($customer['email']);
-            $totalPoints = $achievementService->getTotalPoints($customer['email']);
+            try {
+                $achievements = $achievementService->getAchievementsForCustomer($customer['email']);
+            } catch (\Exception $e) {
+                return redirect('/customer/dashboard')->with('error', 'getAchievements: ' . $e->getMessage());
+            }
+            
+            try {
+                $totalPoints = $achievementService->getTotalPoints($customer['email']);
+            } catch (\Exception $e) {
+                return redirect('/customer/dashboard')->with('error', 'getTotalPoints: ' . $e->getMessage());
+            }
             
             $progressData = [];
             foreach ($achievements as $a) {
                 if (!$a['is_awarded'] && $a['trigger_type']) {
-                    $progressData[$a['id']] = $achievementService->getProgressForTrigger($customer['email'], $a['trigger_type']);
+                    try {
+                        $progressData[$a['id']] = $achievementService->getProgressForTrigger($customer['email'], $a['trigger_type']);
+                    } catch (\Exception $e) {
+                        $progressData[$a['id']] = ['current' => 0, 'unit' => ''];
+                    }
                 }
             }
             
             return view('front.customer.achievements', compact('customer', 'achievements', 'totalPoints', 'progressData'));
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Achievements error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-            return back()->with('error', $e->getMessage());
+            return redirect('/customer/dashboard')->with('error', 'Achievements error: ' . $e->getMessage());
         }
     }
 

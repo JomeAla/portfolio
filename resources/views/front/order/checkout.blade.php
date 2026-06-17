@@ -1,8 +1,6 @@
-@extends('layouts.app')
-
 @section('title', 'Checkout - ' . $product->title)
 
-@push('styles')
+@section('styles')
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -20,9 +18,9 @@
 }
 html{scroll-behavior:smooth}
 body{
-font-family:'Instrument Sans',system-ui,sans-serif;
-background:#050505;
-color:var(--text);
+font-family:'Instrument Sans',system-ui,sans-serif !important;
+background:#050505 !important;
+color:var(--text) !important;
 line-height:1.6;
 overflow-x:hidden;
 }
@@ -240,13 +238,17 @@ font-size:.9rem;margin-bottom:20px;display:none;
 }
 .error-msg.show{display:block}
 
+/* hide layout nav */
+nav.fixed, .fixed.top-0, .bg-white\/80 { display: none !important; }
+main.pt-16 { padding-top: 0 !important; }
+
 @media(max-width:900px){
 .checkout-grid{grid-template-columns:1fr}
 .order-summary{position:static;margin-top:40px}
 .container{padding:0 16px}
 }
 </style>
-@endpush
+@endsection
 
 @section('content')
 
@@ -265,7 +267,7 @@ font-size:.9rem;margin-bottom:20px;display:none;
         <span>/</span>
         <a href="/store">Store</a>
         <span>/</span>
-        <a href="/wordpress-starter-kit.php">WordPress Starter Kit</a>
+        <a href="/store/{{ $product->slug }}">{{ $product->title }}</a>
         <span>/</span>
         <span style="color:var(--text)">Checkout</span>
     </div>
@@ -338,14 +340,14 @@ font-size:.9rem;margin-bottom:20px;display:none;
             <div class="order-summary">
                 <div class="summary-header">
                     <h3>Order Summary</h3>
-                    <p>WordPress Starter Kit</p>
+                    <p>{{ $product->title }}</p>
                 </div>
                 <div class="summary-body">
                     <div class="product-row">
-                        <div class="product-img">🚀</div>
+                        <div class="product-img">📦</div>
                         <div class="product-info">
                             <h4><?php echo $product->title; ?></h4>
-                            <p class="pdesc">50+ pages, 20+ plugins, step-by-step guide</p>
+                            <p class="pdesc"><?php echo $product->short_description ?? 'Digital download'; ?></p>
                             <span class="product-tag">Digital Download</span>
                         </div>
                     </div>

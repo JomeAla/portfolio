@@ -896,7 +896,6 @@ class MarketingController extends Controller
             array_merge([
                 'name' => $request->name,
                 'landing_page_id' => $page->id,
-                'sequence_id' => $page->sequence_id,
                 'source' => 'landing_page',
             ], array_filter($utmData, fn($v) => $v !== null))
         );

@@ -40,12 +40,13 @@ class MembershipController extends Controller
             return back()->with('error', 'Invalid scope selected');
         }
 
-        $insert = $pdo->prepare("INSERT INTO customer_notifications (customer_email, type, title, message, created_at) VALUES (?, ?, ?, ?, NOW())");
+        $insert = $pdo->prepare("INSERT INTO customer_notifications (customer_email, type, title, message, link, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
         
         $count = 0;
         foreach ($emails as $email) {
             try {
-                $insert->execute([$email, $request->type, $request->title, $request->message]);
+                $link = $request->link ?? '';
+                $insert->execute([$email, $request->type, $request->title, $request->message, $link]);
                 $count++;
             } catch (\Exception $e) {}
         }

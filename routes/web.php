@@ -2531,6 +2531,7 @@ Route::get('/customer/affiliate', [CustomerController::class, 'affiliate']);
 Route::get('/customer/refund', [CustomerController::class, 'refund']);
 Route::post('/customer/refund', [CustomerController::class, 'refund']);
 Route::get('/customer/notifications', [CustomerController::class, 'notifications']);
+Route::get('/customer/notifications/unread-count', [CustomerController::class, 'getUnreadCount']);
 Route::get('/customer/notifications/{id}/read', [CustomerController::class, 'markNotificationRead']);
 Route::get('/customer/my-courses', [CustomerController::class, 'myCourses']);
 Route::get('/customer/my-learning', [CustomerController::class, 'myCourses']);
@@ -2578,6 +2579,23 @@ Route::get('/create-customer-tables', function() {
                 is_published TINYINT(1) DEFAULT 1,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 INDEX idx_course (course_id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        } catch (\Exception $e) {}
+
+        // Create customer_notifications table
+        try {
+            $pdo->exec("CREATE TABLE IF NOT EXISTS customer_notifications (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                customer_email VARCHAR(255) NOT NULL,
+                type VARCHAR(50) NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                message TEXT,
+                link VARCHAR(500),
+                is_read TINYINT(1) DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_customer (customer_email),
+                INDEX idx_read (is_read),
+                INDEX idx_created (created_at)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
         } catch (\Exception $e) {}
         

@@ -453,13 +453,13 @@ class CustomerController extends Controller
     public function getUnreadCount()
     {
         $customer = $this->requireCustomer();
-        if (is_a($customer, '\Illuminate\Http\RedirectResponse')) return 0;
+        if (is_a($customer, '\Illuminate\Http\RedirectResponse')) return response()->json(['count' => 0]);
         try {
             $pdo = $this->getPdo();
             $stmt = $pdo->prepare("SELECT COUNT(*) as cnt FROM customer_notifications WHERE customer_email = ? AND is_read = 0");
             $stmt->execute([$customer['email']]);
-            return $stmt->fetch()['cnt'] ?? 0;
-        } catch (\Exception $e) { return 0; }
+            return response()->json(['count' => (int)($stmt->fetch()['cnt'] ?? 0)]);
+        } catch (\Exception $e) { return response()->json(['count' => 0]); }
     }
 
     public static function createNotification($email, $type, $title, $message = '', $link = '')

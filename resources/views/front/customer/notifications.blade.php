@@ -16,7 +16,11 @@
                     @case('order') bg-blue-50 text-blue-600 @break
                     @case('referral') bg-emerald-50 text-emerald-600 @break
                     @case('achievement') bg-amber-50 text-amber-600 @break
-                    @case('course') bg-violet-50 text-violet-600 @break
+                    @case('course')
+                    @case('course_complete') bg-violet-50 text-violet-600 @break
+                    @case('promo') bg-rose-50 text-rose-600 @break
+                    @case('welcome') bg-teal-50 text-teal-600 @break
+                    @case('general') bg-sky-50 text-sky-600 @break
                     @default bg-slate-100 text-slate-600
                 @endswitch
             ">
@@ -24,7 +28,11 @@
                     @case('order') <i class="fas fa-shopping-bag"></i> @break
                     @case('referral') <i class="fas fa-share-alt"></i> @break
                     @case('achievement') <i class="fas fa-trophy"></i> @break
-                    @case('course') <i class="fas fa-graduation-cap"></i> @break
+                    @case('course')
+                    @case('course_complete') <i class="fas fa-graduation-cap"></i> @break
+                    @case('promo') <i class="fas fa-tag"></i> @break
+                    @case('welcome') <i class="fas fa-hand-wave"></i> @break
+                    @case('general') <i class="fas fa-bell"></i> @break
                     @default <i class="fas fa-bell"></i>
                 @endswitch
             </div>

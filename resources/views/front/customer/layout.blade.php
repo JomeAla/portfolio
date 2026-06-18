@@ -67,6 +67,7 @@ footer { display: none !important; }
                 </a>
                 <a href="/customer/notifications" class="sidebar-link {{ request()->is('customer/notifications') ? 'active' : '' }}">
                     <i class="fas fa-bell w-5"></i> Notifications
+                    <span id="notif-badge" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
                 </a>
             </nav>
             
@@ -132,6 +133,23 @@ footer { display: none !important; }
 </div>
 
 <script>
+function updateNotifBadge() {
+    fetch('/customer/notifications/unread-count')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var badge = document.getElementById('notif-badge');
+            if (data.count > 0) {
+                badge.textContent = data.count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        })
+        .catch(function() {});
+}
+document.addEventListener('DOMContentLoaded', updateNotifBadge);
+setInterval(updateNotifBadge, 30000);
+
 function toggleChat() {
     var panel = document.getElementById('chat-panel');
     panel.classList.toggle('hidden');

@@ -45,7 +45,7 @@ $couponSuccess = false;
 $couponCode = '';
 $finalPrice = $price;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] ?? '' === 'init_payment') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'init_payment') {
     header('Content-Type: application/json');
     $email = trim($_POST['email'] ?? '');
     $amount = (float)($_POST['amount'] ?? 0) * 100;

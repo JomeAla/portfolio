@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Models\Setting;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
@@ -114,6 +115,9 @@ class PaystackSubscriptionService
             case 'subscription.enable':
                 return $this->handleSubscriptionEnable($data);
 
+            case 'subscription.renewed':
+                return $this->handleSubscriptionRenewed($data);
+
             case 'invoice.payment_failed':
                 return $this->handlePaymentFailed($data);
 
@@ -157,6 +161,18 @@ class PaystackSubscriptionService
                     'next_billing_date' => now()->addMonths($plan->isYearly() ? 12 : 1),
                 ]
             );
+
+            try {
+                DB::table('customer_notifications')->insert([
+                    'customer_email' => $email,
+                    'type' => 'general',
+                    'title' => 'Subscription Activated',
+                    'message' => 'Your ' . $plan->name . ' subscription is now active. Welcome!',
+                    'link' => '/customer/subscriptions',
+                    'is_read' => false,
+                    'created_at' => now(),
+                ]);
+            } catch (\Exception $e) {}
         }
 
         return ['status' => 'created', 'email' => $email];
@@ -173,6 +189,18 @@ class PaystackSubscriptionService
                 'status' => 'cancelled',
                 'cancelled_at' => now(),
             ]);
+
+            try {
+                DB::table('customer_notifications')->insert([
+                    'customer_email' => $subscription->customer_email,
+                    'type' => 'general',
+                    'title' => 'Subscription Cancelled',
+                    'message' => 'Your subscription has been cancelled. You retain access until the end of your billing period.',
+                    'link' => '/customer/subscriptions',
+                    'is_read' => false,
+                    'created_at' => now(),
+                ]);
+            } catch (\Exception $e) {}
         }
 
         return ['status' => 'cancelled'];
@@ -195,6 +223,39 @@ class PaystackSubscriptionService
         return ['status' => 'reactivated'];
     }
 
+    private function handleSubscriptionRenewed(array $data): array
+    {
+        $email = $data['customer']['email'] ?? '';
+        $subscriptionCode = $data['subscription_code'] ?? '';
+
+        $subscription = Subscription::where('paystack_subscription_code', $subscriptionCode)->first();
+
+        if ($subscription) {
+            $nextPeriod = $subscription->plan && $subscription->plan->isYearly()
+                ? now()->addYear() : now()->addMonth();
+
+            $subscription->update([
+                'status' => 'active',
+                'current_period_end' => $nextPeriod,
+                'next_billing_date' => $nextPeriod,
+            ]);
+
+            try {
+                DB::table('customer_notifications')->insert([
+                    'customer_email' => $email,
+                    'type' => 'general',
+                    'title' => 'Subscription Renewed',
+                    'message' => 'Your subscription has been renewed successfully. Your new billing period has started.',
+                    'link' => '/customer/subscriptions',
+                    'is_read' => false,
+                    'created_at' => now(),
+                ]);
+            } catch (\Exception $e) {}
+        }
+
+        return ['status' => 'renewed', 'email' => $email];
+    }
+
     private function handlePaymentFailed(array $data): array
     {
         $email = $data['customer']['email'] ?? '';
@@ -205,6 +266,18 @@ class PaystackSubscriptionService
 
         if ($subscription) {
             $subscription->update(['status' => 'past_due']);
+
+            try {
+                DB::table('customer_notifications')->insert([
+                    'customer_email' => $email,
+                    'type' => 'general',
+                    'title' => 'Payment Failed',
+                    'message' => 'Your subscription payment failed. Please update your payment method to avoid interruption.',
+                    'link' => '/customer/subscriptions',
+                    'is_read' => false,
+                    'created_at' => now(),
+                ]);
+            } catch (\Exception $e) {}
         }
 
         return ['status' => 'payment_failed', 'email' => $email];

@@ -316,6 +316,18 @@ class CustomerController extends Controller
                 'cancelled_at' => now(),
             ]);
         }
+
+        try {
+            DB::table('customer_notifications')->insert([
+                'customer_email' => $customer['email'],
+                'type' => 'general',
+                'title' => 'Subscription Cancelled',
+                'message' => 'Your subscription has been cancelled. You retain access until the end of your billing period.',
+                'link' => '/customer/subscriptions',
+                'is_read' => false,
+                'created_at' => now(),
+            ]);
+        } catch (\Exception $e) {}
         
         return redirect('/customer/subscriptions')->with('success', 'Subscription cancelled. You will retain access until the end of your billing period.');
     }

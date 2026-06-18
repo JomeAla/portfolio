@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -356,6 +357,18 @@ public function success(Request $request)
         if (!$order->canDownload()) {
             abort(403, 'Download link expired or invalid.');
         }
+
+        try {
+            DB::table('customer_notifications')->insert([
+                'customer_email' => $order->customer_email,
+                'type' => 'order',
+                'title' => 'File Downloaded',
+                'message' => 'You downloaded ' . ($order->product->title ?? 'a file') . '. Thank you!',
+                'link' => '/customer/downloads',
+                'is_read' => false,
+                'created_at' => now(),
+            ]);
+        } catch (\Exception $e) {}
 
         return response()->download(
             storage_path('app/public/' . $order->product->file_path),

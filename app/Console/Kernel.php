@@ -20,6 +20,7 @@ $schedule->command('email:process --limit=50')->everyFifteenMinutes()->withoutOv
         $schedule->command('segments:sync')->everyFifteenMinutes()->withoutOverlapping();
         $schedule->command('cart:process-abandonment')->everyFifteenMinutes()->withoutOverlapping();
         $schedule->command('affiliates:approve-commissions --days=30')->daily()->withoutOverlapping();
+        $schedule->command('subscriptions:check-expiry')->daily()->withoutOverlapping();
     }
 
     protected function commands(): void

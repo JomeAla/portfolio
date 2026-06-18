@@ -67,7 +67,7 @@ footer { display: none !important; }
                 </a>
                 <a href="/customer/notifications" class="sidebar-link {{ request()->is('customer/notifications') ? 'active' : '' }}">
                     <i class="fas fa-bell w-5"></i> Notifications
-                    <span id="notif-badge" class="hidden ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                    <span id="notif-badge" style="display:none;margin-left:auto;background:#ef4444;color:white;font-size:12px;font-weight:700;padding:1px 8px;border-radius:9999px;">0</span>
                 </a>
             </nav>
             

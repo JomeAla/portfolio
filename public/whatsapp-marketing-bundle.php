@@ -277,6 +277,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(-
 </style>
 </head>
 <body>
+<?php if ($step !== 'checkout'): ?>
 
 <div class="container">
 <nav style="padding:20px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
@@ -384,10 +385,9 @@ Bundle Deal — 46% OFF
 </div>
 </footer>
 
-</body>
-</html>
+<?php endif; ?>
+
 <?php if ($step === 'checkout'): ?>
-<div style="display:none">
 <div id="checkoutPage" style="background:var(--bg);min-height:100vh;padding:40px 0">
 <div class="container" style="max-width:640px">
 <div style="text-align:center;margin-bottom:40px">
@@ -432,9 +432,10 @@ Pay &#x20A6;<span id="payBtnAmount"><?= number_format($finalPrice) ?></span>
 </div>
 </div>
 </div>
-</div>
-<script>document.getElementById('checkoutPage').style.display='block';</script>
 <?php endif; ?>
+
+</body>
+</html>
 
 <div class="timer-sticky" id="timerSticky">
 <div class="timer-sticky-dot"></div>

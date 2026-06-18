@@ -10,22 +10,22 @@ class Subscription extends Model
     use HasFactory;
 
     protected $fillable = [
-        'customer_email', 'subscription_plan_id', 'paystack_subscription_code',
-        'paystack_email_token', 'status', 'starts_at', 'ends_at',
-        'trial_ends_at', 'cancelled_at', 'next_billing_at',
+        'customer_email', 'plan_id', 'paystack_subscription_code',
+        'paystack_email_token', 'status', 'started_at', 'current_period_end',
+        'trial_end_date', 'cancelled_at', 'next_billing_date', 'reference',
     ];
 
     protected $casts = [
-        'starts_at' => 'datetime',
-        'ends_at' => 'datetime',
-        'trial_ends_at' => 'datetime',
+        'started_at' => 'datetime',
+        'current_period_end' => 'datetime',
+        'trial_end_date' => 'datetime',
         'cancelled_at' => 'datetime',
-        'next_billing_at' => 'datetime',
+        'next_billing_date' => 'datetime',
     ];
 
     public function plan()
     {
-        return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
+        return $this->belongsTo(SubscriptionPlan::class, 'plan_id');
     }
 
     public function isActive(): bool
@@ -35,7 +35,7 @@ class Subscription extends Model
 
     public function isOnTrial(): bool
     {
-        return $this->status === 'active' && $this->trial_ends_at && now()->lessThan($this->trial_ends_at);
+        return $this->status === 'active' && $this->trial_end_date && now()->lessThan($this->trial_end_date);
     }
 
     public function isCancelled(): bool
@@ -45,7 +45,7 @@ class Subscription extends Model
 
     public function isExpired(): bool
     {
-        return $this->status === 'expired' || ($this->ends_at && now()->greaterThan($this->ends_at));
+        return $this->status === 'expired' || ($this->current_period_end && now()->greaterThan($this->current_period_end));
     }
 
     public function scopeActive($query)
@@ -58,7 +58,7 @@ class Subscription extends Model
         return self::where('customer_email', $email)
             ->where('status', 'active')
             ->where(function ($q) {
-                $q->whereNull('ends_at')->orWhere('ends_at', '>', now());
+                $q->whereNull('current_period_end')->orWhere('current_period_end', '>', now());
             })
             ->latest()
             ->first();

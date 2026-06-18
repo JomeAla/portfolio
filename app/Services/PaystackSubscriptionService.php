@@ -146,15 +146,15 @@ class PaystackSubscriptionService
             Subscription::updateOrCreate(
                 [
                     'customer_email' => $email,
-                    'subscription_plan_id' => $plan->id,
+                    'plan_id' => $plan->id,
                 ],
                 [
                     'paystack_subscription_code' => $subscriptionCode,
                     'paystack_email_token' => $data['email_token'] ?? null,
                     'status' => 'active',
-                    'starts_at' => now(),
-                    'ends_at' => now()->addMonths($plan->isYearly() ? 12 : 1),
-                    'next_billing_at' => now()->addMonths($plan->isYearly() ? 12 : 1),
+                    'started_at' => now(),
+                    'current_period_end' => now()->addMonths($plan->isYearly() ? 12 : 1),
+                    'next_billing_date' => now()->addMonths($plan->isYearly() ? 12 : 1),
                 ]
             );
         }
@@ -188,7 +188,7 @@ class PaystackSubscriptionService
             $subscription->update([
                 'status' => 'active',
                 'cancelled_at' => null,
-                'next_billing_at' => now()->addMonth(),
+                'next_billing_date' => now()->addMonth(),
             ]);
         }
 

@@ -30,8 +30,8 @@
                     @elseif($activeSubscription->isCancelled()) Cancelled
                     @endif
                 </span>
-                @if($activeSubscription->next_billing_at)
-                <span class="text-blue-100 text-sm">Next billing: {{ $activeSubscription->next_billing_at->format('M d, Y') }}</span>
+                @if($activeSubscription->next_billing_date)
+                <span class="text-blue-100 text-sm">Next billing: {{ $activeSubscription->next_billing_date->format('M d, Y') }}</span>
                 @endif
             </div>
         </div>
@@ -79,8 +79,8 @@
                 @endforeach
             </ul>
             @endif
-            <a href="/customer/subscribe/{{ $plan->id }}" class="mt-6 block w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl transition-colors {{ $activeSubscription && $activeSubscription->subscription_plan_id == $plan->id ? 'opacity-50 cursor-not-allowed' : '' }}">
-                @if($activeSubscription && $activeSubscription->subscription_plan_id == $plan->id) Current Plan
+            <a href="/customer/subscribe/{{ $plan->id }}" class="mt-6 block w-full text-center bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 rounded-xl transition-colors {{ $activeSubscription && $activeSubscription->plan_id == $plan->id ? 'opacity-50 cursor-not-allowed' : '' }}">
+                @if($activeSubscription && $activeSubscription->plan_id == $plan->id) Current Plan
                 @else Subscribe
                 @endif
             </a>
@@ -125,8 +125,8 @@
                             {{ ucfirst($sub->status) }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-slate-600">{{ $sub->starts_at ? $sub->starts_at->format('M d, Y') : '-' }}</td>
-                    <td class="px-6 py-4 text-slate-600">{{ $sub->ends_at ? $sub->ends_at->format('M d, Y') : '-' }}</td>
+                    <td class="px-6 py-4 text-slate-600">{{ $sub->started_at ? $sub->started_at->format('M d, Y') : '-' }}</td>
+                    <td class="px-6 py-4 text-slate-600">{{ $sub->current_period_end ? $sub->current_period_end->format('M d, Y') : '-' }}</td>
                 </tr>
                 @endforeach
             </tbody>

@@ -368,23 +368,9 @@ class CustomerController extends Controller
             $totalPoints = 0;
             $progressData = [];
             
-            try {
-                $achievedIds = $achievementService->checkAndAward($customer['email']);
-            } catch (\Throwable $e) {
-                return redirect('/customer/dashboard')->with('error', 'checkAndAward: ' . $e->getMessage());
-            }
-            
-            try {
-                $achievements = $achievementService->getAchievementsForCustomer($customer['email']);
-            } catch (\Throwable $e) {
-                return redirect('/customer/dashboard')->with('error', 'getAchievements: ' . $e->getMessage());
-            }
-            
-            try {
-                $totalPoints = $achievementService->getTotalPoints($customer['email']);
-            } catch (\Throwable $e) {
-                return redirect('/customer/dashboard')->with('error', 'getTotalPoints: ' . $e->getMessage());
-            }
+            $achievedIds = $achievementService->checkAndAward($customer['email']);
+            $achievements = $achievementService->getAchievementsForCustomer($customer['email']);
+            $totalPoints = $achievementService->getTotalPoints($customer['email']);
             
             foreach ($achievements as $a) {
                 if (!$a['is_awarded'] && $a['trigger_type']) {
@@ -401,7 +387,7 @@ class CustomerController extends Controller
         } catch (\Throwable $e) {
             $msg = 'Achievements error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine();
             \Illuminate\Support\Facades\Log::error($msg);
-            return redirect('/customer/dashboard')->with('error', $msg);
+            return response('<h2 style="color:red;font-family:sans-serif;">' . nl2br(htmlspecialchars($msg)) . '</h2>', 500);
         }
     }
 

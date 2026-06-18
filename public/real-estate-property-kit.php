@@ -213,10 +213,10 @@ if (isset($_GET['reference']) && isset($_GET['trxref'])) {
 $product = Product::where('slug', 'real-estate-property-kit')->first();
 $productImage = $product && $product->image ? $product->image : '';
 $productTitle = $product ? $product->title : 'Real Estate Property Kit';
-$productPrice = '35,000';
-$productOldPrice = '50,000';
-$productPriceRaw = 35000;
-$productOldRaw = 50000;
+$productPrice = $product ? number_format((float)($product->sale_price ?? $product->price), 0) : '35,000';
+$productOldPrice = $product ? number_format((float)$product->price, 0) : '50,000';
+$productPriceRaw = $product ? (float)($product->sale_price ?? $product->price) : 35000;
+$productOldRaw = $product ? (float)$product->price : 50000;
 $savings = number_format($productOldRaw - $productPriceRaw, 0);
 ?>
 <!DOCTYPE html>

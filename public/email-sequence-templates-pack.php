@@ -1,11 +1,17 @@
 <?php
 error_reporting(0);
+require __DIR__ . '/../vendor/autoload.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+$app->make('Illuminate\Contracts\Http\Kernel')->bootstrap();
+
+use App\Models\Product;
 
 $baseUrl = 'https://joala.com.ng';
-$productPriceRaw = 15000;
-$productOldRaw = 35000;
-$productTitle = 'Email Sequence Templates Pack';
-$productImage = '/uploads/products/email-sequence-templates-pack-cover.svg';
+$product = Product::where('slug', 'email-sequence-templates-pack')->first();
+$productPriceRaw = $product ? (float)($product->sale_price ?? $product->price) : 15000;
+$productOldRaw = $product ? (float)$product->price : 35000;
+$productTitle = $product ? $product->title : 'Email Sequence Templates Pack';
+$productImage = $product && $product->image ? $product->image : '/uploads/products/email-sequence-templates-pack-cover.svg';
 
 $timerOffset = rand(20000, 40000);
 $step = 'landing';
@@ -1009,9 +1015,9 @@ $couponMsg = '';
                 <div class="price-header">
                     <p class="price-label">Email Sequence Templates Pack</p>
                     <div class="price-amount">
-                        <span class="price-current">₦15,000</span>
-                        <span class="price-original">₦35,000</span>
-                        <span class="price-discount">-57%</span>
+                        <span class="price-current">₦<?php echo number_format($finalPrice); ?></span>
+                        <span class="price-original">₦<?php echo number_format($price); ?></span>
+                        <span class="price-discount">-<?php echo round((1 - $finalPrice / $price) * 100); ?>%</span>
                     </div>
                 </div>
                 
@@ -1034,7 +1040,7 @@ $couponMsg = '';
                     <button type="button" id="applyCoupon" class="apply-btn">Apply</button>
                 </div>
                 
-                <button type="button" id="payBtn" class="pay-btn">Pay ₦15,000</button>
+                <button type="button" id="payBtn" class="pay-btn">Pay ₦<?php echo number_format($finalPrice); ?></button>
                 
                 <p class="guarantee">🔒 Secure payment via Paystack • 30-day money-back guarantee</p>
             </div>
@@ -1073,8 +1079,8 @@ $couponMsg = '';
 
     <div class="sticky-cta" id="timerSticky">
         <div class="sticky-price">
-            <span class="sticky-current">₦15,000</span>
-            <span class="sticky-original">₦35,000</span>
+            <span class="sticky-current">₦<?php echo number_format($finalPrice); ?></span>
+            <span class="sticky-original">₦<?php echo number_format($price); ?></span>
             <span id="stickyTimer" style="font-weight: 600; color: var(--primary);"></span>
         </div>
         <button type="button" class="sticky-btn" id="stickyPayBtn">Buy Now</button>
@@ -1084,10 +1090,8 @@ $couponMsg = '';
         (function(){
             var timerOffset = <?= $timerOffset ?>;
             var endTime = Date.now() + timerOffset;
-            var currentAmount = 15000;
-            var appliedCoupon = null;
-            
             var currentAmount = <?= $finalPrice ?>;
+            var appliedCoupon = null;
             var appliedCoupon = null;
             var isCheckout = false;
 

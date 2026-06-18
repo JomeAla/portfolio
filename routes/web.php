@@ -3184,6 +3184,23 @@ Route::get('/setup-branching', function () {
     }
 });
 
+// Clear compiled view cache
+Route::get('/clear-view-cache', function () {
+    try {
+        $files = glob(storage_path('framework/views/*'));
+        $count = 0;
+        foreach ($files as $file) {
+            if (is_file($file) && !str_ends_with($file, '.gitkeep')) {
+                unlink($file);
+                $count++;
+            }
+        }
+        return "View cache cleared ($count files removed)";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 // Check/Set Brevo API key
 Route::get('/check-brevo-key', function () {
     $key = request('key', '');

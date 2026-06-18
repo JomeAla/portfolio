@@ -67,7 +67,7 @@ class PaystackSubscriptionService
     {
         try {
             $payload = [
-                'customer' => $email,
+                'email' => $email,
                 'plan' => $plan->paystack_plan_code,
                 'amount' => (int) ($plan->price * 100),
                 'currency' => 'NGN',

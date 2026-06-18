@@ -3196,6 +3196,19 @@ Route::get('/debug-notifications-link', function () {
     return "Nav links found: $hasNotif (Notifications text), $hasBell (bell icon)\n\nNav HTML:\n" . htmlspecialchars($navHtml);
 });
 
+// Debug: render just the sidebar nav HTML from the layout
+Route::get('/debug-sidebar-html', function () {
+    try {
+        $html = view('front.customer.layout')->render();
+        $matches = [];
+        preg_match('/<nav[^>]*class="p-4 space-y-2"[^>]*>.*?<\/nav>/s', $html, $matches);
+        $navHtml = $matches[0] ?? 'SIDEBAR NAV NOT FOUND';
+        return '<pre style="background:#1e293b;color:#e2e8f0;padding:20px;font-size:13px;overflow:auto;max-height:100vh;">' . htmlspecialchars($navHtml) . '</pre>';
+    } catch (\Exception $e) {
+        return "RENDER ERROR: " . $e->getMessage() . "\n" . $e->getTraceAsString();
+    }
+});
+
 // Clear compiled view cache
 Route::get('/clear-view-cache', function () {
     $output = [];

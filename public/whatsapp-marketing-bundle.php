@@ -36,8 +36,8 @@ $email = $_SESSION['checkout_email'] ?? '';
 $step = $_GET['step'] ?? 'landing';
 $showPopup = isset($_SESSION['whatsapp_exit_shown']) ? false : true;
 
-$price = $step === 'checkout' ? 8000 : 15000;
-$originalPrice = 15000;
+$price = $step === 'checkout' ? $productPriceRaw : $productOldRaw;
+$originalPrice = $productOldRaw;
 $discount = 0;
 $couponMsg = '';
 $couponSuccess = false;
@@ -294,9 +294,9 @@ Bundle Deal — 46% OFF
 <h3>WhatsApp Marketing Bundle</h3>
 <p>Everything you need to launch, automate, and scale your WhatsApp marketing</p>
 <div class="hero-price-row">
-<span class="price-old">&#x20A6;15,000</span>
-<span class="price-new">&#x20A6;8,000</span>
-<span class="price-badge">46% OFF</span>
+<span class="price-old">&#x20A6;<?= number_format($productOldRaw) ?></span>
+<span class="price-new">&#x20A6;<?= number_format($productPriceRaw) ?></span>
+<span class="price-badge"><?= round((1 - $productPriceRaw / $productOldRaw) * 100) ?>% OFF</span>
 </div>
 <div class="timer-box">
 <div class="timer-label">⏰ Offer expires in</div>
@@ -370,7 +370,7 @@ Bundle Deal — 46% OFF
 <div class="timer-label">⏰ Limited time offer</div>
 <div class="timer-value" id="timer2">--:--:--</div>
 </div>
-<a href="?step=checkout" class="btn-primary">Get Access Now — &#x20A6;8,000</a>
+<a href="?step=checkout" class="btn-primary">Get Access Now — &#x20A6;<?= number_format($productPriceRaw) ?></a>
 </div>
 </div>
 
@@ -398,8 +398,8 @@ Bundle Deal — 46% OFF
 <p>Instant digital delivery after payment</p>
 </div>
 <div class="pricing-price">
-<span class="old">&#x20A6;15,000</span>
-<span class="current" id="checkoutPrice">&#x20A6;8,000</span>
+<span class="old">&#x20A6;<?= number_format($productOldRaw) ?></span>
+<span class="current" id="checkoutPrice">&#x20A6;<?= number_format($productPriceRaw) ?></span>
 </div>
 <form method="POST" id="checkoutForm" style="text-align:left">
 <div style="margin-bottom:20px">

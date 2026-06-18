@@ -3186,6 +3186,7 @@ Route::get('/setup-branching', function () {
 
 // Clear compiled view cache
 Route::get('/clear-view-cache', function () {
+    $output = [];
     try {
         $files = glob(storage_path('framework/views/*'));
         $count = 0;
@@ -3195,10 +3196,21 @@ Route::get('/clear-view-cache', function () {
                 $count++;
             }
         }
-        return "View cache cleared ($count files removed)";
+        $output[] = "View cache cleared ($count files removed)";
     } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+        $output[] = "View cache error: " . $e->getMessage();
     }
+    if (function_exists('opcache_reset')) {
+        try {
+            opcache_reset();
+            $output[] = "OPcache reset successfully";
+        } catch (\Exception $e) {
+            $output[] = "OPcache reset error: " . $e->getMessage();
+        }
+    } else {
+        $output[] = "OPcache not available";
+    }
+    return implode("\n", $output);
 });
 
 // Check/Set Brevo API key

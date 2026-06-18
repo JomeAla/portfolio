@@ -45,6 +45,8 @@ class AchievementService
                 'icon' => $achievement->icon,
                 'badge_color' => $achievement->badge_color,
                 'points' => $achievement->points,
+                'trigger_type' => $achievement->trigger_type,
+                'trigger_value' => $achievement->trigger_value,
                 'is_awarded' => $isAwarded,
                 'awarded_at' => $awardedAt,
             ];

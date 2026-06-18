@@ -69,15 +69,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] ?? '' === 'init_pa
     }
 
     $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+    $finalAmount = $amount / 100;
     $order = Order::create([
-        'user_id' => $userId,
-        'product_id' => $productId,
-        'amount' => $amount / 100,
-        'original_amount' => $price,
-        'coupon_used' => $coupon ?: null,
-        'payment_status' => 'pending',
         'order_number' => 'WA-' . strtoupper(substr(md5(uniqid()), 0, 8)),
-        'funnel_id' => $funnelId,
+        'product_id' => $product ? $product->id : $productId,
+        'customer_name' => explode('@', $email)[0],
+        'customer_email' => $email,
+        'amount' => $finalAmount,
+        'discount' => ($price - $finalAmount),
+        'final_amount' => $finalAmount,
+        'coupon_code' => $coupon ?: null,
+        'payment_status' => 'pending',
+        'checkout_started_at' => now(),
     ]);
 
     $ref = 'WA_' . uniqid() . '_' . time();

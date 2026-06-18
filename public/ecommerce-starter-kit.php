@@ -182,12 +182,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $_SESSION['order_id'] = $order->id;
     $_SESSION['order_number'] = $order->order_number;
 
-    $paystackKey = Setting::get('paystack_public_key') ?? 'pk_live_xxxxxxxxxxxx';
+    $paystackPublicKey = Setting::get('paystack_public_key') ?? 'pk_live_xxxxxxxxxxxx';
 
     echo json_encode([
         'order_id' => $order->id,
         'order_number' => $order->order_number,
-        'paystack_key' => $paystackKey,
+        'paystack_public_key' => $paystackPublicKey,
         'amount' => (int)($finalAmount * 100),
         'email' => $emailInput,
         'reference' => $order->order_number,
@@ -981,6 +981,7 @@ $savings = number_format($productOldRaw - $productPriceRaw, 0);
             payBtn.innerHTML = 'Processing...';
             
             const formData = new FormData();
+            formData.append('action', 'init_payment');
             formData.append('name', name);
             formData.append('email', email);
             formData.append('phone', phone);
@@ -989,11 +990,10 @@ $savings = number_format($productOldRaw - $productPriceRaw, 0);
             
             console.log('Init payment:', { name, email, phone, couponCode });
             
-            fetch('/ecom-init-payment', {
+            fetch(window.location.href, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': '<?php echo csrf_token(); ?>',
                     'Accept': 'application/json',
                 }
             })

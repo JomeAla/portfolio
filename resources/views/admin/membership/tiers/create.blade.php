@@ -48,6 +48,13 @@ Priority support
 Exclusive downloads"></textarea>
         </div>
         
+        <div class="mb-6">
+            <label class="flex items-center">
+                <input type="checkbox" name="is_active" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="ml-2 text-sm text-gray-700">Active</span>
+            </label>
+        </div>
+        
         <div class="flex gap-4">
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
                 Create Tier

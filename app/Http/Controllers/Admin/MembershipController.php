@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use App\Models\SubscriptionPlan;
+use App\Services\PaystackSubscriptionService;
 use PDO;
 
 class MembershipController extends Controller
@@ -161,8 +164,27 @@ public function editCourse($id)
     public function storeTier(Request $request)
     {
         $pdo = db_pdo();
-        $stmt = $pdo->prepare("INSERT INTO membership_tiers (name, description, price, features, is_active, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$request->name, $request->description, $request->price, $request->features, $request->is_active ? 1 : 0]);
+        $stmt = $pdo->prepare("INSERT INTO membership_tiers (name, description, price, billing_period, features, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->execute([$request->name, $request->description, $request->price, $request->billing_period ?? 'monthly', $request->features, $request->is_active ? 1 : 0]);
+
+        $features = $request->features
+            ? array_filter(array_map('trim', explode("\n", $request->features)))
+            : [];
+        $interval = match($request->billing_period ?? 'monthly') {
+            'yearly' => 'yearly', 'quarterly' => 'quarterly', 'weekly' => 'weekly',
+            default => 'monthly',
+        };
+        $plan = SubscriptionPlan::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name),
+            'description' => $request->description ?? '',
+            'price' => $request->price ?? 0,
+            'interval' => $interval,
+            'features' => $features,
+            'is_active' => $request->has('is_active'),
+        ]);
+        try { app(PaystackSubscriptionService::class)->createPlan($plan); } catch (\Exception $e) {}
+
         return redirect('/admin/membership/tiers')->with('success', 'Tier created!');
     }
 
@@ -178,14 +200,43 @@ public function editCourse($id)
     public function updateTier(Request $request, $id)
     {
         $pdo = db_pdo();
-        $stmt = $pdo->prepare("UPDATE membership_tiers SET name = ?, description = ?, price = ?, features = ?, is_active = ? WHERE id = ?");
-        $stmt->execute([$request->name, $request->description, $request->price, $request->features, $request->is_active ? 1 : 0, $id]);
+        $stmt = $pdo->prepare("UPDATE membership_tiers SET name = ?, description = ?, price = ?, billing_period = ?, features = ?, is_active = ? WHERE id = ?");
+        $stmt->execute([$request->name, $request->description, $request->price, $request->billing_period ?? 'monthly', $request->features, $request->is_active ? 1 : 0, $id]);
+
+        $features = $request->features
+            ? array_filter(array_map('trim', explode("\n", $request->features)))
+            : [];
+        $interval = match($request->billing_period ?? 'monthly') {
+            'yearly' => 'yearly', 'quarterly' => 'quarterly', 'weekly' => 'weekly',
+            default => 'monthly',
+        };
+        $plan = SubscriptionPlan::updateOrCreate(
+            ['slug' => Str::slug($request->name)],
+            [
+                'name' => $request->name,
+                'description' => $request->description ?? '',
+                'price' => $request->price ?? 0,
+                'interval' => $interval,
+                'features' => $features,
+                'is_active' => $request->has('is_active'),
+            ]
+        );
+        if (!$plan->paystack_plan_code) {
+            try { app(PaystackSubscriptionService::class)->createPlan($plan); } catch (\Exception $e) {}
+        }
+
         return redirect('/admin/membership/tiers')->with('success', 'Tier updated!');
     }
 
     public function destroyTier($id)
     {
         $pdo = db_pdo();
+        $stmt = $pdo->prepare("SELECT name FROM membership_tiers WHERE id = ?");
+        $stmt->execute([$id]);
+        $tier = $stmt->fetch();
+        if ($tier) {
+            SubscriptionPlan::where('slug', Str::slug($tier['name']))->delete();
+        }
         $stmt = $pdo->prepare("DELETE FROM membership_tiers WHERE id = ?");
         $stmt->execute([$id]);
         return back()->with('success', 'Tier deleted!');

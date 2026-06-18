@@ -33,12 +33,6 @@
                 @endif
                 @endif
                 
-                @if($service->pricing)
-                <div class="pt-4 border-t border-slate-100">
-                    <span class="text-2xl font-bold text-slate-900">{{ $service->pricing }}</span>
-                </div>
-                @endif
-                
                 <a href="{{ route('brief.create') }}" class="inline-block mt-6 w-full text-center bg-slate-900 text-white font-semibold py-3 rounded-xl hover:bg-slate-800 transition-colors">
                     Get Started
                 </a>

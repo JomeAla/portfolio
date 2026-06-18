@@ -3184,6 +3184,28 @@ Route::get('/setup-branching', function () {
     }
 });
 
+// Debug: check if layout has notifications link
+Route::get('/debug-notifications-link', function () {
+    $path = resource_path('views/front/customer/layout.blade.php');
+    if (!file_exists($path)) return "LAYOUT FILE NOT FOUND at $path";
+    $content = file_get_contents($path);
+    if (str_contains($content, 'Notifications')) {
+        // Try to actually render a snippet
+        try {
+            $html = view('front.customer.layout')->render();
+            if (str_contains($html, 'Notifications')) {
+                return "LAYOUT EXISTS, RENDERS, and contains 'Notifications' in HTML output";
+            } else {
+                return "LAYOUT EXISTS and RENDERS but 'Notifications' is NOT in the HTML output";
+            }
+        } catch (\Exception $e) {
+            return "LAYOUT EXISTS but RENDERS WITH ERROR: " . $e->getMessage();
+        }
+    } else {
+        return "LAYOUT EXISTS but 'Notifications' is NOT found in the source file";
+    }
+});
+
 // Clear compiled view cache
 Route::get('/clear-view-cache', function () {
     $output = [];

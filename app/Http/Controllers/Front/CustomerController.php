@@ -98,6 +98,10 @@ class CustomerController extends Controller
             $ins = $pdo->prepare("INSERT INTO customer_accounts (email, password, name, created_at) VALUES (?, ?, ?, NOW())");
             $ins->execute([$email, $password, $name]);
             $customerId = $pdo->lastInsertId();
+            
+            // Set session for customer portal auth
+            session(['customer_id' => $customerId, 'customer_email' => $email]);
+            
             $token = bin2hex(random_bytes(32));
             $expires = date('Y-m-d H:i:s', strtotime('+7 days'));
             $ins = $pdo->prepare("INSERT INTO customer_sessions (customer_id, token, expires_at) VALUES (?, ?, ?)");
@@ -105,9 +109,9 @@ class CustomerController extends Controller
             setcookie('customer_token', $token, time() + (7 * 24 * 60 * 60), '/');
             
             // Send welcome notification
-            CustomerController::createNotification($email, 'welcome', 'Welcome to Joala!', 'Thank you for registering. Explore our courses and products!', '/customer/dashboard');
+            CustomerController::createNotification($email, 'welcome', 'Welcome to Joala!', 'Thank you for registering. Explore our courses and subscription plans!', '/customer/subscriptions');
             
-            return redirect('/customer/dashboard');
+            return redirect('/customer/subscriptions');
         } catch (\Exception $e) { return back()->with('error', 'Error: ' . $e->getMessage()); }
     }
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\Coupon;
 use App\Models\Order;
+use App\Models\Setting;
 
 $baseUrl = 'https://joala.com.ng';
 $productSlug = 'whatsapp-marketing-bundle';
@@ -83,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] ?? '' === 'init_pa
 
     echo json_encode([
         'order_id' => $order->id,
-        'paystack_key' => 'pk_live_xxxx',
+        'paystack_key' => Setting::get('paystack_public_key'),
         'amount' => $amount,
         'email' => $email,
         'reference' => $ref,
@@ -535,7 +536,7 @@ if(appliedCoupon) formData.append('coupon', appliedCoupon);
 fetch(window.location.pathname, {method:'POST',body:formData})
 .then(function(r){return r.json()})
 .then(function(data){
-var paystack = PaystackPop.setup({
+new PaystackPop().newTransaction({
 key: data.paystack_key,
 email: data.email,
 amount: data.amount,
@@ -544,11 +545,10 @@ onClose: function(){
 payBtn.disabled = false;
 payBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Pay ₦'+currentAmount.toLocaleString();
 },
-callback: function(response){
+onSuccess: function(response){
 window.location.href = '<?= $baseUrl ?>/order/success?ref='+response.reference+'&order_id='+data.order_id;
 }
 });
-paystack.openIframe();
 })
 .catch(function(err){
 console.error('Payment init error:', err);

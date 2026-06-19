@@ -10,6 +10,10 @@ footer { display: none !important; }
 .sidebar-link:not(.active) { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
 .sidebar-link:not(.active):hover { background: #fff; color: #1e293b; border-color: #cbd5e0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transform: translateY(-1px); }
 .sidebar-link i { font-size: 16px; width: 20px; text-align: center; }
+.sidebar-nav { flex: 1; overflow-y: auto; }
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 2px; }
+.sidebar-nav::-webkit-scrollbar-track { background: transparent; }
 </style>
 @endsection
 
@@ -17,9 +21,9 @@ footer { display: none !important; }
 <div class="min-h-screen bg-slate-50">
     <div class="flex">
         <!-- Left Sidebar -->
-        <aside class="w-72 bg-white border-r border-slate-200 min-h-screen fixed left-0 top-0 overflow-y-auto">
+        <aside class="w-72 bg-white border-r border-slate-200 h-screen fixed left-0 top-0 flex flex-col">
             <!-- Logo Area -->
-            <div class="p-6 border-b border-slate-100">
+            <div class="p-6 border-b border-slate-100 flex-shrink-0">
                 <a href="/customer/dashboard" class="flex items-center gap-3">
                     <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-violet-600 rounded-xl flex items-center justify-center">
                         <i class="fas fa-user text-white text-xl"></i>
@@ -32,7 +36,7 @@ footer { display: none !important; }
             </div>
             
             <!-- Navigation Links -->
-            <nav class="p-4 space-y-2">
+            <nav class="sidebar-nav p-4 space-y-2">
                 <a href="/customer/dashboard" class="sidebar-link {{ request()->is('customer/dashboard') ? 'active' : '' }}">
                     <i class="fas fa-home w-5"></i> Dashboard
                 </a>
@@ -72,7 +76,7 @@ footer { display: none !important; }
             </nav>
             
             <!-- Bottom Links -->
-            <div class="p-4 border-t border-slate-100">
+            <div class="p-4 border-t border-slate-100 flex-shrink-0">
                 <a href="/" class="sidebar-link text-blue-600 hover:bg-blue-50">
                     <i class="fas fa-store w-5"></i> Browse Store
                 </a>
@@ -83,7 +87,7 @@ footer { display: none !important; }
         </aside>
         
 <!-- Main Content Area -->
-        <main class="ml-72 flex-1 p-8">
+        <main class="ml-72 flex-1 p-8 min-h-screen">
             @yield('customer-content')
         </main>
     </div>

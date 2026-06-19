@@ -53,6 +53,10 @@
                     <a href="{{ route('contact') }}" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Contact</a>
                     <a href="{{ route('brief.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Start a Project</a>
                     @if(session()->has('customer_id'))
+                        <a href="/customer/notifications" class="relative text-slate-600 hover:text-slate-900 transition-colors">
+                            <i class="fas fa-bell text-lg"></i>
+                            <span id="notif-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center leading-none">0</span>
+                        </a>
                         <a href="/customer/dashboard" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">My Account</a>
                     @else
                         <a href="/customer/login" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">My Account</a>
@@ -110,6 +114,27 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    @if(session()->has('customer_id'))
+    <script>
+    function updateNotifBadge() {
+        fetch('/customer/notifications/unread-count')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var badge = document.getElementById('notif-badge');
+                if (!badge) return;
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            })
+            .catch(function() {});
+    }
+    document.addEventListener('DOMContentLoaded', updateNotifBadge);
+    setInterval(updateNotifBadge, 30000);
+    </script>
+    @endif
     @yield('scripts')
     @if(!app()->isLocal() && env('APP_ENV') !== 'local')
     <script>

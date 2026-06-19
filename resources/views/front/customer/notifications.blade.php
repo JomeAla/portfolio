@@ -10,7 +10,7 @@
     @if(count($notifications ?? []) > 0)
     <div class="divide-y divide-slate-100">
         @foreach($notifications as $notif)
-        <a href="{{ $notif['link'] ? $notif['link'] : '/customer/notifications/' . $notif['id'] . '/read' }}" class="flex items-start gap-4 p-5 hover:bg-slate-50 transition-colors {{ $notif['is_read'] ? 'opacity-60' : '' }}">
+        <a href="/customer/notifications/{{ $notif['id'] }}/read?redirect={{ urlencode($notif['link']) }}" class="flex items-start gap-4 p-5 hover:bg-slate-50 transition-colors {{ $notif['is_read'] ? 'opacity-60' : '' }}">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
                 @switch($notif['type'])
                     @case('order') bg-blue-50 text-blue-600 @break
@@ -59,4 +59,14 @@
     </div>
     @endif
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof updateNotifBadge === 'function') {
+        updateNotifBadge();
+    }
+});
+</script>
 @endsection

@@ -450,7 +450,7 @@ class CustomerController extends Controller
         } catch (\Exception $e) { return back()->with('error', $e->getMessage()); }
     }
 
-    public function markNotificationRead($id)
+    public function markNotificationRead($id, Request $request)
     {
         $customer = $this->requireCustomer();
         if (is_a($customer, '\Illuminate\Http\RedirectResponse')) return $customer;
@@ -458,6 +458,14 @@ class CustomerController extends Controller
             $pdo = $this->getPdo();
             $stmt = $pdo->prepare("UPDATE customer_notifications SET is_read = 1 WHERE id = ? AND customer_email = ?");
             $stmt->execute([$id, $customer['email']]);
+            $redirect = $request->query('redirect');
+            if ($redirect && filter_var($redirect, FILTER_VALIDATE_URL)) {
+                $parsed = parse_url($redirect);
+                if (isset($parsed['host']) && $parsed['host'] !== request()->getHost()) {
+                    return back();
+                }
+                return redirect($redirect);
+            }
             return back();
         } catch (\Exception $e) { return back()->with('error', $e->getMessage()); }
     }

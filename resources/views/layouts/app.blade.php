@@ -55,7 +55,7 @@
                     @if(session()->has('customer_id'))
                         <a href="/customer/notifications" class="relative text-slate-600 hover:text-slate-900 transition-colors">
                             <i class="fas fa-bell text-lg"></i>
-                            <span id="notif-badge" class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center leading-none">0</span>
+                            <span id="notif-badge" style="display:none" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center leading-none">0</span>
                         </a>
                         <a href="/customer/dashboard" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">My Account</a>
                     @else
@@ -124,9 +124,9 @@
                 if (!badge) return;
                 if (data.count > 0) {
                     badge.textContent = data.count;
-                    badge.classList.remove('hidden');
+                    badge.style.display = 'flex';
                 } else {
-                    badge.classList.add('hidden');
+                    badge.style.display = 'none';
                 }
             })
             .catch(function() {});

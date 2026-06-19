@@ -76,6 +76,7 @@
                     <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Message</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
                     <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Date</th>
+                    <th class="px-6 py-4 text-left text-sm font-semibold text-slate-600">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-200">
@@ -104,10 +105,17 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 text-slate-500 text-sm">{{ date('M d, Y g:i A', strtotime($notif['created_at'])) }}</td>
+                    <td class="px-6 py-4">
+                        <form method="POST" action="{{ route('admin.notifications.delete', $notif['id']) }}" onsubmit="return confirm('Delete this notification?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Delete</button>
+                        </form>
+                    </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center text-slate-500">No notifications yet</td>
+                    <td colspan="7" class="px-6 py-12 text-center text-slate-500">No notifications yet</td>
                 </tr>
                 @endforelse
             </tbody>

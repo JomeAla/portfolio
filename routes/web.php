@@ -278,6 +278,7 @@ Route::prefix('admin')->group(function () {
         // Customer Notifications Admin Route
         Route::get('/notifications', [MembershipController::class, 'notifications'])->name('admin.notifications');
         Route::post('/notifications/send', [MembershipController::class, 'sendNotification'])->name('admin.notifications.send');
+        Route::delete('/notifications/{id}/delete', [MembershipController::class, 'destroyNotification'])->name('admin.notifications.delete');
         
         // Advanced Analytics Route
         Route::get('/analytics', [AnalyticsController::class, 'index'])->name('admin.analytics');

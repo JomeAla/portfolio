@@ -19,6 +19,14 @@ class MembershipController extends Controller
         return view('admin.notifications.index', compact('notifications'));
     }
 
+    public function destroyNotification($id)
+    {
+        $pdo = db_pdo();
+        $stmt = $pdo->prepare("DELETE FROM customer_notifications WHERE id = ?");
+        $stmt->execute([$id]);
+        return back()->with('success', 'Notification deleted!');
+    }
+
     public function sendNotification(Request $request)
     {
         $request->validate([

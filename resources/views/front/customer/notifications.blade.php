@@ -2,7 +2,7 @@
 
 @section('customer-content')
 <div class="mb-8">
-    <h1 class="text-3xl font-bold text-slate-900">Notifications</h1>
+    <h1 class="text-3xl font-bold text-slate-900">Updates</h1>
     <p class="text-slate-600">Stay updated with your account activity</p>
 </div>
 

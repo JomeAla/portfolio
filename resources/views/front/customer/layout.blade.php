@@ -66,7 +66,7 @@ footer { display: none !important; }
                     <i class="fas fa-undo w-5"></i> Request Refund
                 </a>
                 <a href="/customer/notifications" class="sidebar-link {{ request()->is('customer/notifications') ? 'active' : '' }}">
-                    <i class="fas fa-bell w-5"></i> Notifications
+                    <i class="fas fa-info-circle w-5"></i> Updates
                     <span id="notif-badge" style="display:none;margin-left:auto;background:#ef4444;color:white;font-size:12px;font-weight:700;padding:1px 8px;border-radius:9999px;">0</span>
                 </a>
             </nav>

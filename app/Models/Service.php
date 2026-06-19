@@ -23,6 +23,6 @@ class Service extends Model
 
     public function getRouteKeyName()
     {
-        return 'slug';
+        return 'id';
     }
 }

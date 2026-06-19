@@ -36,7 +36,7 @@
             
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Features (comma separated)</label>
-                <input type="text" name="features" value="{{ $service->features }}" 
+                <input type="text" name="features" value="{{ is_array($service->features) ? implode(', ', $service->features) : $service->features }}" 
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
                     placeholder="Feature 1, Feature 2, Feature 3">
             </div>
@@ -46,6 +46,18 @@
                 <input type="text" name="pricing" value="{{ $service->pricing }}" 
                     class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
                     placeholder="Starting from $500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Order</label>
+                <input type="number" name="order" value="{{ $service->order ?? 0 }}" 
+                    class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
+            </div>
+
+            <div class="flex items-center gap-3">
+                <input type="checkbox" name="is_active" id="is_active" value="1" {{ $service->is_active ? 'checked' : '' }}
+                    class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <label for="is_active" class="text-sm font-medium text-gray-700">Active</label>
             </div>
         </div>
     </div>

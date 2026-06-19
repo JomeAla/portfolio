@@ -81,7 +81,7 @@
             </a>
             @empty
             <div class="text-center py-8">
-                <p class="text-slate-500">Services coming soon.</p>
+                <p class="text-slate-500">No services available at the moment.</p>
             </div>
             @endforelse
         </div>

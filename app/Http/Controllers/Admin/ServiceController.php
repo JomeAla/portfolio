@@ -29,6 +29,9 @@ class ServiceController extends Controller
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
+        $data['features'] = $request->features ? array_map('trim', explode(',', $request->features)) : [];
+        $data['order'] = $request->order ?? 0;
+        $data['is_active'] = $request->has('is_active');
 
         Service::create($data);
 
@@ -49,6 +52,9 @@ class ServiceController extends Controller
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->title);
+        $data['features'] = $request->features ? array_map('trim', explode(',', $request->features)) : [];
+        $data['order'] = $request->order ?? 0;
+        $data['is_active'] = $request->has('is_active');
 
         $service->update($data);
 

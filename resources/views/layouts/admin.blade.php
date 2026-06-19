@@ -112,6 +112,15 @@
                     <i class="fas fa-bullhorn w-5"></i>
                     <span>Campaigns</span>
                 </a>
+                <div class="px-6 py-2 text-slate-500 text-xs font-semibold uppercase">WhatsApp</div>
+                <a href="/admin/whatsapp" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
+                    <i class="fab fa-whatsapp w-5"></i>
+                    <span>WhatsApp Broadcast</span>
+                </a>
+                <a href="/admin/whatsapp/contacts" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
+                    <i class="fas fa-address-book w-5"></i>
+                    <span>WhatsApp Contacts</span>
+                </a>
                 <div class="px-6 py-2 text-slate-500 text-xs font-semibold uppercase">Content</div>
                 <a href="/admin/marketing/blog" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
                     <i class="fas fa-blog w-5"></i>

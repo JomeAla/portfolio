@@ -232,6 +232,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/settings/payment', [SettingsController::class, 'updatePayment'])->name('admin.settings.payment');
         Route::post('/settings/github', [SettingsController::class, 'updateGithub'])->name('admin.settings.github');
         Route::post('/settings/email', [SettingsController::class, 'updateEmail'])->name('admin.settings.email');
+        Route::post('/settings/whatsapp', [SettingsController::class, 'updateWhatsApp'])->name('admin.settings.whatsapp');
         
         Route::resource('projects', ProjectController::class)->except(['show']);
         Route::get('/projects/{project}/delete', [ProjectController::class, 'destroy'])->name('projects.delete');
@@ -2842,6 +2843,19 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     })->name('admin.broadcast.send');
 });
 
+// Admin - WhatsApp Broadcasting
+Route::middleware(['admin'])->prefix('admin')->group(function () {
+    Route::get('/whatsapp', [\App\Http\Controllers\Admin\WhatsAppController::class, 'index'])->name('admin.whatsapp.index');
+    Route::get('/whatsapp/create', [\App\Http\Controllers\Admin\WhatsAppController::class, 'create'])->name('admin.whatsapp.create');
+    Route::post('/whatsapp', [\App\Http\Controllers\Admin\WhatsAppController::class, 'store'])->name('admin.whatsapp.store');
+    Route::get('/whatsapp/{id}', [\App\Http\Controllers\Admin\WhatsAppController::class, 'show'])->name('admin.whatsapp.show');
+    Route::post('/whatsapp/{id}/send', [\App\Http\Controllers\Admin\WhatsAppController::class, 'send'])->name('admin.whatsapp.send');
+    Route::post('/whatsapp/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppController::class, 'destroy'])->name('admin.whatsapp.destroy');
+    Route::get('/whatsapp/contacts', [\App\Http\Controllers\Admin\WhatsAppController::class, 'contacts'])->name('admin.whatsapp.contacts');
+    Route::post('/whatsapp/contacts/import', [\App\Http\Controllers\Admin\WhatsAppController::class, 'importContacts'])->name('admin.whatsapp.contacts.import');
+    Route::post('/whatsapp/contacts/{id}/toggle-optin', [\App\Http\Controllers\Admin\WhatsAppController::class, 'toggleOptIn'])->name('admin.whatsapp.contacts.toggle');
+});
+
 // One-time setup endpoint for creating new feature tables
 Route::get('/setup-new-tables', function () {
     try {
@@ -2866,6 +2880,48 @@ Route::get('/setup-new-tables', function () {
             $out[] = "project_briefs.is_read column added";
         } else {
             $out[] = "project_briefs.is_read already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_broadcasts')) {
+            \Illuminate\Support\Facades\Schema::create('whatsapp_broadcasts', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->text('message');
+                $table->enum('status', ['draft', 'scheduled', 'sending', 'sent', 'failed'])->default('draft');
+                $table->timestamp('scheduled_at')->nullable();
+                $table->integer('total_recipients')->default(0);
+                $table->integer('sent_count')->default(0);
+                $table->integer('failed_count')->default(0);
+                $table->json('log')->nullable();
+                $table->timestamps();
+            });
+            $out[] = "whatsapp_broadcasts table created";
+        } else {
+            $out[] = "whatsapp_broadcasts already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_contacts')) {
+            \Illuminate\Support\Facades\Schema::create('whatsapp_contacts', function ($table) {
+                $table->id();
+                $table->unsignedBigInteger('lead_id')->nullable();
+                $table->string('phone', 20);
+                $table->boolean('opted_in')->default(true);
+                $table->timestamp('last_sent_at')->nullable();
+                $table->timestamps();
+                $table->unique(['lead_id', 'phone']);
+            });
+            $out[] = "whatsapp_contacts table created";
+        } else {
+            $out[] = "whatsapp_contacts already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'phone')) {
+            \Illuminate\Support\Facades\Schema::table('leads', function ($table) {
+                $table->string('phone', 20)->nullable()->after('email');
+            });
+            $out[] = "leads.phone column added";
+        } else {
+            $out[] = "leads.phone already exists";
         }
 
         return "<h2>Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";

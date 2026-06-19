@@ -11,7 +11,8 @@ class ProjectBrief extends Model
 
     protected $fillable = [
         'name', 'email', 'phone', 'company', 'project_type',
-        'description', 'budget_range', 'timeline', 'files', 'status', 'notes'
+        'description', 'budget_range', 'timeline', 'files', 'status', 'notes',
+        'is_read',
     ];
 
     protected $casts = [

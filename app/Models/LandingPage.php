@@ -33,6 +33,11 @@ class LandingPage extends Model
         'countdown_end' => 'datetime',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'id';
+    }
+
     public function sequence(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Sequence::class, 'sequence_id');

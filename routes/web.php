@@ -2930,6 +2930,59 @@ Route::get('/setup-new-tables', function () {
     }
 });
 
+// Dedicated WhatsApp Tables Setup
+Route::get('/setup-whatsapp-tables', function () {
+    try {
+        $out = [];
+
+        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_broadcasts')) {
+            \Illuminate\Support\Facades\Schema::create('whatsapp_broadcasts', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->text('message');
+                $table->enum('status', ['draft', 'scheduled', 'sending', 'sent', 'failed'])->default('draft');
+                $table->timestamp('scheduled_at')->nullable();
+                $table->integer('total_recipients')->default(0);
+                $table->integer('sent_count')->default(0);
+                $table->integer('failed_count')->default(0);
+                $table->json('log')->nullable();
+                $table->timestamps();
+            });
+            $out[] = "whatsapp_broadcasts table created";
+        } else {
+            $out[] = "whatsapp_broadcasts already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_contacts')) {
+            \Illuminate\Support\Facades\Schema::create('whatsapp_contacts', function ($table) {
+                $table->id();
+                $table->unsignedBigInteger('lead_id')->nullable();
+                $table->string('phone', 20);
+                $table->boolean('opted_in')->default(true);
+                $table->timestamp('last_sent_at')->nullable();
+                $table->timestamps();
+                $table->unique(['lead_id', 'phone']);
+            });
+            $out[] = "whatsapp_contacts table created";
+        } else {
+            $out[] = "whatsapp_contacts already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'phone')) {
+            \Illuminate\Support\Facades\Schema::table('leads', function ($table) {
+                $table->string('phone', 20)->nullable()->after('email');
+            });
+            $out[] = "leads.phone column added";
+        } else {
+            $out[] = "leads.phone already exists";
+        }
+
+        return "<h2>WhatsApp Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
+    } catch (\Exception $e) {
+        return "<h2>Error</h2><pre>" . $e->getMessage() . "</pre>";
+    }
+});
+
 // Setup Welcome Email Sequence
 Route::get('/setup-welcome-sequence', function () {
     $key = request('key', '');

@@ -125,6 +125,7 @@ class CustomerController extends Controller
             } catch (\Exception $e) {}
             setcookie('customer_token', '', time() - 3600, '/');
         }
+        session()->forget('customer_id');
         return redirect('/customer/login');
     }
 

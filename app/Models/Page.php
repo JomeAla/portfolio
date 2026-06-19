@@ -22,4 +22,9 @@ class Page extends Model
     protected $casts = [
         'content' => 'array',
     ];
+
+    public function getRouteKeyName()
+    {
+        return 'id';
+    }
 }

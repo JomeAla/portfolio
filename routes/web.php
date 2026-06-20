@@ -3180,27 +3180,19 @@ Route::get('/debug-whatsapp', function () {
     return "<h2>WhatsApp Diagnostics</h2><pre>" . implode("\n", $out) . "</pre>";
 });
 
-// Read the compiled view to find the parentheses issue
+// Force recompile and test the create view
 Route::get('/test-whatsapp-create', function () {
     try {
-        $compiledPath = '/home/joalacom/public_html/storage/framework/views/5d0c1b61e7ad699271bf7e673f48f55f.php';
-        if (!file_exists($compiledPath)) {
-            // Force compilation first
-            view('admin.whatsapp.create', [
-                'segments' => collect(), 'templates' => collect(),
-                'leadCount' => 0, 'contactCount' => 0
-            ])->render();
-            return "Compiled - check again";
-        }
-        $lines = file($compiledPath);
-        // Show lines 30-45 for context
-        $out = "Compiled view lines 30-45:\n";
-        for ($i = 29; $i < min(45, count($lines)); $i++) {
-            $out .= ($i+1) . ": " . htmlentities($lines[$i]) . "\n";
-        }
-        return response("<pre>$out</pre>")->header('Content-Type', 'text/html');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        $segments = \App\Models\Segment::where('is_active', true)->get();
+        $leadCount = \App\Models\Lead::count();
+        $contactCount = \App\Models\WhatsAppContact::where('opted_in', true)->count();
+        $tc = 'App\Models\WhatsAppTemplate';
+        $templates = $tc::where('status', 'active')->get();
+        $html = view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'))->render();
+        return response($html)->header('Content-Type', 'text/html');
     } catch (\Throwable $e) {
-        return response("ERROR: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine(), 200)->header('Content-Type', 'text/plain');
+        return response("ERROR: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString(), 200)->header('Content-Type', 'text/plain');
     }
 });
 

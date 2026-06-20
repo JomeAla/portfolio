@@ -2887,6 +2887,15 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::post('/whatsapp/conversations/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'destroy'])->name('admin.whatsapp.conversations.destroy');
     Route::get('/whatsapp/conversations/logs', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'logs'])->name('admin.whatsapp.conversations.logs');
 
+    // Groups
+    Route::get('/whatsapp/groups', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'index'])->name('admin.whatsapp.groups');
+    Route::get('/whatsapp/groups/create', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'create'])->name('admin.whatsapp.groups.create');
+    Route::post('/whatsapp/groups', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'store'])->name('admin.whatsapp.groups.store');
+    Route::get('/whatsapp/groups/{group}/edit', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'edit'])->name('admin.whatsapp.groups.edit');
+    Route::post('/whatsapp/groups/{group}', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'update'])->name('admin.whatsapp.groups.update');
+    Route::post('/whatsapp/groups/{group}/toggle', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'toggleActive'])->name('admin.whatsapp.groups.toggle');
+    Route::post('/whatsapp/groups/{group}/delete', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'destroy'])->name('admin.whatsapp.groups.destroy');
+
     // Wildcard routes LAST (so static sub-paths like /contacts, /templates match first)
     Route::get('/whatsapp/{id}', [\App\Http\Controllers\Admin\WhatsAppController::class, 'show'])->name('admin.whatsapp.show');
     Route::post('/whatsapp/{id}/send', [\App\Http\Controllers\Admin\WhatsAppController::class, 'send'])->name('admin.whatsapp.send');
@@ -3115,6 +3124,30 @@ Route::get('/setup-whatsapp-tables', function () {
             $out[] = "whatsapp_conversation_logs table created";
         } else {
             $out[] = "whatsapp_conversation_logs already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_groups')) {
+            \Illuminate\Support\Facades\Schema::create('whatsapp_groups', function ($table) {
+                $table->id();
+                $table->string('name');
+                $table->string('group_jid')->unique();
+                $table->text('description')->nullable();
+                $table->integer('member_count')->default(0);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+            });
+            $out[] = "whatsapp_groups table created";
+        } else {
+            $out[] = "whatsapp_groups already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('whatsapp_broadcasts', 'group_jid')) {
+            \Illuminate\Support\Facades\Schema::table('whatsapp_broadcasts', function ($table) {
+                $table->string('group_jid')->nullable()->after('status');
+            });
+            $out[] = "whatsapp_broadcasts.group_jid column added";
+        } else {
+            $out[] = "whatsapp_broadcasts.group_jid already exists";
         }
 
         return "<h2>WhatsApp Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";

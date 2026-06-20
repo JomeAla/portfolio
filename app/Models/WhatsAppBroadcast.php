@@ -19,6 +19,7 @@ class WhatsAppBroadcast extends Model
         'sent_count',
         'failed_count',
         'log',
+        'group_jid',
     ];
 
     protected $casts = [

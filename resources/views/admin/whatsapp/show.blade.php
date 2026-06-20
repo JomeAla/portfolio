@@ -38,6 +38,15 @@
             </div>
             @endif
 
+            @if($broadcast->group_jid)
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-6">
+                <p class="text-sm text-purple-700">
+                    <i class="fas fa-users mr-2"></i>
+                    Sent to Group: <span class="font-mono">{{ $broadcast->group_jid }}</span>
+                </p>
+            </div>
+            @endif
+
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-3">Message Preview</h3>
                 <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 whitespace-pre-wrap text-gray-800 leading-relaxed">
@@ -82,8 +91,16 @@
         @if($broadcast->status == 'draft')
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/50 p-6 mt-6">
             <h3 class="font-semibold text-gray-900 mb-4">Send Broadcast</h3>
-            <form method="POST" action="/admin/whatsapp/{{ $broadcast->id }}/send" onsubmit="return confirm('Send this broadcast to all opted-in contacts?')">
+            <form method="POST" action="/admin/whatsapp/{{ $broadcast->id }}/send" onsubmit="return confirm('Send this broadcast now?')">
                 @csrf
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Send To</label>
+                    <select name="scope" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
+                        <option value="all">All Opted-In Contacts</option>
+                        <option value="segment">Specific Segment</option>
+                        <option value="group" {{ $broadcast->group_jid ? 'selected' : '' }}>WhatsApp Group</option>
+                    </select>
+                </div>
                 <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
                     <i class="fas fa-paper-plane mr-2"></i>Send Now
                 </button>

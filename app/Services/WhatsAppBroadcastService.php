@@ -88,6 +88,27 @@ class WhatsAppBroadcastService
         return $this->sendBroadcast($broadcast, $phones);
     }
 
+    public function sendToGroup(WhatsAppBroadcast $broadcast): array
+    {
+        $groupJid = $broadcast->group_jid;
+        if (empty($groupJid)) {
+            return ['sent' => 0, 'failed' => 1, 'errors' => ['No group JID set on broadcast']];
+        }
+
+        $broadcast->update(['status' => 'sending', 'total_recipients' => 1]);
+
+        $payload = $broadcast->payload ?: $this->buildTextPayload($broadcast->message);
+
+        try {
+            $this->sendPayload($groupJid, $payload);
+            $broadcast->update(['status' => 'sent', 'sent_count' => 1, 'failed_count' => 0]);
+            return ['sent' => 1, 'failed' => 0, 'errors' => []];
+        } catch (\Exception $e) {
+            $broadcast->update(['status' => 'failed', 'sent_count' => 0, 'failed_count' => 1, 'log' => [['error' => $e->getMessage()]]]);
+            return ['sent' => 0, 'failed' => 1, 'errors' => [$e->getMessage()]];
+        }
+    }
+
     // ─── Template-Based Sending ──────────────────────────────────────
 
     public function sendTemplate(string $phone, WhatsAppTemplate $template, ?Lead $lead = null): void

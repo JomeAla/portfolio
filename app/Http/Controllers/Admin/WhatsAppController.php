@@ -7,6 +7,7 @@ use App\Models\Lead;
 use App\Models\Segment;
 use App\Models\WhatsAppBroadcast;
 use App\Models\WhatsAppContact;
+use App\Models\WhatsAppGroup;
 use App\Services\WhatsAppBroadcastService;
 use Illuminate\Http\Request;
 
@@ -35,15 +36,17 @@ class WhatsAppController extends Controller
     {
         $segments = collect();
         $templates = collect();
+        $groups = collect();
         $leadCount = 0;
         $contactCount = 0;
 
         try { $segments = Segment::where('is_active', true)->get(); } catch (\Throwable $e) {}
+        try { $groups = WhatsAppGroup::active()->get(); } catch (\Throwable $e) {}
         try { $leadCount = Lead::count(); } catch (\Throwable $e) {}
         try { $contactCount = WhatsAppContact::where('opted_in', true)->count(); } catch (\Throwable $e) {}
         try { $tc = 'App\Models\WhatsAppTemplate'; $templates = $tc::where('status', 'active')->get(); } catch (\Throwable $e) {}
 
-        return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
+        return view('admin.whatsapp.create', compact('segments', 'templates', 'groups', 'leadCount', 'contactCount'));
     }
 
     public function store(Request $request)
@@ -54,13 +57,20 @@ class WhatsAppController extends Controller
             'message_type' => 'required|in:text,template',
             'template_id' => 'required_if:message_type,template|exists:whatsapp_templates,id',
             'schedule' => 'nullable|date',
-            'scope' => 'required|in:all,segment,custom',
+            'scope' => 'required|in:all,segment,group',
             'segment_id' => 'required_if:scope,segment|exists:segments,id',
+            'group_id' => 'required_if:scope,group|exists:whatsapp_groups,id',
         ]);
 
         try {
             $payload = null;
             $message = $request->message ?? '';
+            $groupJid = null;
+
+            if ($request->scope === 'group' && $request->group_id) {
+                $group = WhatsAppGroup::findOrFail($request->group_id);
+                $groupJid = $group->group_jid;
+            }
 
             if ($request->message_type === 'template' && $request->template_id) {
                 $tc = 'App\Models\WhatsAppTemplate';
@@ -78,6 +88,7 @@ class WhatsAppController extends Controller
                 'template_id' => $request->template_id,
                 'status' => $request->schedule ? 'scheduled' : 'draft',
                 'scheduled_at' => $request->schedule,
+                'group_jid' => $groupJid,
             ]);
 
             if ($request->schedule) {
@@ -108,6 +119,7 @@ class WhatsAppController extends Controller
             $scope = $request->scope ?? 'all';
             $result = match ($scope) {
                 'segment' => $this->whatsapp->sendToSegment($request->segment_id, $broadcast),
+                'group' => $this->whatsapp->sendToGroup($broadcast),
                 default => $this->whatsapp->sendToAllLeads($broadcast),
             };
 

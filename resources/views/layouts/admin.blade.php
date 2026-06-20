@@ -133,6 +133,10 @@
                     <i class="fas fa-address-book w-5"></i>
                     <span>Contacts</span>
                 </a>
+                <a href="/admin/whatsapp/groups" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
+                    <i class="fas fa-users w-5"></i>
+                    <span>Groups</span>
+                </a>
                 <div class="px-6 py-2 text-slate-500 text-xs font-semibold uppercase">Content</div>
                 <a href="/admin/marketing/blog" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
                     <i class="fas fa-blog w-5"></i>

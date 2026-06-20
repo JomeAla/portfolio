@@ -55,6 +55,7 @@
                 <select name="scope" id="scopeSelect" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
                     <option value="all">All Opted-In Contacts ({{ $contactCount }})</option>
                     <option value="segment">Specific Segment</option>
+                    <option value="group">WhatsApp Group</option>
                 </select>
             </div>
             <div>
@@ -74,6 +75,17 @@
                 <option value="{{ $segment->id }}">{{ $segment->name }}</option>
                 @endforeach
             </select>
+        </div>
+
+        <div id="groupField" class="hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Target Group</label>
+            <select name="group_id" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
+                <option value="">Select Group</option>
+                @foreach($groups as $g)
+                <option value="{{ $g->id }}">{{ $g->name }} ({{ $g->group_jid }})</option>
+                @endforeach
+            </select>
+            <p class="text-xs text-gray-500 mt-1">Message will be sent to the entire WhatsApp group. <a href="/admin/whatsapp/groups" class="text-blue-600">Manage Groups</a></p>
         </div>
 
         <div id="scheduleFields" class="hidden">
@@ -98,6 +110,7 @@ function toggleSchedule() {
 }
 document.getElementById('scopeSelect').addEventListener('change', function() {
     document.getElementById('segmentField').style.display = this.value === 'segment' ? 'block' : 'none';
+    document.getElementById('groupField').style.display = this.value === 'group' ? 'block' : 'none';
 });
 </script>
 @endsection

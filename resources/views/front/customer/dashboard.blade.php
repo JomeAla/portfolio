@@ -1,13 +1,23 @@
 @extends('front.customer.layout')
 
 @section('customer-content')
+@if(session('success'))
+<div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-xl mb-6">
+    <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
+</div>
+@endif
+@if(session('error'))
+<div class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl mb-6">
+    <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
+</div>
+@endif
 <div class="mb-8">
     <div class="flex items-center justify-between">
         <div>
             <p class="text-sm font-medium text-slate-500 uppercase tracking-wider">Dashboard</p>
             <h1 class="text-3xl font-bold text-slate-900 mt-1">Welcome back, {{ explode(' ', $customer['name'] ?? 'Customer')[0] }}!</h1>
         </div>
-        <a href="/" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-medium transition-all hover:scale-105">
+        <a href="/store" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-medium transition-all hover:scale-105">
             <i class="fas fa-store"></i> Browse Store
         </a>
     </div>
@@ -133,7 +143,7 @@
                         <i class="fas fa-shopping-bag text-2xl text-slate-400"></i>
                     </div>
                     <p class="text-slate-600 mb-4">No orders yet</p>
-                    <a href="/" class="inline-flex items-center gap-2 text-blue-600 hover:underline font-medium">
+                    <a href="/store" class="inline-flex items-center gap-2 text-blue-600 hover:underline font-medium">
                         Browse Products <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>

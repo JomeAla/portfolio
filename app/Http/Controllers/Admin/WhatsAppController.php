@@ -7,6 +7,7 @@ use App\Models\Lead;
 use App\Models\Segment;
 use App\Models\WhatsAppBroadcast;
 use App\Models\WhatsAppContact;
+use App\Models\WhatsAppTemplate;
 use App\Services\WhatsAppBroadcastService;
 use Illuminate\Http\Request;
 
@@ -36,24 +37,40 @@ class WhatsAppController extends Controller
         $segments = Segment::where('is_active', true)->get();
         $leadCount = Lead::count();
         $contactCount = WhatsAppContact::where('opted_in', true)->count();
+        $templates = WhatsAppTemplate::where('status', 'active')->get();
 
-        return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount'));
+        return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'message' => 'required|string',
+            'message' => 'nullable|string',
+            'message_type' => 'required|in:text,template',
+            'template_id' => 'required_if:message_type,template|exists:whatsapp_templates,id',
             'schedule' => 'nullable|date',
             'scope' => 'required|in:all,segment,custom',
             'segment_id' => 'required_if:scope,segment|exists:segments,id',
         ]);
 
         try {
+            $payload = null;
+            $message = $request->message ?? '';
+
+            if ($request->message_type === 'template' && $request->template_id) {
+                $template = WhatsAppTemplate::findOrFail($request->template_id);
+                $payload = $this->whatsapp->buildTemplatePayload($template);
+                $message = $template->body;
+            } elseif (empty($message)) {
+                return back()->with('error', 'Message body is required for text broadcasts.')->withInput();
+            }
+
             $broadcast = WhatsAppBroadcast::create([
                 'name' => $request->name,
-                'message' => $request->message,
+                'message' => $message,
+                'payload' => $payload,
+                'template_id' => $request->template_id,
                 'status' => $request->schedule ? 'scheduled' : 'draft',
                 'scheduled_at' => $request->schedule,
             ]);
@@ -62,7 +79,7 @@ class WhatsAppController extends Controller
                 return redirect('/admin/whatsapp')->with('success', 'Broadcast scheduled for ' . $request->schedule);
             }
 
-            return redirect('/admin/whatsapp/' . $broadcast->id)->with('success', 'Broadcast created as draft. Review and send when ready.');
+            return redirect('/admin/whatsapp/' . $broadcast->id)->with('success', 'Broadcast created as draft.');
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
         }
@@ -70,7 +87,7 @@ class WhatsAppController extends Controller
 
     public function show($id)
     {
-        $broadcast = WhatsAppBroadcast::findOrFail($id);
+        $broadcast = WhatsAppBroadcast::with('template')->findOrFail($id);
         return view('admin.whatsapp.show', compact('broadcast'));
     }
 

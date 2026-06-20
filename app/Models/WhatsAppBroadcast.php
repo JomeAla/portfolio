@@ -11,6 +11,8 @@ class WhatsAppBroadcast extends Model
     protected $fillable = [
         'name',
         'message',
+        'payload',
+        'template_id',
         'status',
         'scheduled_at',
         'total_recipients',
@@ -22,7 +24,13 @@ class WhatsAppBroadcast extends Model
     protected $casts = [
         'scheduled_at' => 'datetime',
         'log' => 'array',
+        'payload' => 'array',
     ];
+
+    public function template()
+    {
+        return $this->belongsTo(\App\Models\WhatsAppTemplate::class, 'template_id');
+    }
 
     public function scopeDraft($query)
     {

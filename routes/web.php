@@ -2854,6 +2854,39 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::get('/whatsapp/contacts', [\App\Http\Controllers\Admin\WhatsAppController::class, 'contacts'])->name('admin.whatsapp.contacts');
     Route::post('/whatsapp/contacts/import', [\App\Http\Controllers\Admin\WhatsAppController::class, 'importContacts'])->name('admin.whatsapp.contacts.import');
     Route::post('/whatsapp/contacts/{id}/toggle-optin', [\App\Http\Controllers\Admin\WhatsAppController::class, 'toggleOptIn'])->name('admin.whatsapp.contacts.toggle');
+
+    // Templates
+    Route::get('/whatsapp/templates', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'index'])->name('admin.whatsapp.templates');
+    Route::get('/whatsapp/templates/create', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'create'])->name('admin.whatsapp.templates.create');
+    Route::post('/whatsapp/templates', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'store'])->name('admin.whatsapp.templates.store');
+    Route::get('/whatsapp/templates/{id}', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'show'])->name('admin.whatsapp.templates.show');
+    Route::get('/whatsapp/templates/{id}/edit', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'edit'])->name('admin.whatsapp.templates.edit');
+    Route::post('/whatsapp/templates/{id}', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'update'])->name('admin.whatsapp.templates.update');
+    Route::post('/whatsapp/templates/{id}/toggle', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'toggleStatus'])->name('admin.whatsapp.templates.toggle');
+    Route::get('/whatsapp/templates/{id}/preview', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'preview'])->name('admin.whatsapp.templates.preview');
+    Route::post('/whatsapp/templates/{id}/test', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'sendTest'])->name('admin.whatsapp.templates.test');
+    Route::post('/whatsapp/templates/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'destroy'])->name('admin.whatsapp.templates.destroy');
+
+    // Flows
+    Route::get('/whatsapp/flows', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'index'])->name('admin.whatsapp.flows');
+    Route::get('/whatsapp/flows/create', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'create'])->name('admin.whatsapp.flows.create');
+    Route::post('/whatsapp/flows', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'store'])->name('admin.whatsapp.flows.store');
+    Route::get('/whatsapp/flows/{id}', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'show'])->name('admin.whatsapp.flows.show');
+    Route::get('/whatsapp/flows/{id}/edit', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'edit'])->name('admin.whatsapp.flows.edit');
+    Route::post('/whatsapp/flows/{id}', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'update'])->name('admin.whatsapp.flows.update');
+    Route::post('/whatsapp/flows/{id}/deploy', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'deploy'])->name('admin.whatsapp.flows.deploy');
+    Route::post('/whatsapp/flows/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'destroy'])->name('admin.whatsapp.flows.destroy');
+
+    // Conversations
+    Route::get('/whatsapp/conversations', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'index'])->name('admin.whatsapp.conversations');
+    Route::get('/whatsapp/conversations/create', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'create'])->name('admin.whatsapp.conversations.create');
+    Route::post('/whatsapp/conversations', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'store'])->name('admin.whatsapp.conversations.store');
+    Route::get('/whatsapp/conversations/{id}', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'show'])->name('admin.whatsapp.conversations.show');
+    Route::get('/whatsapp/conversations/{id}/edit', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'edit'])->name('admin.whatsapp.conversations.edit');
+    Route::post('/whatsapp/conversations/{id}', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'update'])->name('admin.whatsapp.conversations.update');
+    Route::post('/whatsapp/conversations/{id}/toggle', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'toggleActive'])->name('admin.whatsapp.conversations.toggle');
+    Route::post('/whatsapp/conversations/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'destroy'])->name('admin.whatsapp.conversations.destroy');
+    Route::get('/whatsapp/conversations/logs', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'logs'])->name('admin.whatsapp.conversations.logs');
 });
 
 // One-time setup endpoint for creating new feature tables
@@ -2934,6 +2967,24 @@ Route::get('/setup-new-tables', function () {
 Route::get('/setup-whatsapp-tables', function () {
     try {
         $out = [];
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('whatsapp_broadcasts', 'payload')) {
+            \Illuminate\Support\Facades\Schema::table('whatsapp_broadcasts', function ($table) {
+                $table->json('payload')->nullable()->after('message');
+            });
+            $out[] = "whatsapp_broadcasts.payload column added";
+        } else {
+            $out[] = "whatsapp_broadcasts.payload already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('whatsapp_broadcasts', 'template_id')) {
+            \Illuminate\Support\Facades\Schema::table('whatsapp_broadcasts', function ($table) {
+                $table->unsignedBigInteger('template_id')->nullable()->after('payload');
+            });
+            $out[] = "whatsapp_broadcasts.template_id column added";
+        } else {
+            $out[] = "whatsapp_broadcasts.template_id already exists";
+        }
 
         if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_broadcasts')) {
             \Illuminate\Support\Facades\Schema::create('whatsapp_broadcasts', function ($table) {

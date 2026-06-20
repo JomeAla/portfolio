@@ -2845,12 +2845,10 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
 
 // Admin - WhatsApp Broadcasting
 Route::middleware(['admin'])->prefix('admin')->group(function () {
+    // Static routes FIRST (before any {id} wildcards)
     Route::get('/whatsapp', [\App\Http\Controllers\Admin\WhatsAppController::class, 'index'])->name('admin.whatsapp.index');
     Route::get('/whatsapp/create', [\App\Http\Controllers\Admin\WhatsAppController::class, 'create'])->name('admin.whatsapp.create');
     Route::post('/whatsapp', [\App\Http\Controllers\Admin\WhatsAppController::class, 'store'])->name('admin.whatsapp.store');
-    Route::get('/whatsapp/{id}', [\App\Http\Controllers\Admin\WhatsAppController::class, 'show'])->name('admin.whatsapp.show');
-    Route::post('/whatsapp/{id}/send', [\App\Http\Controllers\Admin\WhatsAppController::class, 'send'])->name('admin.whatsapp.send');
-    Route::post('/whatsapp/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppController::class, 'destroy'])->name('admin.whatsapp.destroy');
     Route::get('/whatsapp/contacts', [\App\Http\Controllers\Admin\WhatsAppController::class, 'contacts'])->name('admin.whatsapp.contacts');
     Route::post('/whatsapp/contacts/import', [\App\Http\Controllers\Admin\WhatsAppController::class, 'importContacts'])->name('admin.whatsapp.contacts.import');
     Route::post('/whatsapp/contacts/{id}/toggle-optin', [\App\Http\Controllers\Admin\WhatsAppController::class, 'toggleOptIn'])->name('admin.whatsapp.contacts.toggle');
@@ -2887,6 +2885,11 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::post('/whatsapp/conversations/{id}/toggle', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'toggleActive'])->name('admin.whatsapp.conversations.toggle');
     Route::post('/whatsapp/conversations/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'destroy'])->name('admin.whatsapp.conversations.destroy');
     Route::get('/whatsapp/conversations/logs', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'logs'])->name('admin.whatsapp.conversations.logs');
+
+    // Wildcard routes LAST (so static sub-paths like /contacts, /templates match first)
+    Route::get('/whatsapp/{id}', [\App\Http\Controllers\Admin\WhatsAppController::class, 'show'])->name('admin.whatsapp.show');
+    Route::post('/whatsapp/{id}/send', [\App\Http\Controllers\Admin\WhatsAppController::class, 'send'])->name('admin.whatsapp.send');
+    Route::post('/whatsapp/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppController::class, 'destroy'])->name('admin.whatsapp.destroy');
 });
 
 // One-time setup endpoint for creating new feature tables
@@ -3116,6 +3119,65 @@ Route::get('/dump-autoload', function () {
     } catch (\Exception $e) {
         return "<h2>Error</h2><pre>" . $e->getMessage() . "</pre>";
     }
+});
+
+// Diagnostic: Check what's going wrong with WhatsApp pages
+Route::get('/debug-whatsapp', function () {
+    $key = request('key', '');
+    if ($key !== 'joala2024') { return "Invalid key"; }
+
+    $out = [];
+
+    // Check class existence
+    $classes = [
+        'App\Models\Lead',
+        'App\Models\Segment',
+        'App\Models\WhatsAppBroadcast',
+        'App\Models\WhatsAppContact',
+        'App\Models\WhatsAppTemplate',
+        'App\Models\WhatsAppFlow',
+        'App\Models\WhatsAppConversation',
+        'App\Services\WhatsAppBroadcastService',
+    ];
+    foreach ($classes as $class) {
+        try {
+            $exists = class_exists($class, true);
+            $out[] = ($exists ? 'OK' : 'NOT FOUND') . " – $class";
+        } catch (\Exception $e) {
+            $out[] = 'ERROR – '.$class.': '.$e->getMessage();
+        } catch (\Throwable $e) {
+            $out[] = 'FATAL – '.$class.': '.$e->getMessage();
+        }
+    }
+
+    // Check tables
+    $tables = ['leads', 'segments', 'whatsapp_broadcasts', 'whatsapp_contacts', 'whatsapp_templates', 'whatsapp_flows', 'whatsapp_conversations'];
+    foreach ($tables as $table) {
+        try {
+            $exists = \Illuminate\Support\Facades\Schema::hasTable($table);
+            $out[] = ($exists ? 'OK' : 'MISSING') . " – table '$table'";
+        } catch (\Exception $e) {
+            $out[] = 'ERROR – table \''.$table.'\': '.$e->getMessage();
+        }
+    }
+
+    // Test a simple query on each
+    $queries = [
+        'Segment::count()' => fn() => \App\Models\Segment::count(),
+        'Lead::count()' => fn() => \App\Models\Lead::count(),
+        'WhatsAppContact::count()' => fn() => \App\Models\WhatsAppContact::count(),
+        'WhatsAppTemplate::count()' => fn() => class_exists('App\Models\WhatsAppTemplate') ? \App\Models\WhatsAppTemplate::count() : 'class not found',
+    ];
+    foreach ($queries as $label => $fn) {
+        try {
+            $result = $fn();
+            $out[] = "OK – $label = $result";
+        } catch (\Exception $e) {
+            $out[] = 'ERROR – '.$label.': '.$e->getMessage();
+        }
+    }
+
+    return "<h2>WhatsApp Diagnostics</h2><pre>" . implode("\n", $out) . "</pre>";
 });
 
 // Setup Welcome Email Sequence

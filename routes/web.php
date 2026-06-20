@@ -3180,6 +3180,20 @@ Route::get('/debug-whatsapp', function () {
     return "<h2>WhatsApp Diagnostics</h2><pre>" . implode("\n", $out) . "</pre>";
 });
 
+// Test without controller — reproduces the create method
+Route::get('/test-whatsapp-create', function () {
+    try {
+        $segments = \App\Models\Segment::where('is_active', true)->get();
+        $leadCount = \App\Models\Lead::count();
+        $contactCount = \App\Models\WhatsAppContact::where('opted_in', true)->count();
+        $tc = 'App\Models\WhatsAppTemplate';
+        $templates = $tc::where('status', 'active')->get();
+        return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
+    } catch (\Throwable $e) {
+        return "<h2>Error in test-whatsapp-create</h2><pre>" . $e->getMessage() . "\n" . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString() . "</pre>";
+    }
+});
+
 // Setup Welcome Email Sequence
 Route::get('/setup-welcome-sequence', function () {
     $key = request('key', '');

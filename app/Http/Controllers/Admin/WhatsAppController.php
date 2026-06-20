@@ -34,19 +34,19 @@ class WhatsAppController extends Controller
     public function create()
     {
         try {
+            $html = '<h2>Create method reached</h2><p>Querying data...</p>';
             $segments = collect();
-            $templates = collect();
+            try { $segments = Segment::where('is_active', true)->get(); $html .= "<p>Segments: OK (" . $segments->count() . ")</p>"; } catch (\Throwable $e) { $html .= "<p>Segments: " . $e->getMessage() . "</p>"; }
             $leadCount = 0;
+            try { $leadCount = Lead::count(); $html .= "<p>Leads: OK ($leadCount)</p>"; } catch (\Throwable $e) { $html .= "<p>Leads: " . $e->getMessage() . "</p>"; }
             $contactCount = 0;
-
-            try { $segments = Segment::where('is_active', true)->get(); } catch (\Throwable $e) {}
-            try { $leadCount = Lead::count(); } catch (\Throwable $e) {}
-            try { $contactCount = WhatsAppContact::where('opted_in', true)->count(); } catch (\Throwable $e) {}
-            try { $tc = 'App\Models\WhatsAppTemplate'; $templates = $tc::where('status', 'active')->get(); } catch (\Throwable $e) {}
-
+            try { $contactCount = WhatsAppContact::where('opted_in', true)->count(); $html .= "<p>Contacts: OK ($contactCount)</p>"; } catch (\Throwable $e) { $html .= "<p>Contacts: " . $e->getMessage() . "</p>"; }
+            $templates = collect();
+            try { $tc = 'App\Models\WhatsAppTemplate'; $templates = $tc::where('status', 'active')->get(); $html .= "<p>Templates: OK (" . $templates->count() . ")</p>"; } catch (\Throwable $e) { $html .= "<p>Templates: " . $e->getMessage() . "</p>"; }
+            $html .= "<p>Rendering view...</p>";
             return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
         } catch (\Throwable $e) {
-            return response('<h2>Create error</h2><pre>' . $e->getMessage() . "\n" . $e->getFile() . ':' . $e->getLine() . '</pre>', 500);
+            return response('<h2>Create error</h2><pre>' . $e->getMessage() . "\nFile: " . $e->getFile() . ':' . $e->getLine() . "\n\nTrace:\n" . $e->getTraceAsString() . '</pre>', 500);
         }
     }
 

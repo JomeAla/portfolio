@@ -3180,17 +3180,33 @@ Route::get('/debug-whatsapp', function () {
     return "<h2>WhatsApp Diagnostics</h2><pre>" . implode("\n", $out) . "</pre>";
 });
 
-// Test without controller — reproduces the create method
+// Test without controller
 Route::get('/test-whatsapp-create', function () {
+    $key = request('key', '');
+    $out = ['key=' . ($key ?: 'none')];
+
     try {
+        $out[] = 'Step 1: loading Segment...';
         $segments = \App\Models\Segment::where('is_active', true)->get();
+        $out[] = 'Step 2: Segment OK (count=' . $segments->count() . ')';
+
         $leadCount = \App\Models\Lead::count();
+        $out[] = 'Step 3: Lead OK (count=' . $leadCount . ')';
+
         $contactCount = \App\Models\WhatsAppContact::where('opted_in', true)->count();
+        $out[] = 'Step 4: WhatsAppContact OK (count=' . $contactCount . ')';
+
         $tc = 'App\Models\WhatsAppTemplate';
         $templates = $tc::where('status', 'active')->get();
+        $out[] = 'Step 5: WhatsAppTemplate OK (count=' . $templates->count() . ')';
+
+        $out[] = 'Step 6: Rendering view...';
         return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
     } catch (\Throwable $e) {
-        return "<h2>Error in test-whatsapp-create</h2><pre>" . $e->getMessage() . "\n" . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString() . "</pre>";
+        $out[] = 'ERROR: ' . $e->getMessage();
+        $out[] = 'File: ' . $e->getFile() . ':' . $e->getLine();
+        $out[] = 'Trace: ' . $e->getTraceAsString();
+        return response("<h2>Test Results</h2><pre>" . implode("\n", $out) . "</pre>")->header('Content-Type', 'text/html');
     }
 });
 

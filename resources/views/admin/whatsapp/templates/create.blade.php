@@ -40,7 +40,7 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Body Text *</label>
-            <textarea name="body" required rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none" placeholder="Message body with {{name}}, {{first_name}}, {{site_name}} placeholders"></textarea>
+            <textarea name="body" required rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none" placeholder="Message body with @{{name}}, @{{first_name}}, @{{site_name}} placeholders"></textarea>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -83,7 +83,7 @@
 
         <div class="bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
             <p class="font-medium mb-1">Available Placeholders:</p>
-            <code class="text-xs">{{ '{{name}}' }}, {{ '{{first_name}}' }}, {{ '{{phone}}' }}, {{ '{{email}}' }}, {{ '{{site_name}}' }}, {{ '{{site_url}}' }}, {{ '{{year}}' }}</code>
+            <code class="text-xs">@{{name}}, @{{first_name}}, @{{phone}}, @{{email}}, @{{site_name}}, @{{site_url}}, @{{year}}</code>
         </div>
 
         <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">

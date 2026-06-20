@@ -33,17 +33,21 @@ class WhatsAppController extends Controller
 
     public function create()
     {
-        $segments = [];
-        $templates = [];
-        $leadCount = 0;
-        $contactCount = 0;
+        try {
+            $segments = collect();
+            $templates = collect();
+            $leadCount = 0;
+            $contactCount = 0;
 
-        try { $segments = Segment::where('is_active', true)->get(); } catch (\Exception $e) {}
-        try { $leadCount = Lead::count(); } catch (\Exception $e) {}
-        try { $contactCount = WhatsAppContact::where('opted_in', true)->count(); } catch (\Exception $e) {}
-        try { $templateClass = 'App\Models\WhatsAppTemplate'; $templates = $templateClass::where('status', 'active')->get(); } catch (\Exception $e) {}
+            try { $segments = Segment::where('is_active', true)->get(); } catch (\Throwable $e) {}
+            try { $leadCount = Lead::count(); } catch (\Throwable $e) {}
+            try { $contactCount = WhatsAppContact::where('opted_in', true)->count(); } catch (\Throwable $e) {}
+            try { $tc = 'App\Models\WhatsAppTemplate'; $templates = $tc::where('status', 'active')->get(); } catch (\Throwable $e) {}
 
-        return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
+            return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
+        } catch (\Throwable $e) {
+            return response('<h2>Create error</h2><pre>' . $e->getMessage() . "\n" . $e->getFile() . ':' . $e->getLine() . '</pre>', 500);
+        }
     }
 
     public function store(Request $request)

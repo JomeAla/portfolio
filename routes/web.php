@@ -3180,9 +3180,10 @@ Route::get('/debug-whatsapp', function () {
     return "<h2>WhatsApp Diagnostics</h2><pre>" . implode("\n", $out) . "</pre>";
 });
 
-// Test view rendering step by step
+// Clear view cache + test view rendering
 Route::get('/test-whatsapp-create', function () {
     try {
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
         $segments = \App\Models\Segment::where('is_active', true)->get();
         $leadCount = \App\Models\Lead::count();
         $contactCount = \App\Models\WhatsAppContact::where('opted_in', true)->count();

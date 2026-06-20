@@ -2898,17 +2898,21 @@ Route::get('/setup-new-tables', function () {
     try {
         $out = [];
 
-        \Illuminate\Support\Facades\Schema::create('page_visits', function ($table) {
-            $table->bigIncrements('id');
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->text('url')->nullable();
-            $table->text('referer')->nullable();
-            $table->string('session_id')->nullable()->index();
-            $table->timestamp('visited_at')->useCurrent();
-            $table->index('visited_at');
-        });
-        $out[] = "page_visits table OK";
+        if (!\Illuminate\Support\Facades\Schema::hasTable('page_visits')) {
+            \Illuminate\Support\Facades\Schema::create('page_visits', function ($table) {
+                $table->bigIncrements('id');
+                $table->string('ip_address', 45)->nullable();
+                $table->text('user_agent')->nullable();
+                $table->text('url')->nullable();
+                $table->text('referer')->nullable();
+                $table->string('session_id')->nullable()->index();
+                $table->timestamp('visited_at')->useCurrent();
+                $table->index('visited_at');
+            });
+            $out[] = "page_visits table created";
+        } else {
+            $out[] = "page_visits already exists";
+        }
 
         if (!\Illuminate\Support\Facades\Schema::hasColumn('project_briefs', 'is_read')) {
             \Illuminate\Support\Facades\Schema::table('project_briefs', function ($table) {

@@ -196,6 +196,7 @@
 <a href="/admin/support" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
                     <i class="fas fa-ticket-alt w-5"></i>
                     <span>Support</span>
+                    <span id="support-badge" class="ml-auto hidden bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
                 </a>
                 <a href="/admin/notifications" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
                     <i class="fas fa-bell w-5"></i>
@@ -221,11 +222,11 @@
     </div>
     @yield('scripts')
     <script>
-    function updateBriefBadge() {
-        fetch('/admin/briefs/unread-count')
+    function updateBadge(id, url) {
+        fetch(url)
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                var badge = document.getElementById('brief-badge');
+                var badge = document.getElementById(id);
                 if (data.count > 0) {
                     badge.textContent = data.count;
                     badge.classList.remove('hidden');
@@ -235,8 +236,14 @@
             })
             .catch(function() {});
     }
-    document.addEventListener('DOMContentLoaded', updateBriefBadge);
-    setInterval(updateBriefBadge, 30000);
+    document.addEventListener('DOMContentLoaded', function() {
+        updateBadge('brief-badge', '/admin/briefs/unread-count');
+        updateBadge('support-badge', '/admin/support/unread-count');
+    });
+    setInterval(function() {
+        updateBadge('brief-badge', '/admin/briefs/unread-count');
+        updateBadge('support-badge', '/admin/support/unread-count');
+    }, 30000);
     </script>
 </body>
 </html>

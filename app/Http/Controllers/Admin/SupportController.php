@@ -20,8 +20,17 @@ class SupportController extends Controller
         return view('admin.support.index', compact('tickets'));
     }
 
+    public function unreadCount()
+    {
+        $count = SupportTicket::whereNull('admin_read_at')->count();
+        return response()->json(['count' => $count]);
+    }
+
     public function show(SupportTicket $ticket)
     {
+        if (is_null($ticket->admin_read_at)) {
+            $ticket->update(['admin_read_at' => now()]);
+        }
         return view('admin.support.show', compact('ticket'));
     }
 

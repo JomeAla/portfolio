@@ -339,6 +339,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/email/campaigns', [EmailCampaignController::class, 'store'])->name('admin.email.campaigns.store');
         
         Route::get('/support', [SupportController::class, 'index'])->name('admin.support');
+        Route::get('/support/unread-count', [SupportController::class, 'unreadCount'])->name('admin.support.unread');
         Route::get('/support/{ticket}', [SupportController::class, 'show'])->name('admin.support.show');
         Route::put('/support/{ticket}', [SupportController::class, 'update'])->name('admin.support.update');
         Route::delete('/support/{ticket}', [SupportController::class, 'destroy'])->name('admin.support.destroy');
@@ -2958,6 +2959,15 @@ Route::get('/setup-new-tables', function () {
             $out[] = "leads.phone column added";
         } else {
             $out[] = "leads.phone already exists";
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('support_tickets', 'admin_read_at')) {
+            \Illuminate\Support\Facades\Schema::table('support_tickets', function ($table) {
+                $table->timestamp('admin_read_at')->nullable()->after('responded_at');
+            });
+            $out[] = "support_tickets.admin_read_at column added";
+        } else {
+            $out[] = "support_tickets.admin_read_at already exists";
         }
 
         return "<h2>Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";

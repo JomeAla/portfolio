@@ -16,11 +16,12 @@ class SupportTicket extends Model
 
     protected $fillable = [
         'ticket_number', 'user_id', 'name', 'email', 'phone', 'subject',
-        'message', 'status', 'admin_response', 'responded_at'
+        'message', 'status', 'admin_response', 'responded_at', 'admin_read_at'
     ];
 
     protected $casts = [
         'responded_at' => 'datetime',
+        'admin_read_at' => 'datetime',
     ];
 
     protected static function boot()

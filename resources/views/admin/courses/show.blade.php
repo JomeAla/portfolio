@@ -35,6 +35,16 @@
             @endif
         </p>
     </div>
+    <div class="bg-white rounded-lg shadow p-6">
+        <p class="text-slate-500 text-sm">Required Tier</p>
+        <p class="text-3xl font-bold text-slate-800">
+            @if($tierName ?? false)
+                {{ $tierName }}+
+            @else
+                All Tiers
+            @endif
+        </p>
+    </div>
 </div>
 
 <div class="bg-white rounded-lg shadow p-6 mb-6">

@@ -40,6 +40,27 @@ class CustomerController extends Controller
         return $customer;
     }
 
+    private function getCustomerTierId(string $email): ?int
+    {
+        try {
+            $pdo = $this->getPdo();
+            $stmt = $pdo->prepare("
+                SELECT mt.id
+                FROM subscriptions s
+                JOIN subscription_plans sp ON s.plan_id = sp.id
+                JOIN membership_tiers mt ON LOWER(REPLACE(sp.name, ' ', '')) = LOWER(REPLACE(mt.name, ' ', ''))
+                WHERE s.customer_email = ? AND s.status = 'active'
+                  AND (s.current_period_end IS NULL OR s.current_period_end > NOW())
+                ORDER BY s.created_at DESC LIMIT 1
+            ");
+            $stmt->execute([$email]);
+            $row = $stmt->fetch();
+            return $row ? (int)$row['id'] : null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     public function showLogin() {
         if (session()->has('customer_id')) {
             return redirect('/customer/dashboard');
@@ -525,6 +546,7 @@ class CustomerController extends Controller
         if (is_a($customer, '\Illuminate\Http\RedirectResponse')) return $customer;
         try {
             $pdo = $this->getPdo();
+            $tierId = $this->getCustomerTierId($customer['email']);
             $stmt = $pdo->prepare("
                 SELECT c.*, ce.progress, ce.enrolled_at, ce.completed_at,
                     (SELECT COUNT(*) FROM course_lessons WHERE course_id = c.id AND is_published = 1) as lessons_count,
@@ -532,9 +554,10 @@ class CustomerController extends Controller
                 FROM course_enrollments ce
                 JOIN courses c ON ce.course_id = c.id
                 WHERE ce.customer_email = ?
+                  AND (c.required_tier_id IS NULL OR ? IS NULL OR c.required_tier_id <= ?)
                 ORDER BY ce.enrolled_at DESC
             ");
-            $stmt->execute([$customer['email'], $customer['email']]);
+            $stmt->execute([$customer['email'], $customer['email'], $tierId, $tierId]);
             $courses = $stmt->fetchAll();
             
             foreach ($courses as &$course) {
@@ -554,20 +577,25 @@ class CustomerController extends Controller
         try {
             $pdo = $this->getPdo();
             
-            $checkEnroll = $pdo->prepare("SELECT * FROM course_enrollments WHERE customer_email = ? AND course_id = ?");
-            $checkEnroll->execute([$customer['email'], $id]);
-            $enrollment = $checkEnroll->fetch();
-            
-            if (!$enrollment) {
-                return back()->with('error', 'You are not enrolled in this course.');
-            }
-            
             $stmt = $pdo->prepare("SELECT * FROM courses WHERE id = ?");
             $stmt->execute([$id]);
             $course = $stmt->fetch();
             
             if (!$course) {
                 return back()->with('error', 'Course not found.');
+            }
+
+            $tierId = $this->getCustomerTierId($customer['email']);
+            if (!empty($course['required_tier_id']) && (!$tierId || (int)$course['required_tier_id'] > (int)$tierId)) {
+                return back()->with('error', 'This course requires a higher membership tier. Please upgrade your subscription.');
+            }
+
+            $checkEnroll = $pdo->prepare("SELECT * FROM course_enrollments WHERE customer_email = ? AND course_id = ?");
+            $checkEnroll->execute([$customer['email'], $id]);
+            $enrollment = $checkEnroll->fetch();
+            
+            if (!$enrollment) {
+                return back()->with('error', 'You are not enrolled in this course.');
             }
             
             $lessonsStmt = $pdo->prepare("SELECT cl.*, lp.is_completed, lp.completed_at as lesson_completed_at FROM course_lessons cl LEFT JOIN lesson_progress lp ON cl.id = lp.lesson_id AND lp.customer_email = ? WHERE cl.course_id = ? AND cl.is_published = 1 ORDER BY cl.lesson_order");

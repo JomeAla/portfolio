@@ -40,6 +40,13 @@
                 <span><i class="fas fa-book mr-1"></i> {{ $course['lessons_count'] }} lessons</span>
                 <span><i class="fas fa-users mr-1"></i> {{ $course['students_count'] }} students</span>
             </div>
+            @if(!empty($course['required_tier_name']))
+            <div class="mb-3">
+                <span class="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700">
+                    <i class="fas fa-crown mr-1"></i>{{ $course['required_tier_name'] }}+
+                </span>
+            </div>
+            @endif
             
             <div class="flex items-center justify-between pt-4 border-t border-gray-100">
                 <span class="font-bold text-blue-600">

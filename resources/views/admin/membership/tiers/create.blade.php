@@ -26,9 +26,9 @@
             <textarea name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="What does this tier include?"></textarea>
         </div>
         
-        <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-3 gap-4 mb-4">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Price (₦)</label>
                 <input type="number" name="price" step="0.01" min="0" value="0" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
             </div>
             <div>
@@ -38,6 +38,10 @@
                     <option value="yearly">Yearly</option>
                     <option value="one_time">One Time</option>
                 </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Discount %</label>
+                <input type="number" name="discount_percent" step="0.01" min="0" max="100" value="0" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none" placeholder="e.g., 10">
             </div>
         </div>
         

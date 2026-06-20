@@ -65,45 +65,58 @@ class MembershipController extends Controller
     public function courses()
     {
         $pdo = db_pdo();
-        $stmt = $pdo->query("SELECT * FROM courses ORDER BY created_at DESC");
+        $stmt = $pdo->query("
+            SELECT c.*, mt.name as required_tier_name,
+                (SELECT COUNT(*) FROM course_lessons WHERE course_id = c.id) as lessons_count,
+                (SELECT COUNT(*) FROM course_enrollments WHERE course_id = c.id) as students_count
+            FROM courses c
+            LEFT JOIN membership_tiers mt ON c.required_tier_id = mt.id
+            ORDER BY c.created_at DESC
+        ");
         $courses = $stmt->fetchAll();
         return view('admin.courses.index', compact('courses'));
     }
 
     public function createCourse()
     {
-        return view('admin.courses.create');
+        $pdo = db_pdo();
+        $tiers = $pdo->query("SELECT id, name FROM membership_tiers WHERE is_active = 1 ORDER BY price")->fetchAll(\PDO::FETCH_ASSOC);
+        return view('admin.courses.create', compact('tiers'));
     }
 
     public function storeCourse(Request $request)
     {
         $pdo = db_pdo();
-        $stmt = $pdo->prepare("INSERT INTO courses (title, slug, description, image, price, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+        $stmt = $pdo->prepare("INSERT INTO courses (title, slug, description, image, price, required_tier_id, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
         $slug = strtolower(str_replace(' ', '-', $request->title));
-        $stmt->execute([$request->title, $slug, $request->description, $request->image ?? '', $request->price ?? 0, $request->is_active ? 1 : 0]);
+        $tierId = $request->required_tier_id ? (int)$request->required_tier_id : null;
+        $stmt->execute([$request->title, $slug, $request->description, $request->image ?? '', $request->price ?? 0, $tierId, $request->is_active ? 1 : 0]);
         return redirect('/admin/courses')->with('success', 'Course created!');
     }
 
-public function editCourse($id)
+    public function editCourse($id)
     {
         $pdo = db_pdo();
         $stmt = $pdo->prepare("SELECT * FROM courses WHERE id = ?");
         $stmt->execute([$id]);
-        $course = $stmt->fetch(PDO::FETCH_ASSOC);
+        $course = $stmt->fetch(\PDO::FETCH_ASSOC);
         
         // Get lessons
         $lessonsStmt = $pdo->prepare("SELECT * FROM course_lessons WHERE course_id = ? ORDER BY lesson_order");
         $lessonsStmt->execute([$id]);
-        $lessons = $lessonsStmt->fetchAll(PDO::FETCH_OBJ);
+        $lessons = $lessonsStmt->fetchAll(\PDO::FETCH_OBJ);
         
-        return view('admin.courses.edit', compact('course', 'lessons'));
+        $tiers = $pdo->query("SELECT id, name FROM membership_tiers WHERE is_active = 1 ORDER BY price")->fetchAll(\PDO::FETCH_ASSOC);
+        
+        return view('admin.courses.edit', compact('course', 'lessons', 'tiers'));
     }
 
     public function updateCourse(Request $request, $id)
     {
         $pdo = db_pdo();
-        $stmt = $pdo->prepare("UPDATE courses SET title = ?, description = ?, image = ?, price = ?, is_active = ? WHERE id = ?");
-        $stmt->execute([$request->title, $request->description, $request->image ?? '', $request->price ?? 0, $request->is_active ? 1 : 0, $id]);
+        $tierId = $request->required_tier_id ? (int)$request->required_tier_id : null;
+        $stmt = $pdo->prepare("UPDATE courses SET title = ?, description = ?, image = ?, price = ?, required_tier_id = ?, is_active = ? WHERE id = ?");
+        $stmt->execute([$request->title, $request->description, $request->image ?? '', $request->price ?? 0, $tierId, $request->is_active ? 1 : 0, $id]);
         return redirect('/admin/courses')->with('success', 'Course updated!');
     }
 
@@ -130,7 +143,15 @@ public function editCourse($id)
         $enrollStmt->execute([$id]);
         $enrollment = $enrollStmt->fetch(PDO::FETCH_ASSOC);
         
-        return view('admin.courses.show', compact('course', 'lessons', 'enrollment'));
+        $tierName = null;
+        if (!empty($course['required_tier_id'])) {
+            $tierStmt = $pdo->prepare("SELECT name FROM membership_tiers WHERE id = ?");
+            $tierStmt->execute([$course['required_tier_id']]);
+            $tierRow = $tierStmt->fetch(PDO::FETCH_ASSOC);
+            $tierName = $tierRow['name'] ?? null;
+        }
+        
+        return view('admin.courses.show', compact('course', 'lessons', 'enrollment', 'tierName'));
     }
 
     // Course Lessons
@@ -173,8 +194,8 @@ public function editCourse($id)
     public function storeTier(Request $request)
     {
         $pdo = db_pdo();
-        $stmt = $pdo->prepare("INSERT INTO membership_tiers (name, description, price, billing_period, features, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
-        $stmt->execute([$request->name, $request->description, $request->price, $request->billing_period ?? 'monthly', $request->features, $request->is_active ? 1 : 0]);
+        $stmt = $pdo->prepare("INSERT INTO membership_tiers (name, description, price, billing_period, features, discount_percent, is_active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->execute([$request->name, $request->description, $request->price, $request->billing_period ?? 'monthly', $request->features, $request->discount_percent ?? 0, $request->is_active ? 1 : 0]);
 
         $features = $request->features
             ? array_filter(array_map('trim', explode("\n", $request->features)))
@@ -209,8 +230,8 @@ public function editCourse($id)
     public function updateTier(Request $request, $id)
     {
         $pdo = db_pdo();
-        $stmt = $pdo->prepare("UPDATE membership_tiers SET name = ?, description = ?, price = ?, billing_period = ?, features = ?, is_active = ? WHERE id = ?");
-        $stmt->execute([$request->name, $request->description, $request->price, $request->billing_period ?? 'monthly', $request->features, $request->is_active ? 1 : 0, $id]);
+        $stmt = $pdo->prepare("UPDATE membership_tiers SET name = ?, description = ?, price = ?, billing_period = ?, features = ?, discount_percent = ?, is_active = ? WHERE id = ?");
+        $stmt->execute([$request->name, $request->description, $request->price, $request->billing_period ?? 'monthly', $request->features, $request->discount_percent ?? 0, $request->is_active ? 1 : 0, $id]);
 
         $features = $request->features
             ? array_filter(array_map('trim', explode("\n", $request->features)))

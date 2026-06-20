@@ -73,6 +73,15 @@
                 <input type="checkbox" name="is_published" value="1" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                 <span class="ml-2 text-sm text-gray-700">Publish Immediately</span>
             </label>
+            <label class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Required Tier:</span>
+                <select name="required_tier_id" class="px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500">
+                    <option value="">All Tiers (Free)</option>
+                    @foreach($tiers ?? [] as $t)
+                    <option value="{{ $t['id'] }}">{{ $t['name'] }}</option>
+                    @endforeach
+                </select>
+            </label>
         </div>
         
         <div class="flex gap-4 pt-4">

@@ -3626,4 +3626,62 @@ Route::get('/check-brevo-key', function () {
     return "Brevo API key is configured (masked): " . substr($apiKey, 0, 8) . '...';
 });
 
+// Apply membership tier DB schema changes
+Route::get('/fix-membership-schema', function () {
+    try {
+        $pdo = DB::connection()->getPdo();
+        $output = [];
+
+        // Add discount_percent to membership_tiers
+        try {
+            $pdo->exec("ALTER TABLE membership_tiers ADD COLUMN discount_percent DECIMAL(5,2) DEFAULT 0 AFTER features");
+            $output[] = "✓ Added discount_percent column to membership_tiers";
+        } catch (\Exception $e) {
+            if (str_contains($e->getMessage(), 'Duplicate column')) {
+                $output[] = "→ discount_percent already exists";
+            } else {
+                $output[] = "✗ discount_percent error: " . $e->getMessage();
+            }
+        }
+
+        // Add required_tier_id to courses
+        try {
+            $pdo->exec("ALTER TABLE courses ADD COLUMN required_tier_id INT DEFAULT NULL AFTER is_published");
+            $output[] = "✓ Added required_tier_id column to courses";
+        } catch (\Exception $e) {
+            if (str_contains($e->getMessage(), 'Duplicate column')) {
+                $output[] = "→ required_tier_id already exists";
+            } else {
+                $output[] = "✗ required_tier_id error: " . $e->getMessage();
+            }
+        }
+
+        // Update existing tiers with correct data
+        try {
+            $affected = $pdo->exec("UPDATE membership_tiers SET discount_percent = 5, price = 5000, billing_period = 'monthly' WHERE LOWER(name) LIKE '%basic%'");
+            $output[] = "✓ Updated Basic tier (5% discount, ₦5,000/month)";
+        } catch (\Exception $e) {
+            $output[] = "✗ Basic tier update error: " . $e->getMessage();
+        }
+
+        try {
+            $affected = $pdo->exec("UPDATE membership_tiers SET discount_percent = 10, price = 15000, billing_period = 'monthly' WHERE LOWER(name) LIKE '%pro%'");
+            $output[] = "✓ Updated Pro tier (10% discount, ₦15,000/month)";
+        } catch (\Exception $e) {
+            $output[] = "✗ Pro tier update error: " . $e->getMessage();
+        }
+
+        try {
+            $affected = $pdo->exec("UPDATE membership_tiers SET discount_percent = 20, price = 50000, billing_period = 'monthly' WHERE LOWER(name) LIKE '%vip%'");
+            $output[] = "✓ Updated VIP tier (20% discount, ₦50,000/month)";
+        } catch (\Exception $e) {
+            $output[] = "✗ VIP tier update error: " . $e->getMessage();
+        }
+
+        return '<h2 style="color:#1e293b;font-family:sans-serif;">Membership Schema Update</h2><pre style="background:#f8fafc;padding:16px;border-radius:8px;font-size:14px;">' . implode("\n", $output) . '</pre>';
+    } catch (\Exception $e) {
+        return '<h2 style="color:red;font-family:sans-serif;">Error: ' . $e->getMessage() . '</h2>';
+    }
+});
+
 

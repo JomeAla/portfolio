@@ -74,6 +74,15 @@
                 <input type="checkbox" name="is_published" value="1" {{ $course['is_published'] ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                 <span class="ml-2 text-sm text-gray-700">Published</span>
             </label>
+            <label class="flex items-center gap-2">
+                <span class="text-sm text-gray-700">Required Tier:</span>
+                <select name="required_tier_id" class="px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-blue-500">
+                    <option value="">All Tiers (Free)</option>
+                    @foreach($tiers ?? [] as $t)
+                    <option value="{{ $t['id'] }}" {{ ($course['required_tier_id'] ?? '') == $t['id'] ? 'selected' : '' }}>{{ $t['name'] }}</option>
+                    @endforeach
+                </select>
+            </label>
         </div>
         
         <div class="flex gap-4 pt-4">

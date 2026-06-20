@@ -17,13 +17,35 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
+use App\Models\Subscription;
+use App\Models\SubscriptionPlan;
 
 class OrderController extends Controller
 {
     use HandlesMailConfig;
+
+    private function getTierDiscount(string $email): int
+    {
+        try {
+            $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
+            $sub = $pdo->prepare("
+                SELECT sp.id as plan_id, mt.discount_percent
+                FROM subscriptions s
+                JOIN subscription_plans sp ON s.plan_id = sp.id
+                JOIN membership_tiers mt ON LOWER(REPLACE(sp.name, ' ', '')) = LOWER(REPLACE(mt.name, ' ', ''))
+                WHERE s.customer_email = ? AND s.status = 'active'
+                  AND (s.current_period_end IS NULL OR s.current_period_end > NOW())
+                ORDER BY s.created_at DESC LIMIT 1
+            ");
+            $sub->execute([$email]);
+            $row = $sub->fetch(\PDO::FETCH_ASSOC);
+            if ($row && $row['discount_percent'] > 0) {
+                return (int) $row['discount_percent'];
+            }
+        } catch (\Exception $e) {}
+        return 0;
+    }
 
     public function checkout(Request $request, $slug)
     {
@@ -121,6 +143,12 @@ class OrderController extends Controller
                 }
             }
 
+            $tierPercent = $this->getTierDiscount($email);
+            if ($tierPercent > 0) {
+                $tierDiscount = round($amount * $tierPercent / 100);
+                $discount = max($discount, $tierDiscount);
+            }
+
             $finalAmount = max(0, $amount - $discount);
 
             $lead = Lead::firstOrCreate(['email' => $email], [
@@ -188,6 +216,12 @@ class OrderController extends Controller
                 if ($coupon && $coupon->isValid()) {
                     $discount = $coupon->calculateDiscount($amount);
                 }
+            }
+
+            $tierPercent = $this->getTierDiscount($request->email);
+            if ($tierPercent > 0) {
+                $tierDiscount = round($amount * $tierPercent / 100);
+                $discount = max($discount, $tierDiscount);
             }
 
             $finalAmount = $amount - $discount;

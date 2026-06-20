@@ -41,7 +41,7 @@
             <textarea name="steps" required rows="14" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none font-mono text-sm" placeholder='[
   {
     "step_order": 1,
-    "message": "Hi {{name}}, thanks for your purchase!",
+    "message": "Hi @{{name}}, thanks for your purchase!",
     "delay_minutes": 0
   },
   {

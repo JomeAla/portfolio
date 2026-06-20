@@ -3180,17 +3180,19 @@ Route::get('/debug-whatsapp', function () {
     return "<h2>WhatsApp Diagnostics</h2><pre>" . implode("\n", $out) . "</pre>";
 });
 
-// Test without controller — simple text output
+// Test view rendering step by step
 Route::get('/test-whatsapp-create', function () {
     try {
-        $tc = 'App\Models\WhatsAppTemplate';
-        $templates = $tc::where('status', 'active')->get();
         $segments = \App\Models\Segment::where('is_active', true)->get();
         $leadCount = \App\Models\Lead::count();
         $contactCount = \App\Models\WhatsAppContact::where('opted_in', true)->count();
-        return response("OK: templates=" . $templates->count() . " segments=" . $segments->count() . " leads=$leadCount contacts=$contactCount")->header('Content-Type', 'text/plain');
+        $tc = 'App\Models\WhatsAppTemplate';
+        $templates = $tc::where('status', 'active')->get();
+
+        $html = view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'))->render();
+        return response($html)->header('Content-Type', 'text/html');
     } catch (\Throwable $e) {
-        return response("ERROR: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine(), 200)->header('Content-Type', 'text/plain');
+        return response("VIEW ERROR: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString(), 200)->header('Content-Type', 'text/plain');
     }
 });
 

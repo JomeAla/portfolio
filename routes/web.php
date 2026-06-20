@@ -3231,11 +3231,12 @@ Route::get('/debug-whatsapp', function () {
 Route::get('/test-whatsapp-create', function () {
     try {
         $segments = \App\Models\Segment::where('is_active', true)->get();
+        $groups = \App\Models\WhatsAppGroup::active()->get();
         $leadCount = \App\Models\Lead::count();
         $contactCount = \App\Models\WhatsAppContact::where('opted_in', true)->count();
         $tc = 'App\Models\WhatsAppTemplate';
         $templates = $tc::where('status', 'active')->get();
-        $html = view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'))->render();
+        $html = view('admin.whatsapp.create', compact('segments', 'groups', 'leadCount', 'contactCount', 'templates'))->render();
         return response($html)->header('Content-Type', 'text/html');
     } catch (\Throwable $e) {
         return response("ERROR: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString(), 200)->header('Content-Type', 'text/plain');

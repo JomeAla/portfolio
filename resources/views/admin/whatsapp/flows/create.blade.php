@@ -51,7 +51,7 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Pre-filled Data JSON (optional)</label>
-            <textarea name="flow_data" rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none font-mono text-sm" placeholder='{"name": "{{name}}", "phone": "{{phone}}"}'></textarea>
+            <textarea name="flow_data" rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-pink-500 focus:ring-2 focus:ring-pink-200 outline-none font-mono text-sm" placeholder='{"name": "@{{name}}", "phone": "@{{phone}}"}'></textarea>
         </div>
 
         <button type="submit" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">

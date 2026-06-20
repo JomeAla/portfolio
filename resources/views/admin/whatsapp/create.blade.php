@@ -25,7 +25,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Message Type *</label>
                 <select name="message_type" id="msgType" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none" onchange="toggleMessageType()">
                     <option value="text">Plain Text</option>
-                    <option value="template">Template (Interactive / Media / Flow)</option>
+                    <option value="template">Template Based</option>
                 </select>
             </div>
         </div>
@@ -34,7 +34,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
                 <textarea name="message" rows="6" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none" placeholder="Type your message...">{{ old('message') }}</textarea>
-                <p class="text-xs text-gray-500 mt-1">Placeholders: {{ '{{name}}' }}, {{ '{{first_name}}' }}, {{ '{{site_name}}' }}</p>
+                <p class="text-xs text-gray-500 mt-1">Placeholders: @{{name}}, @{{first_name}}, @{{site_name}}</p>
             </div>
         </div>
 
@@ -43,7 +43,7 @@
             <select name="template_id" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
                 <option value="">Select a template...</option>
                 @foreach($templates as $t)
-                <option value="{{ $t->id }}">{{ $t->name }} ({{ ucfirst($t->message_type) }} - {{ $t->button_count }} buttons)</option>
+                <option value="{{ $t->id }}">{{ $t->name }} - {{ $t->message_type }}</option>
                 @endforeach
             </select>
             <p class="text-xs text-gray-500 mt-1">Templates support: buttons, lists, media, flows. <a href="/admin/whatsapp/templates" class="text-blue-600">Manage Templates</a></p>
@@ -77,7 +77,7 @@
         </div>
 
         <div id="scheduleFields" class="hidden">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Date & Time</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Schedule Date and Time</label>
             <input type="datetime-local" name="schedule" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
         </div>
 
@@ -89,15 +89,15 @@
 
 <script>
 function toggleMessageType() {
-    const val = document.getElementById('msgType').value;
-    document.getElementById('textFields').classList.toggle('hidden', val !== 'text');
-    document.getElementById('templateField').classList.toggle('hidden', val !== 'template');
+    var val = document.getElementById('msgType').value;
+    document.getElementById('textFields').style.display = val === 'text' ? 'block' : 'none';
+    document.getElementById('templateField').style.display = val === 'template' ? 'block' : 'none';
 }
 function toggleSchedule() {
-    document.getElementById('scheduleFields').classList.toggle('hidden', document.getElementById('sendType').value !== 'schedule');
+    document.getElementById('scheduleFields').style.display = document.getElementById('sendType').value === 'schedule' ? 'block' : 'none';
 }
-document.getElementById('scopeSelect')?.addEventListener('change', function() {
-    document.getElementById('segmentField').classList.toggle('hidden', this.value !== 'segment');
+document.getElementById('scopeSelect').addEventListener('change', function() {
+    document.getElementById('segmentField').style.display = this.value === 'segment' ? 'block' : 'none';
 });
 </script>
 @endsection

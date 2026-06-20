@@ -7,7 +7,6 @@ use App\Models\Lead;
 use App\Models\Segment;
 use App\Models\WhatsAppBroadcast;
 use App\Models\WhatsAppContact;
-use App\Models\WhatsAppTemplate;
 use App\Services\WhatsAppBroadcastService;
 use Illuminate\Http\Request;
 
@@ -42,7 +41,7 @@ class WhatsAppController extends Controller
         try { $segments = Segment::where('is_active', true)->get(); } catch (\Exception $e) {}
         try { $leadCount = Lead::count(); } catch (\Exception $e) {}
         try { $contactCount = WhatsAppContact::where('opted_in', true)->count(); } catch (\Exception $e) {}
-        try { $templates = WhatsAppTemplate::where('status', 'active')->get(); } catch (\Exception $e) {}
+        try { $templateClass = 'App\Models\WhatsAppTemplate'; $templates = $templateClass::where('status', 'active')->get(); } catch (\Exception $e) {}
 
         return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
     }

@@ -73,7 +73,7 @@ footer { display: none !important; }
             
             <!-- Bottom Links -->
             <div class="p-4 border-t border-slate-100 flex-shrink-0">
-                <a href="/" class="sidebar-link text-blue-600 hover:bg-blue-50">
+                <a href="/store" class="sidebar-link text-blue-600 hover:bg-blue-50">
                     <i class="fas fa-store w-5"></i> Browse Store
                 </a>
                 <a href="/customer/logout" class="sidebar-link text-red-600 hover:bg-red-50">

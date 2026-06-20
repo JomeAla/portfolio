@@ -36,7 +36,7 @@
     @else
     <div class="p-8 text-center">
         <p class="text-slate-600">No downloads available yet.</p>
-        <a href="/" class="text-blue-600 hover:underline mt-2 inline-block">Browse products</a>
+        <a href="/store" class="text-blue-600 hover:underline mt-2 inline-block">Browse products</a>
     </div>
     @endif
 </div>

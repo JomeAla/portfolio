@@ -3106,6 +3106,18 @@ Route::get('/setup-whatsapp-tables', function () {
     }
 });
 
+// Refresh autoloader
+Route::get('/dump-autoload', function () {
+    $key = request('key', '');
+    if ($key !== 'joala2024') { return "Invalid key"; }
+    try {
+        exec('composer dump-autoload 2>&1', $output, $code);
+        return "<h2>dump-autoload (exit code: $code)</h2><pre>" . implode("\n", $output) . "</pre>";
+    } catch (\Exception $e) {
+        return "<h2>Error</h2><pre>" . $e->getMessage() . "</pre>";
+    }
+});
+
 // Setup Welcome Email Sequence
 Route::get('/setup-welcome-sequence', function () {
     $key = request('key', '');

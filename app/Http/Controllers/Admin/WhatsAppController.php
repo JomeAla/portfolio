@@ -34,10 +34,15 @@ class WhatsAppController extends Controller
 
     public function create()
     {
-        $segments = Segment::where('is_active', true)->get();
-        $leadCount = Lead::count();
-        $contactCount = WhatsAppContact::where('opted_in', true)->count();
-        $templates = WhatsAppTemplate::where('status', 'active')->get();
+        $segments = [];
+        $templates = [];
+        $leadCount = 0;
+        $contactCount = 0;
+
+        try { $segments = Segment::where('is_active', true)->get(); } catch (\Exception $e) {}
+        try { $leadCount = Lead::count(); } catch (\Exception $e) {}
+        try { $contactCount = WhatsAppContact::where('opted_in', true)->count(); } catch (\Exception $e) {}
+        try { $templates = WhatsAppTemplate::where('status', 'active')->get(); } catch (\Exception $e) {}
 
         return view('admin.whatsapp.create', compact('segments', 'leadCount', 'contactCount', 'templates'));
     }

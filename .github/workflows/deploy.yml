@@ -136,6 +136,9 @@ jobs:
               echo "Extracting files on server..."
               ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "cd $DEPLOY_PATH && tar -xzf deploy.tar.gz --overwrite && rm deploy.tar.gz && echo 'Extraction complete'"
             fi
+
+            echo "Running composer dump-autoload..."
+            ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "cd $DEPLOY_PATH && composer dump-autoload 2>&1 || echo 'composer not available - autoload may need manual refresh'"
             
             echo "Deployment complete"
           else

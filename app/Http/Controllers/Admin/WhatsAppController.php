@@ -61,11 +61,11 @@ class WhatsAppController extends Controller
             'name' => 'required|string|max:255',
             'message' => 'nullable|string',
             'message_type' => 'required|in:text,template',
-            'template_id' => 'required_if:message_type,template|exists:whatsapp_templates,id',
+            'template_id' => 'nullable|required_if:message_type,template|exists:whatsapp_templates,id',
             'schedule' => 'nullable|date',
             'scope' => 'required|in:all,segment,group',
-            'segment_id' => 'required_if:scope,segment|exists:segments,id',
-            'group_id' => 'required_if:scope,group|exists:whatsapp_groups,id',
+            'segment_id' => 'nullable|required_if:scope,segment|exists:segments,id',
+            'group_id' => 'nullable|required_if:scope,group|exists:whatsapp_groups,id',
         ]);
 
         try {

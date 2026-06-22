@@ -53,7 +53,6 @@ class WhatsAppController extends Controller
 
     public function store(Request $request)
     {
-        // Convert empty schedule string to null so nullable|date doesn't reject it
         if ($request->has('schedule') && empty($request->schedule)) {
             $request->merge(['schedule' => null]);
         }
@@ -102,8 +101,24 @@ class WhatsAppController extends Controller
                 return redirect('/admin/whatsapp')->with('success', 'Broadcast scheduled for ' . $request->schedule);
             }
 
+            if ($request->send_type === 'now') {
+                $broadcast->update(['status' => 'sending']);
+                $scope = $request->scope ?? 'all';
+                $result = match ($scope) {
+                    'segment' => $this->whatsapp->sendToSegment((int) $request->segment_id, $broadcast),
+                    'group' => $this->whatsapp->sendToGroup($broadcast),
+                    default => $this->whatsapp->sendToAllLeads($broadcast),
+                };
+                $msg = $result['sent'] > 0
+                    ? "Broadcast sent. Delivered: {$result['sent']}, Failed: {$result['failed']}"
+                    : "Broadcast completed. " . ($result['errors'][0] ?? 'No messages were sent.');
+                return redirect('/admin/whatsapp/' . $broadcast->id)->with(
+                    $result['sent'] > 0 ? 'success' : 'error', $msg
+                );
+            }
+
             return redirect('/admin/whatsapp/' . $broadcast->id)->with('success', 'Broadcast created as draft.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
         }
     }
@@ -194,8 +209,12 @@ class WhatsAppController extends Controller
                 $this->whatsapp->syncLeadPhone($lead->id, $request->phone);
             }
             return back()->with('success', 'Contact imported.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::error("WhatsApp broadcast create failed: " . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            return back()->with('error', 'Error: ' . $e->getMessage())->withInput();
         }
     }
 

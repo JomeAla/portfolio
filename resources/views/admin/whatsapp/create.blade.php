@@ -62,6 +62,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Schedule</label>
                 <select name="send_type" id="sendType" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none" onchange="toggleSchedule()">
                     <option value="draft">Save as Draft</option>
+                    <option value="now">Create &amp; Send Now</option>
                     <option value="schedule">Schedule for Later</option>
                 </select>
             </div>
@@ -93,9 +94,9 @@
             <input type="datetime-local" name="schedule" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
         </div>
 
-        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
-            <i class="fas fa-paper-plane mr-2"></i>Create Broadcast
-        </button>
+                <button type="submit" id="createBtn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                    <i class="fas fa-paper-plane mr-2"></i><span id="createBtnText">Save as Draft</span>
+                </button>
     </form>
 </div>
 
@@ -106,10 +107,17 @@ function toggleMessageType() {
     document.getElementById('templateField').style.display = val === 'template' ? 'block' : 'none';
 }
 function toggleSchedule() {
-    var show = document.getElementById('sendType').value === 'schedule';
+    var val = document.getElementById('sendType').value;
+    var show = val === 'schedule';
     document.getElementById('scheduleFields').style.display = show ? 'block' : 'none';
     var input = document.querySelector('[name="schedule"]');
     if (input) input.disabled = !show;
+    var btnText = document.getElementById('createBtnText');
+    if (btnText) {
+        if (val === 'now') btnText.textContent = 'Create & Send Now';
+        else if (val === 'draft') btnText.textContent = 'Save as Draft';
+        else btnText.textContent = 'Schedule';
+    }
 }
 document.getElementById('scopeSelect').addEventListener('change', function() {
     document.getElementById('segmentField').style.display = this.value === 'segment' ? 'block' : 'none';

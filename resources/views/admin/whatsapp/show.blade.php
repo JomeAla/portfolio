@@ -10,6 +10,28 @@
     </a>
 </div>
 
+@if(!$apiConfigured)
+<div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+    <div class="flex items-start gap-3">
+        <i class="fas fa-exclamation-triangle text-amber-600 mt-1"></i>
+        <div>
+            <p class="font-semibold text-amber-800">WhatsApp API Not Configured</p>
+            <p class="text-sm text-amber-700 mt-1">
+                The WhatsApp API endpoint is not set. Messages will be simulated (logged only) and not actually delivered.
+                <a href="/admin/settings" class="underline font-medium hover:text-amber-900">Configure API settings</a>
+            </p>
+        </div>
+    </div>
+</div>
+@else
+<div class="mb-6">
+    <button id="test-api-btn" class="text-sm px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
+        <i class="fas fa-plug mr-1"></i> Test API Connection
+    </button>
+    <span id="test-api-result" class="ml-3 text-sm hidden"></span>
+</div>
+@endif
+
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2">
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/50 p-8">
@@ -91,22 +113,110 @@
         @if($broadcast->status == 'draft')
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/50 p-6 mt-6">
             <h3 class="font-semibold text-gray-900 mb-4">Send Broadcast</h3>
-            <form method="POST" action="/admin/whatsapp/{{ $broadcast->id }}/send" onsubmit="return confirm('Send this broadcast now?')">
+            <form method="POST" action="/admin/whatsapp/{{ $broadcast->id }}/send" id="send-form">
                 @csrf
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Send To</label>
-                    <select name="scope" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
+                    <select name="scope" id="scope-select" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
                         <option value="all">All Opted-In Contacts</option>
                         <option value="segment">Specific Segment</option>
                         <option value="group" {{ $broadcast->group_jid ? 'selected' : '' }}>WhatsApp Group</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+
+                <div id="segment-selector" class="mb-4" style="display:none">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Choose Segment</label>
+                    <select name="segment_id" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
+                        <option value="">Select a segment...</option>
+                        @foreach($segments as $segment)
+                        <option value="{{ $segment->id }}">{{ $segment->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div id="group-selector" class="mb-4" style="display:none">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Choose Group</label>
+                    <select name="group_id" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none">
+                        <option value="">Select a group...</option>
+                        @foreach($groups as $group)
+                        <option value="{{ $group->id }}" {{ $broadcast->group_jid == $group->group_jid ? 'selected' : '' }}>{{ $group->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <button type="submit" id="send-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
                     <i class="fas fa-paper-plane mr-2"></i>Send Now
                 </button>
+
+                <div id="send-loading" class="hidden mt-3 text-center text-sm text-gray-500">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>Sending broadcast...
+                </div>
             </form>
         </div>
         @endif
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var scopeSelect = document.getElementById('scope-select');
+    var segmentSelector = document.getElementById('segment-selector');
+    var groupSelector = document.getElementById('group-selector');
+    var sendForm = document.getElementById('send-form');
+    var sendBtn = document.getElementById('send-btn');
+    var sendLoading = document.getElementById('send-loading');
+    var testBtn = document.getElementById('test-api-btn');
+    var testResult = document.getElementById('test-api-result');
+
+    function toggleScope() {
+        var val = scopeSelect.value;
+        if (segmentSelector) segmentSelector.style.display = val === 'segment' ? 'block' : 'none';
+        if (groupSelector) groupSelector.style.display = val === 'group' ? 'block' : 'none';
+    }
+
+    if (scopeSelect) {
+        scopeSelect.addEventListener('change', toggleScope);
+        toggleScope();
+    }
+
+    if (sendForm) {
+        sendForm.addEventListener('submit', function(e) {
+            if (sendBtn) sendBtn.disabled = true;
+            if (sendLoading) sendLoading.classList.remove('hidden');
+        });
+    }
+
+    if (testBtn) {
+        testBtn.addEventListener('click', function() {
+            testBtn.disabled = true;
+            testBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Testing...';
+            testResult.className = 'ml-3 text-sm hidden';
+
+            fetch('/admin/whatsapp/test-api')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    testBtn.disabled = false;
+                    testBtn.innerHTML = '<i class="fas fa-plug mr-1"></i> Test API Connection';
+                    testResult.classList.remove('hidden');
+                    if (data.success) {
+                        testResult.className = 'ml-3 text-sm text-green-600';
+                        testResult.textContent = 'Connected successfully!';
+                    } else {
+                        testResult.className = 'ml-3 text-sm text-red-600';
+                        testResult.textContent = data.error || 'Connection failed';
+                    }
+                })
+                .catch(function(err) {
+                    testBtn.disabled = false;
+                    testBtn.innerHTML = '<i class="fas fa-plug mr-1"></i> Test API Connection';
+                    testResult.classList.remove('hidden');
+                    testResult.className = 'ml-3 text-sm text-red-600';
+                    testResult.textContent = 'Request failed: ' + err.message;
+                });
+        });
+    }
+});
+</script>
 @endsection

@@ -48,6 +48,7 @@ class WhatsAppBroadcastService
         $log = [];
 
         $payload = $broadcast->payload ?: $this->buildTextPayload($broadcast->message);
+        $isSimulated = empty($this->apiEndpoint);
 
         foreach ($contacts as $contact) {
             try {
@@ -69,13 +70,20 @@ class WhatsAppBroadcastService
             'log' => $log,
         ]);
 
-        Log::info("WhatsApp broadcast #{$broadcast->id} completed: {$sent} sent, {$failed} failed");
+        Log::info("WhatsApp broadcast #{$broadcast->id} completed: {$sent} sent, {$failed} failed" . ($isSimulated ? ' (SIMULATED)' : ''));
+
+        if ($isSimulated) {
+            $errors[] = 'WhatsApp API endpoint is not configured. Messages were simulated (logged only).';
+        }
 
         return compact('sent', 'failed', 'errors');
     }
 
-    public function sendToSegment(int $segmentId, WhatsAppBroadcast $broadcast): array
+    public function sendToSegment(?int $segmentId, WhatsAppBroadcast $broadcast): array
     {
+        if (!$segmentId) {
+            return ['sent' => 0, 'failed' => 0, 'errors' => ['No segment selected.']];
+        }
         $leadIds = \DB::table('segment_leads')->where('segment_id', $segmentId)->pluck('lead_id')->toArray();
         $phones = WhatsAppContact::whereIn('lead_id', $leadIds)->where('opted_in', true)->pluck('phone')->toArray();
         if (empty($phones)) return ['sent' => 0, 'failed' => 0, 'errors' => ['No opted-in contacts in this segment']];
@@ -85,6 +93,7 @@ class WhatsAppBroadcastService
     public function sendToAllLeads(WhatsAppBroadcast $broadcast): array
     {
         $phones = WhatsAppContact::where('opted_in', true)->pluck('phone')->toArray();
+        Log::info("WhatsApp sendToAllLeads: found " . count($phones) . " opted-in contacts");
         return $this->sendBroadcast($broadcast, $phones);
     }
 
@@ -379,9 +388,17 @@ class WhatsAppBroadcastService
 
     protected function sendRawPayload(string $phone, array $payload, ?Lead $lead = null): void
     {
+        if (!extension_loaded('curl')) {
+            throw new \RuntimeException('cURL extension is not installed or enabled.');
+        }
+
         $body = array_merge(['messaging_product' => 'whatsapp', 'to' => $phone], $payload);
 
         $ch = curl_init($this->apiEndpoint);
+        if ($ch === false) {
+            throw new \RuntimeException('Failed to initialize cURL handle.');
+        }
+
         curl_setopt_array($ch, [
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => json_encode($body),
@@ -391,14 +408,62 @@ class WhatsAppBroadcastService
             ],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
         ]);
         $response = curl_exec($ch);
+        $curlError = curl_error($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+
+        if ($response === false) {
+            throw new \RuntimeException("cURL error: {$curlError}");
+        }
 
         if ($httpCode < 200 || $httpCode >= 300) {
             throw new \RuntimeException("API returned HTTP {$httpCode}: {$response}");
         }
+    }
+
+    public function testApiConnection(): array
+    {
+        if (empty($this->apiEndpoint)) {
+            return ['success' => false, 'error' => 'API endpoint not configured.'];
+        }
+        if (empty($this->apiToken)) {
+            return ['success' => false, 'error' => 'API token not configured.'];
+        }
+        if (!extension_loaded('curl')) {
+            return ['success' => false, 'error' => 'cURL extension not installed.'];
+        }
+
+        $ch = curl_init($this->apiEndpoint);
+        if ($ch === false) {
+            return ['success' => false, 'error' => 'Failed to initialize cURL.'];
+        }
+
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $this->apiToken],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+        $response = curl_exec($ch);
+        $curlError = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false) {
+            return ['success' => false, 'error' => "cURL error: {$curlError}"];
+        }
+
+        $decoded = json_decode($response, true);
+
+        if ($httpCode === 200) {
+            return ['success' => true, 'message' => 'API endpoint is reachable and authenticated.', 'data' => $decoded];
+        }
+
+        $errorMsg = $decoded['error']['message'] ?? $response;
+        return ['success' => false, 'error' => "HTTP {$httpCode}: {$errorMsg}"];
     }
 
     // ─── Helpers ─────────────────────────────────────────────────────

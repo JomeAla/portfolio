@@ -2896,6 +2896,9 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     Route::post('/whatsapp/groups/{group}/toggle', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'toggleActive'])->name('admin.whatsapp.groups.toggle');
     Route::post('/whatsapp/groups/{group}/delete', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'destroy'])->name('admin.whatsapp.groups.destroy');
 
+    // Test endpoint (before wildcards)
+    Route::get('/whatsapp/test-api', [\App\Http\Controllers\Admin\WhatsAppController::class, 'testApi'])->name('admin.whatsapp.test');
+
     // Wildcard routes LAST (so static sub-paths like /contacts, /templates match first)
     Route::get('/whatsapp/{id}', [\App\Http\Controllers\Admin\WhatsAppController::class, 'show'])->name('admin.whatsapp.show');
     Route::post('/whatsapp/{id}/send', [\App\Http\Controllers\Admin\WhatsAppController::class, 'send'])->name('admin.whatsapp.send');

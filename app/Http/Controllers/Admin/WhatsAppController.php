@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\Segment;
+use App\Models\Setting;
 use App\Models\WhatsAppBroadcast;
 use App\Models\WhatsAppContact;
 use App\Models\WhatsAppGroup;
 use App\Services\WhatsAppBroadcastService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class WhatsAppController extends Controller
 {
@@ -104,7 +106,10 @@ class WhatsAppController extends Controller
     public function show($id)
     {
         $broadcast = WhatsAppBroadcast::with('template')->findOrFail($id);
-        return view('admin.whatsapp.show', compact('broadcast'));
+        $segments = Segment::where('is_active', true)->get();
+        $groups = WhatsAppGroup::active()->get();
+        $apiConfigured = !empty(Setting::get('whatsapp_api_endpoint', ''));
+        return view('admin.whatsapp.show', compact('broadcast', 'segments', 'groups', 'apiConfigured'));
     }
 
     public function send(Request $request, $id)
@@ -117,16 +122,36 @@ class WhatsAppController extends Controller
 
         try {
             $scope = $request->scope ?? 'all';
+
+            if ($scope === 'group' && $request->group_id) {
+                $group = WhatsAppGroup::findOrFail($request->group_id);
+                $broadcast->update(['group_jid' => $group->group_jid]);
+            }
+
             $result = match ($scope) {
-                'segment' => $this->whatsapp->sendToSegment($request->segment_id, $broadcast),
+                'segment' => $this->whatsapp->sendToSegment((int) $request->segment_id, $broadcast),
                 'group' => $this->whatsapp->sendToGroup($broadcast),
                 default => $this->whatsapp->sendToAllLeads($broadcast),
             };
 
-            return redirect('/admin/whatsapp')->with('success',
-                "Broadcast sent. Delivered: {$result['sent']}, Failed: {$result['failed']}"
+            $msg = $result['sent'] > 0
+                ? "Broadcast sent. Delivered: {$result['sent']}, Failed: {$result['failed']}"
+                : "Broadcast completed. " . ($result['errors'][0] ?? 'No messages were sent.');
+
+            $result['sent'] > 0
+                ? Log::info("WhatsApp broadcast #{$broadcast->id} sent successfully: {$result['sent']} delivered, {$result['failed']} failed")
+                : Log::warning("WhatsApp broadcast #{$broadcast->id} had issues: " . ($result['errors'][0] ?? 'unknown'));
+
+            return redirect('/admin/whatsapp')->with(
+                $result['sent'] > 0 ? 'success' : 'error',
+                $msg
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            Log::error("WhatsApp broadcast #{$broadcast->id} send exception: " . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
@@ -167,6 +192,12 @@ class WhatsAppController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
+    }
+
+    public function testApi()
+    {
+        $result = $this->whatsapp->testApiConnection();
+        return response()->json($result);
     }
 
     public function toggleOptIn($id)

@@ -436,7 +436,10 @@ class WhatsAppBroadcastService
             return ['success' => false, 'error' => 'cURL extension not installed.'];
         }
 
-        $ch = curl_init($this->apiEndpoint);
+        // The /messages endpoint only accepts POST; strip it to GET the phone number ID object for auth check
+        $testUrl = preg_replace('#/messages/?$#', '', $this->apiEndpoint);
+
+        $ch = curl_init($testUrl);
         if ($ch === false) {
             return ['success' => false, 'error' => 'Failed to initialize cURL.'];
         }
@@ -459,7 +462,8 @@ class WhatsAppBroadcastService
         $decoded = json_decode($response, true);
 
         if ($httpCode === 200) {
-            return ['success' => true, 'message' => 'API endpoint is reachable and authenticated.', 'data' => $decoded];
+            $name = $decoded['name'] ?? ($decoded['display_phone_number'] ?? '');
+            return ['success' => true, 'message' => "Authenticated. Phone number ID: {$name}", 'data' => $decoded];
         }
 
         $errorMsg = $decoded['error']['message'] ?? $response;

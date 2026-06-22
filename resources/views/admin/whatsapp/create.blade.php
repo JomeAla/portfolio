@@ -106,7 +106,10 @@ function toggleMessageType() {
     document.getElementById('templateField').style.display = val === 'template' ? 'block' : 'none';
 }
 function toggleSchedule() {
-    document.getElementById('scheduleFields').style.display = document.getElementById('sendType').value === 'schedule' ? 'block' : 'none';
+    var show = document.getElementById('sendType').value === 'schedule';
+    document.getElementById('scheduleFields').style.display = show ? 'block' : 'none';
+    var input = document.querySelector('[name="schedule"]');
+    if (input) input.disabled = !show;
 }
 document.getElementById('scopeSelect').addEventListener('change', function() {
     document.getElementById('segmentField').style.display = this.value === 'segment' ? 'block' : 'none';

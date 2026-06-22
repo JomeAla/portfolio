@@ -53,6 +53,11 @@ class WhatsAppController extends Controller
 
     public function store(Request $request)
     {
+        // Convert empty schedule string to null so nullable|date doesn't reject it
+        if ($request->has('schedule') && empty($request->schedule)) {
+            $request->merge(['schedule' => null]);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'message' => 'nullable|string',

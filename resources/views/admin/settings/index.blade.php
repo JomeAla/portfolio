@@ -26,9 +26,6 @@
         <button onclick="switchTab('email')" class="pb-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium tab-btn" data-tab="email">
             Email (SMTP)
         </button>
-        <button onclick="switchTab('whatsapp')" class="pb-4 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium tab-btn" data-tab="whatsapp">
-            WhatsApp API
-        </button>
     </nav>
 </div>
 
@@ -327,59 +324,6 @@
 
         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
             Save Email Settings
-        </button>
-    </form>
-</div>
-
-<!-- WhatsApp API Settings -->
-<div id="tab-whatsapp" class="tab-content hidden">
-    <form method="POST" action="/admin/settings/whatsapp" class="space-y-6">
-        @csrf
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
-            <h2 class="text-lg font-semibold text-slate-900 mb-4">WhatsApp API Configuration</h2>
-            <p class="text-sm text-gray-500 mb-6">Configure WhatsApp Business API for sending broadcasts. Leave blank to use simulation mode (logs only).</p>
-
-            <div class="grid grid-cols-1 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp Business Number</label>
-                    <input type="text" name="whatsapp_number" value="{{ $settings['whatsapp_number'] ?? '' }}"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
-                        placeholder="e.g., 2348012345678">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">API Endpoint</label>
-                    <input type="text" name="whatsapp_api_endpoint" value="{{ $settings['whatsapp_api_endpoint'] ?? '' }}"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
-                        placeholder="e.g., https://graph.facebook.com/v18.0/PHONE_NUMBER_ID/messages">
-                    <p class="mt-1 text-xs text-gray-500">For WhatsApp Cloud API or your preferred provider endpoint</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">API Token</label>
-                    <input type="password" name="whatsapp_api_token" value="{{ $settings['whatsapp_api_token'] ?? '' }}"
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none"
-                        placeholder="Bearer token or API key">
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
-            <h2 class="text-lg font-semibold text-slate-900 mb-4">Quick Setup Guide</h2>
-            <div class="text-sm text-gray-600 space-y-2">
-                <p><strong>Option 1: WhatsApp Cloud API (Meta)</strong></p>
-                <ol class="list-decimal list-inside ml-4 space-y-1">
-                    <li>Go to <a href="https://developers.facebook.com" target="_blank" class="text-blue-600">Facebook Developers</a></li>
-                    <li>Create an app &rarr; Add "WhatsApp" product</li>
-                    <li>Copy the Phone Number ID and Permanent Token</li>
-                    <li>Set endpoint: <code class="bg-gray-100 px-1 rounded">https://graph.facebook.com/v18.0/YOUR_PHONE_ID/messages</code></li>
-                </ol>
-                <p class="mt-3"><strong>Option 2: Third-party Provider</strong></p>
-                <p>Use services like Twilio, MessageBird, WATI, or WAToolkit with their provided API endpoint and token.</p>
-                <p class="mt-3"><strong>No API configured?</strong> Broadcasts will log to the simulation log without sending real messages.</p>
-            </div>
-        </div>
-
-        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
-            Save WhatsApp Settings
         </button>
     </form>
 </div>

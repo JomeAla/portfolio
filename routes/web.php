@@ -150,11 +150,6 @@ Route::get('/done-for-you', function() {
     return view('front.done-for-you');
 })->name('done.for.you');
 
-// WhatsApp Marketing Bundle Landing Page
-Route::get('/whatsapp-marketing-bundle', function() {
-    return view('front.whatsapp-marketing-bundle');
-})->name('whatsapp.marketing.bundle');
-
 // Course Creator Kit Landing Page
 Route::get('/course-creator-kit', function() {
     return view('front.course-creator-kit');
@@ -181,11 +176,7 @@ Route::get('/setup-audit-kit', [SetupController::class, 'setupAuditKit']);
 // Website Audit post-purchase sequence
 Route::get('/setup-audit-sequence', [SetupController::class, 'setupAuditSequence']);
 
-// Setup WhatsApp post-purchase sequence
-Route::get('/setup-whatsapp-sequence', [SetupController::class, 'setupWhatsAppSequence']);
 
-// Add WhatsApp upsell to Email Templates sequence
-Route::get('/add-whatsapp-upsell', [SetupController::class, 'addWhatsAppUpsell']);
 Route::post('/store/validate-coupon', [StoreController::class, 'validateCoupon'])->name('store.coupon');
 Route::get('/store/validate-coupon', [StoreController::class, 'validateCoupon'])->name('store.coupon.get');
 Route::get('/order/validate-coupon', [OrderController::class, 'validateCoupon'])->name('order.validate.coupon');
@@ -232,7 +223,6 @@ Route::prefix('admin')->group(function () {
         Route::post('/settings/payment', [SettingsController::class, 'updatePayment'])->name('admin.settings.payment');
         Route::post('/settings/github', [SettingsController::class, 'updateGithub'])->name('admin.settings.github');
         Route::post('/settings/email', [SettingsController::class, 'updateEmail'])->name('admin.settings.email');
-        Route::post('/settings/whatsapp', [SettingsController::class, 'updateWhatsApp'])->name('admin.settings.whatsapp');
         
         Route::resource('projects', ProjectController::class)->except(['show']);
         Route::get('/projects/{project}/delete', [ProjectController::class, 'destroy'])->name('projects.delete');
@@ -730,7 +720,6 @@ Route::get('/update-product-paths', function () {
     $products = [
         ['slug' => 'email-sequence-templates-pack', 'file' => 'Email Sequence Templates Pack - JoAla Ventures.zip'],
         ['slug' => 'e-commerce-starter-kit', 'file' => 'ecommerce-starter-kit-v1.1.0.zip'],
-        ['slug' => 'whatsapp-marketing-bundle', 'file' => 'WhatsApp Marketing Bundle - Complete Templates.zip'],
     ];
 
     $baseDir = storage_path('app/public/products');
@@ -955,29 +944,7 @@ Route::get('/test-email-create', function () {
     return view('admin.marketing.email_templates.create');
 });
 
-// WhatsApp Marketing Bundle Product
-Route::get('/setup-whatsapp-product', function () {
-    if (\Illuminate\Support\Facades\DB::table('products')->where('slug', 'whatsapp-marketing-bundle')->exists()) {
-        return 'WhatsApp Marketing Bundle already exists! <a href="/store">View Store</a>';
-    }
-    $id = \Illuminate\Support\Facades\DB::table('products')->insertGetId([
-        'title' => 'WhatsApp Marketing Bundle',
-        'slug' => 'whatsapp-marketing-bundle',
-        'short_description' => '48 ready-to-send WhatsApp templates for business',
-        'description' => 'WhatsApp Marketing Bundle - 48 templates including broadcast sequences, auto-replies, status templates, chatbot flows, and order fulfillment sequences.',
-        'type' => 'ebook',
-        'price' => 15000.00,
-        'sale_price' => 8000.00,
-        'file_path' => 'uploads/products/files/whatsapp-marketing-bundle.html',
-        'image' => '/uploads/products/whatsapp-marketing-bundle-cover.svg',
-        'is_active' => 1,
-        'is_featured' => 1,
-        'order' => 1,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
-    return 'WhatsApp Marketing Bundle created! ID: ' . $id . ' <a href="/store">View Store</a>';
-});
+
 
 Route::get('/setup-product', function () {
     if (\Illuminate\Support\Facades\DB::table('products')->where('title', 'LIKE', '%Email Sequence Templates%')->exists()) {
@@ -1401,296 +1368,7 @@ Route::get('/setup-ecommerce-funnel', function () {
     }
 });
 
-// Comprehensive WhatsApp Funnel Setup
-Route::get('/setup-whatsapp-funnel', function () {
-    try {
-        $out = [];
 
-        // 1. Create free lead magnet product
-        $freeProduct = \App\Models\Product::firstOrCreate(
-            ['slug' => 'free-whatsapp-marketing-bundle'],
-            [
-                'title' => 'Free WhatsApp Marketing Guide',
-                'slug' => 'free-whatsapp-marketing-bundle',
-                'short_description' => 'Complete guide to using WhatsApp for business growth',
-                'description' => 'Learn WhatsApp broadcast setup, automation, CRM integration, templates, business profile optimization, and analytics tracking.',
-                'type' => 'ebook',
-                'price' => 0,
-                'sale_price' => 0,
-                'file_path' => 'uploads/free-products/files/free-whatsapp-marketing-bundle.html',
-                'is_active' => 1,
-                'is_featured' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        );
-        $out[] = "Free product ID: {$freeProduct->id}";
-
-        // 2. Create pre-sale email sequence
-        $presaleSeq = \App\Models\EmailSequence::updateOrCreate(
-            ['name' => 'WhatsApp Marketing Bundle Pre-Sale'],
-            [
-                'name' => 'WhatsApp Marketing Bundle Pre-Sale',
-                'description' => 'Nurture leads who got the free WhatsApp guide toward purchasing the premium bundle',
-                'trigger_type' => 'welcome',
-                'is_active' => true,
-            ]
-        );
-        \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $presaleSeq->id)->delete();
-        \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Free WhatsApp Marketing Guide is ready!', 'body' => "Hi {{name}},\n\nYour free WhatsApp Marketing Guide is ready.\n\nDownload it here: https://joala.com.ng/free-download/free-whatsapp-marketing-bundle\n\nInside this guide, you'll learn the fundamentals of using WhatsApp for business — from broadcast setup to analytics tracking.\n\nBut if you're ready to go beyond the basics and get a complete WhatsApp marketing system with done-for-you templates, check out the premium bundle:\nhttps://joala.com.ng/store/whatsapp-marketing-bundle\n\nIt includes broadcast templates, automation workflows, CRM integration guides, and more.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 2, 'delay_days' => 2, 'subject' => 'Why most WhatsApp campaigns fail (and how to avoid it)', 'body' => "Hi {{name}},\n\nDid you know that 70% of business WhatsApp messages go unread?\n\nThe #1 reason? Lack of strategy and proper setup.\n\nMost businesses jump straight into broadcasting without:\n- A clean, segmented contact list\n- Proper broadcast timing and frequency\n- Follow-up automation\n- Performance tracking\n\nThat's exactly what the WhatsApp Marketing Bundle solves — a complete system with:\n✓ Broadcast templates that get replies\n✓ Automation workflows for follow-ups\n✓ CRM integration to track conversations\n✓ Analytics templates to measure ROI\n\nSee it here: https://joala.com.ng/store/whatsapp-marketing-bundle\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 3, 'delay_days' => 4, 'subject' => 'Success story: How a boutique grew sales 3x with WhatsApp', 'body' => "Hi {{name}},\n\n\"We went from 10 orders a week to 35 after implementing a proper WhatsApp broadcast system. The templates alone saved us hours.\"\n— Chioma O., Boutique Owner, Abuja\n\nChioma had been using WhatsApp the same way most businesses do — sending random messages whenever she remembered. After implementing a structured broadcast + automation system, here's what changed:\n- Messages actually got read (78% open rate)\n- Customers started replying and ordering\n- She saved 10+ hours per week on manual messaging\n\nThe WhatsApp Marketing Bundle gives you everything Chioma used, including:\n- Done-for-you broadcast scripts\n- Automation workflow templates\n- CRM tracking templates\n- Business profile optimization guide\n\nGet the same results: https://joala.com.ng/store/whatsapp-marketing-bundle\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 4, 'delay_days' => 6, 'subject' => 'Special offer: 15% off the WhatsApp Marketing Bundle', 'body' => "Hi {{name}},\n\nI'm giving you an exclusive 15% discount on the WhatsApp Marketing Bundle.\n\nUse code: WHATSAPP15 at checkout\n\nThis brings the price down to just ₦6,800 — a one-time investment for a complete WhatsApp marketing system.\n\nHere's exactly what you'll get:\n• 20+ Broadcast Templates (sales, announcements, follow-ups)\n• Automation Workflow Guide\n• CRM Integration Templates\n• Business Profile Optimization Checklist\n• Analytics & Reporting Templates\n• Customer Support Scripts\n• Product Catalogue Setup Guide\n• WhatsApp Business vs API Comparison\n• Broadcast Timing & Frequency Guide\n• Lifetime free updates\n• Priority support\n\nGet it now: https://joala.com.ng/store/whatsapp-marketing-bundle?coupon=WHATSAPP15\n\nThis offer won't last forever. Grab it today.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 5, 'delay_days' => 9, 'subject' => 'Last chance: Your 15% discount on WhatsApp Bundle expires soon', 'body' => "Hi {{name}},\n\nJust a friendly reminder that your 15% discount (code: WHATSAPP15) is still available.\n\nBut I can't keep it open forever.\n\nIf you're serious about using WhatsApp to grow your business, now is the time.\n\nThe WhatsApp Marketing Bundle gives you everything you need — ready-to-use templates, automation workflows, CRM guides, and more. No guesswork, no trial-and-error.\n\nGet started today: https://joala.com.ng/store/whatsapp-marketing-bundle?coupon=WHATSAPP15\n\nIf you have any questions, just reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-        ]);
-        $out[] = "Pre-sale sequence ID: {$presaleSeq->id} (5 steps)";
-
-        // Sync sequences table
-        $seq = \App\Models\Sequence::updateOrCreate(
-            ['id' => $presaleSeq->id],
-            ['name' => 'WhatsApp Marketing Bundle Pre-Sale', 'description' => 'Nurture leads toward the premium WhatsApp bundle', 'is_active' => true]
-        );
-        $out[] = "Sequences table synced ID: {$seq->id}";
-
-        // 3. Create post-purchase sequence
-        $postSeq = \App\Models\EmailSequence::updateOrCreate(
-            ['name' => 'WhatsApp Marketing Bundle Post-Purchase'],
-            [
-                'name' => 'WhatsApp Marketing Bundle Post-Purchase',
-                'description' => 'Onboard and engage buyers of the WhatsApp Marketing Bundle',
-                'trigger_type' => 'post_purchase',
-                'is_active' => true,
-            ]
-        );
-        \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $postSeq->id)->delete();
-        \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
-            ['sequence_id' => $postSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your WhatsApp Marketing Bundle is ready!', 'body' => "Hi {{name}},\n\nThank you for purchasing the WhatsApp Marketing Bundle!\n\nYour download link: https://joala.com.ng/order/download/{{download_token}}\n\nGetting started fast:\n1. Download the ZIP file\n2. Extract all templates to your computer\n3. Open the README file for setup instructions\n4. Start with the Broadcast Templates — pick one and customize it\n5. Use the Automation Guide to set up your first workflow\n\nInside your bundle:\n✓ 20+ Broadcast Templates\n✓ Automation Workflow Guide\n✓ CRM Integration Templates\n✓ Business Profile Optimization Checklist\n✓ Analytics & Reporting Templates\n✓ Customer Support Scripts\n✓ Product Catalogue Setup Guide\n\nPro tip: Start with the \"Welcome Broadcast\" template — it's the highest-converting template in the pack.\n\nIf you need help, just reply to this email.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $postSeq->id, 'step_order' => 2, 'delay_days' => 3, 'subject' => 'Quick start: Set up your first WhatsApp broadcast', 'body' => "Hi {{name}},\n\nReady to send your first broadcast? Here's a quick 3-step process using your bundle:\n\n1. Open the Broadcast Templates folder\n2. Choose the \"Promotional Offer\" template\n3. Customize it with your product/service details\n4. Send to your contact list via WhatsApp Broadcast\n\nBest practices:\n- Send between 10am-2pm for highest open rates\n- Keep messages under 200 characters\n- Always include a call-to-action\n- Track replies as leads\n\nThe Broadcast Templates folder includes templates for:\n✓ Sales & Promotions\n✓ Announcements & Launches\n✓ Customer Follow-ups\n✓ Abandoned Cart Recovery\n✓ Re-engagement Campaigns\n\nStart with one campaign this week and track your results.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $postSeq->id, 'step_order' => 3, 'delay_days' => 5, 'subject' => 'Master WhatsApp Automation & CRM tracking', 'body' => "Hi {{name}},\n\nNow that you've sent your first broadcast, let's level up with automation.\n\nThe Automation Workflow Guide in your bundle shows you how to:\n- Set up auto-replies for common questions\n- Create follow-up sequences for leads\n- Tag and segment your contacts\n- Track conversations in a CRM\n\nQuick tip: Use the \"Abandoned Cart Recovery\" template for customers who showed interest but didn't buy. Set it to send 24 hours after the initial inquiry.\n\nCRM tracking tip: Create a simple spreadsheet (template included) to track:\n- Date of first contact\n- Product/service they asked about\n- Follow-up status\n- Deal value\n\nThis simple system can double your conversion rate.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $postSeq->id, 'step_order' => 4, 'delay_days' => 7, 'subject' => 'Optimize your WhatsApp Business Profile for more sales', 'body' => "Hi {{name}},\n\nYour WhatsApp Business Profile is your storefront — is it optimized?\n\nUse the Business Profile Optimization Checklist in your bundle to:\n✓ Complete your profile with high-quality images\n✓ Write a compelling business description\n✓ Set up your product catalogue\n✓ Configure quick replies for FAQs\n✓ Set business hours and location\n✓ Add your website and social links\n✓ Create greeting and away messages\n\nBusinesses with complete profiles get 3x more customer inquiries.\n\nTake 15 minutes today to run through the checklist. Every field you complete is another reason for a customer to trust you.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $postSeq->id, 'step_order' => 5, 'delay_days' => 10, 'subject' => 'WhatsApp Business API vs WhatsApp Business App — which is right for you?', 'body' => "Hi {{name}},\n\nAs your business grows, you might wonder if you need the WhatsApp Business API.\n\nHere's a quick comparison (full guide in your bundle):\n\nWhatsApp Business App (Free):\n✓ Great for small businesses with <50 daily conversations\n✓ Manual broadcast to 256 contacts at a time\n✓ Basic quick replies and labels\n✓ Free to use\n\nWhatsApp Business API (Paid):\n✓ For businesses with 50+ daily conversations\n✓ Unlimited broadcast reach\n✓ CRM integration for automation\n✓ Multiple agents can reply\n✓ Analytics dashboard\n\nTips:\n- Start with the free Business App\n- When you hit 30+ conversations/day, consider the API\n- Use the CRM templates in your bundle regardless of which option you choose\n\nYou already have everything you need to start making sales with WhatsApp today.\n\nIf you ever need help, reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-        ]);
-        $out[] = "Post-purchase sequence ID: {$postSeq->id} (5 steps)";
-
-        // Sync sequences table
-        $seq2 = \App\Models\Sequence::updateOrCreate(
-            ['id' => $postSeq->id],
-            ['name' => 'WhatsApp Marketing Bundle Post-Purchase', 'description' => 'Onboard new buyers of WhatsApp bundle', 'is_active' => true]
-        );
-        $out[] = "Sequences table synced ID: {$seq2->id}";
-
-        // 4. Find premium product
-        $premiumProduct = \App\Models\Product::where('slug', 'whatsapp-marketing-bundle')->first();
-        $premiumId = $premiumProduct ? $premiumProduct->id : 0;
-        $out[] = "Premium product ID: " . ($premiumProduct ? $premiumProduct->id : 'NOT FOUND');
-
-        // 5. Create the funnel
-        $funnel = \App\Models\Funnel::updateOrCreate(
-            ['slug' => 'whatsapp-marketing-bundle-funnel'],
-            [
-                'name' => 'WhatsApp Marketing Bundle Funnel',
-                'slug' => 'whatsapp-marketing-bundle-funnel',
-                'description' => 'Lead magnet → download → checkout → pre-sale nurture',
-                'goal' => 'sales',
-                'funnel_type' => 'sales',
-                'product_id' => $premiumId ?: null,
-                'welcome_sequence_id' => $presaleSeq->id,
-                'environment' => 'production',
-                'is_active' => true,
-                'upsell_enabled' => false,
-                'countdown_enabled' => false,
-            ]
-        );
-        $out[] = "Funnel ID: {$funnel->id}";
-
-        // 6. Link landing page to funnel and pre-sale sequence
-        try {
-            $landingPage = \App\Models\LandingPage::where('slug', 'free-whatsapp-marketing-bundle')->first();
-            if ($landingPage) {
-                $landingPage->update([
-                    'funnel_id' => $funnel->id,
-                    'sequence_id' => $presaleSeq->id,
-                ]);
-                $out[] = "Landing page linked: ID {$landingPage->id}";
-            } else {
-                $out[] = "WARNING: Landing page 'free-whatsapp-marketing-bundle' not found in DB";
-            }
-        } catch (\Exception $e) {
-            $out[] = "WARNING: Could not link landing page: " . $e->getMessage();
-        }
-
-        // 7. Create funnel stages
-        \App\Models\FunnelStage::where('funnel_id', $funnel->id)->delete();
-
-        // Stage 1: Landing page (lead capture)
-        \App\Models\FunnelStage::create([
-            'funnel_id' => $funnel->id,
-            'name' => 'Lead Magnet Page',
-            'type' => 'landing',
-            'content' => ['url' => '/l/free-whatsapp-marketing-bundle'],
-            'order' => 1,
-            'delay_days' => 0,
-            'is_required' => true,
-            'action_on_complete' => 'advance',
-        ]);
-        $out[] = "Stage 1: Lead Magnet Page";
-
-        // Stage 2: Download page
-        \App\Models\FunnelStage::create([
-            'funnel_id' => $funnel->id,
-            'name' => 'Download Page',
-            'type' => 'thank_you',
-            'content' => ['url' => '/download/free-whatsapp-marketing-bundle'],
-            'order' => 2,
-            'delay_days' => 0,
-            'is_required' => false,
-            'action_on_complete' => 'advance',
-        ]);
-        $out[] = "Stage 2: Download Page";
-
-        // Stage 3: Premium checkout
-        \App\Models\FunnelStage::create([
-            'funnel_id' => $funnel->id,
-            'name' => 'Premium Checkout',
-            'type' => 'checkout',
-            'content' => ['url' => '/store/whatsapp-marketing-bundle'],
-            'order' => 3,
-            'delay_days' => 0,
-            'sequence_id' => $presaleSeq->id,
-            'is_required' => false,
-            'action_on_complete' => 'email',
-        ]);
-        $out[] = "Stage 3: Premium Checkout";
-
-        // 8. Write free product deliverable HTML file
-        $freeFilePath = public_path('uploads/free-products/files/free-whatsapp-marketing-bundle.html');
-        $dir = dirname($freeFilePath);
-        if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
-        }
-        file_put_contents($freeFilePath, '<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Free WhatsApp Marketing Guide - JoAla Ventures</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:system-ui,-apple-system,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7;padding:40px 20px}
-.container{max-width:720px;margin:0 auto}
-h1{font-size:2em;margin-bottom:8px;color:#0f172a}
-.lead{font-size:1.15em;color:#64748b;margin-bottom:32px}
-h2{font-size:1.4em;margin:32px 0 12px;color:#075985;border-bottom:2px solid #e2e8f0;padding-bottom:6px}
-h3{font-size:1.1em;margin:20px 0 8px;color:#0c4a6e}
-p{margin-bottom:12px}
-ul{list-style:none;padding:0;margin:0 0 16px}
-ul li{padding:8px 0 8px 28px;position:relative;border-bottom:1px solid #f1f5f9}
-ul li:before{content:"\\2713";position:absolute;left:0;color:#059669;font-weight:bold}
-.badge{display:inline-block;background:#dbeafe;color:#1e40af;padding:2px 12px;border-radius:20px;font-size:.85em;font-weight:600}
-.footer{margin-top:40px;padding-top:24px;border-top:2px solid #e2e8f0;text-align:center;color:#94a3b8;font-size:.9em}
-</style>
-</head>
-<body>
-<div class="container">
-<h1>WhatsApp Marketing Guide</h1>
-<p class="lead">Your complete guide to using WhatsApp for business growth — broadcast, automation, CRM, and more.</p>
-
-<h2>1. WhatsApp Broadcast Setup</h2>
-<p>WhatsApp Broadcast allows you to send messages to multiple contacts at once while keeping each conversation private. Unlike groups, recipients only see your message — not who else received it.</p>
-<ul>
-<li>Use broadcast lists for announcements, promotions, and updates</li>
-<li>Keep broadcasts to 256 recipients per list (Business App limit)</li>
-<li>Always personalise the first line with the recipient\'s name</li>
-<li>Send between 10am-2pm for optimal open rates</li>
-<li>Track replies manually and follow up within 24 hours</li>
-<li>Segment your audience before broadcasting (e.g., customers vs prospects)</li>
-</ul>
-
-<h2>2. Automation Strategies</h2>
-<p>Save hours with smart automation. The key is to automate repetitive tasks while keeping the personal touch.</p>
-<ul>
-<li>Set up quick replies for FAQs (pricing, hours, location)</li>
-<li>Use away messages for after-hours inquiries</li>
-<li>Create greeting messages that capture lead info</li>
-<li>Build follow-up sequences for new leads</li>
-<li>Automate abandoned cart recovery messages</li>
-<li>Schedule broadcast messages during peak engagement times</li>
-</ul>
-
-<h2>3. CRM Integration</h2>
-<p>Turn WhatsApp from a messaging app into a sales engine by tracking every conversation.</p>
-<ul>
-<li>Tag contacts by source, interest, and purchase stage</li>
-<li>Track conversation history per customer</li>
-<li>Log deals and follow-ups in a simple spreadsheet or CRM</li>
-<li>Set reminders for follow-ups based on lead response</li>
-<li>Measure conversion rate from message to sale</li>
-<li>Export your contact list for backup and analysis</li>
-</ul>
-
-<h2>4. Ready-to-Use Templates</h2>
-<p>Copy, paste, and customise these proven templates:</p>
-
-<h3 class="badge">Sales Broadcast</h3>
-<p>"Hi [Name], we have a special offer just for you! Get [discount]% off on [product] this week only. Reply YES to claim yours."</p>
-
-<h3 class="badge">Follow-Up</h3>
-<p>"Hi [Name], just checking in! Did you have a chance to review the [product] we discussed? Happy to answer any questions."</p>
-
-<h3 class="badge">Abandoned Cart</h3>
-<p>"Hi [Name], you left [product] in your cart! Complete your order now and get free delivery. Reply ORDER to proceed."</p>
-
-<h3 class="badge">Re-engagement</h3>
-<p>"Hi [Name], it\'s been a while! We\'ve added new products you might like. Check them out here: [link]"</p>
-
-<h2>5. Business Profile Optimization</h2>
-<p>Your WhatsApp Business profile is your digital storefront.</p>
-<ul>
-<li>Use a professional logo as your profile picture</li>
-<li>Write a clear business description (3-4 lines max)</li>
-<li>Add your business address, hours, and website</li>
-<li>Set up your product catalogue with photos and prices</li>
-<li>Create quick replies for top 5 FAQs</li>
-<li>Enable greeting and away messages</li>
-<li>Link your Instagram and Facebook accounts</li>
-<li>Verify your business if eligible</li>
-</ul>
-
-<h2>6. Analytics & Tracking</h2>
-<p>Track these metrics to optimise your WhatsApp marketing:</p>
-<ul>
-<li>Message delivery rate (aim for 95%+)</li>
-<li>Read rate (aim for 70%+)</li>
-<li>Reply rate (aim for 30%+)</li>
-<li>Conversion rate (from message to sale)</li>
-<li>Average response time (aim for under 1 hour)</li>
-<li>Best sending days and times</li>
-<li>Most engaging message types</li>
-</ul>
-
-<div class="footer">
-<p><strong>Want the complete system?</strong> Get the WhatsApp Marketing Bundle with 20+ ready-to-use templates, automation workflows, CRM guides, and more.</p>
-<p>Visit joala.com.ng/store/whatsapp-marketing-bundle</p>
-<p>&copy; 2026 JoAla Ventures. All rights reserved.</p>
-</div>
-</div>
-</body>
-</html>');
-        $out[] = "Free product deliverable HTML created at: uploads/free-products/files/free-whatsapp-marketing-bundle.html";
-
-        $out[] = "---";
-        $out[] = "Landing page URL: https://joala.com.ng/l/free-whatsapp-marketing-bundle";
-        $out[] = "Download page URL: https://joala.com.ng/download/free-whatsapp-marketing-bundle";
-        $out[] = "Sales page URL: https://joala.com.ng/store/whatsapp-marketing-bundle";
-        $out[] = "Funnel edit: /admin/marketing/funnels/{$funnel->id}/edit";
-
-        return "<h2>WhatsApp Funnel Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
-
-    } catch (\Exception $e) {
-        return "<h2>ERROR</h2><pre>" . $e->getMessage() . "\n" . $e->getTraceAsString() . "</pre>";
-    }
-});
 
 // Comprehensive Email Sequence Templates Pack Funnel Setup
 Route::get('/setup-email-funnel', function () {
@@ -2844,66 +2522,7 @@ Route::middleware(['admin'])->prefix('admin')->group(function () {
     })->name('admin.broadcast.send');
 });
 
-// Admin - WhatsApp Broadcasting
-Route::middleware(['admin'])->prefix('admin')->group(function () {
-    // Static routes FIRST (before any {id} wildcards)
-    Route::get('/whatsapp', [\App\Http\Controllers\Admin\WhatsAppController::class, 'index'])->name('admin.whatsapp.index');
-    Route::get('/whatsapp/create', [\App\Http\Controllers\Admin\WhatsAppController::class, 'create'])->name('admin.whatsapp.create');
-    Route::post('/whatsapp', [\App\Http\Controllers\Admin\WhatsAppController::class, 'store'])->name('admin.whatsapp.store');
-    Route::get('/whatsapp/contacts', [\App\Http\Controllers\Admin\WhatsAppController::class, 'contacts'])->name('admin.whatsapp.contacts');
-    Route::post('/whatsapp/contacts/import', [\App\Http\Controllers\Admin\WhatsAppController::class, 'importContacts'])->name('admin.whatsapp.contacts.import');
-    Route::post('/whatsapp/contacts/{id}/toggle-optin', [\App\Http\Controllers\Admin\WhatsAppController::class, 'toggleOptIn'])->name('admin.whatsapp.contacts.toggle');
 
-    // Templates
-    Route::get('/whatsapp/templates', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'index'])->name('admin.whatsapp.templates');
-    Route::get('/whatsapp/templates/create', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'create'])->name('admin.whatsapp.templates.create');
-    Route::post('/whatsapp/templates', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'store'])->name('admin.whatsapp.templates.store');
-    Route::get('/whatsapp/templates/{id}', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'show'])->name('admin.whatsapp.templates.show');
-    Route::get('/whatsapp/templates/{id}/edit', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'edit'])->name('admin.whatsapp.templates.edit');
-    Route::post('/whatsapp/templates/{id}', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'update'])->name('admin.whatsapp.templates.update');
-    Route::post('/whatsapp/templates/{id}/toggle', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'toggleStatus'])->name('admin.whatsapp.templates.toggle');
-    Route::get('/whatsapp/templates/{id}/preview', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'preview'])->name('admin.whatsapp.templates.preview');
-    Route::post('/whatsapp/templates/{id}/test', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'sendTest'])->name('admin.whatsapp.templates.test');
-    Route::post('/whatsapp/templates/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppTemplateController::class, 'destroy'])->name('admin.whatsapp.templates.destroy');
-
-    // Flows
-    Route::get('/whatsapp/flows', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'index'])->name('admin.whatsapp.flows');
-    Route::get('/whatsapp/flows/create', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'create'])->name('admin.whatsapp.flows.create');
-    Route::post('/whatsapp/flows', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'store'])->name('admin.whatsapp.flows.store');
-    Route::get('/whatsapp/flows/{id}', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'show'])->name('admin.whatsapp.flows.show');
-    Route::get('/whatsapp/flows/{id}/edit', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'edit'])->name('admin.whatsapp.flows.edit');
-    Route::post('/whatsapp/flows/{id}', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'update'])->name('admin.whatsapp.flows.update');
-    Route::post('/whatsapp/flows/{id}/deploy', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'deploy'])->name('admin.whatsapp.flows.deploy');
-    Route::post('/whatsapp/flows/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppFlowController::class, 'destroy'])->name('admin.whatsapp.flows.destroy');
-
-    // Conversations
-    Route::get('/whatsapp/conversations', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'index'])->name('admin.whatsapp.conversations');
-    Route::get('/whatsapp/conversations/create', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'create'])->name('admin.whatsapp.conversations.create');
-    Route::post('/whatsapp/conversations', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'store'])->name('admin.whatsapp.conversations.store');
-    Route::get('/whatsapp/conversations/{id}', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'show'])->name('admin.whatsapp.conversations.show');
-    Route::get('/whatsapp/conversations/{id}/edit', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'edit'])->name('admin.whatsapp.conversations.edit');
-    Route::post('/whatsapp/conversations/{id}', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'update'])->name('admin.whatsapp.conversations.update');
-    Route::post('/whatsapp/conversations/{id}/toggle', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'toggleActive'])->name('admin.whatsapp.conversations.toggle');
-    Route::post('/whatsapp/conversations/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'destroy'])->name('admin.whatsapp.conversations.destroy');
-    Route::get('/whatsapp/conversations/logs', [\App\Http\Controllers\Admin\WhatsAppConversationController::class, 'logs'])->name('admin.whatsapp.conversations.logs');
-
-    // Groups
-    Route::get('/whatsapp/groups', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'index'])->name('admin.whatsapp.groups');
-    Route::get('/whatsapp/groups/create', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'create'])->name('admin.whatsapp.groups.create');
-    Route::post('/whatsapp/groups', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'store'])->name('admin.whatsapp.groups.store');
-    Route::get('/whatsapp/groups/{group}/edit', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'edit'])->name('admin.whatsapp.groups.edit');
-    Route::post('/whatsapp/groups/{group}', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'update'])->name('admin.whatsapp.groups.update');
-    Route::post('/whatsapp/groups/{group}/toggle', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'toggleActive'])->name('admin.whatsapp.groups.toggle');
-    Route::post('/whatsapp/groups/{group}/delete', [\App\Http\Controllers\Admin\WhatsAppGroupController::class, 'destroy'])->name('admin.whatsapp.groups.destroy');
-
-    // Test endpoint (before wildcards)
-    Route::get('/whatsapp/test-api', [\App\Http\Controllers\Admin\WhatsAppController::class, 'testApi'])->name('admin.whatsapp.test');
-
-    // Wildcard routes LAST (so static sub-paths like /contacts, /templates match first)
-    Route::get('/whatsapp/{id}', [\App\Http\Controllers\Admin\WhatsAppController::class, 'show'])->name('admin.whatsapp.show');
-    Route::post('/whatsapp/{id}/send', [\App\Http\Controllers\Admin\WhatsAppController::class, 'send'])->name('admin.whatsapp.send');
-    Route::post('/whatsapp/{id}/delete', [\App\Http\Controllers\Admin\WhatsAppController::class, 'destroy'])->name('admin.whatsapp.destroy');
-});
 
 // One-time setup endpoint for creating new feature tables
 Route::get('/setup-new-tables', function () {
@@ -2935,47 +2554,7 @@ Route::get('/setup-new-tables', function () {
             $out[] = "project_briefs.is_read already exists";
         }
 
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_broadcasts')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_broadcasts', function ($table) {
-                $table->id();
-                $table->string('name');
-                $table->text('message');
-                $table->enum('status', ['draft', 'scheduled', 'sending', 'sent', 'failed'])->default('draft');
-                $table->timestamp('scheduled_at')->nullable();
-                $table->integer('total_recipients')->default(0);
-                $table->integer('sent_count')->default(0);
-                $table->integer('failed_count')->default(0);
-                $table->json('log')->nullable();
-                $table->timestamps();
-            });
-            $out[] = "whatsapp_broadcasts table created";
-        } else {
-            $out[] = "whatsapp_broadcasts already exists";
-        }
 
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_contacts')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_contacts', function ($table) {
-                $table->id();
-                $table->unsignedBigInteger('lead_id')->nullable();
-                $table->string('phone', 20);
-                $table->boolean('opted_in')->default(true);
-                $table->timestamp('last_sent_at')->nullable();
-                $table->timestamps();
-                $table->unique(['lead_id', 'phone']);
-            });
-            $out[] = "whatsapp_contacts table created";
-        } else {
-            $out[] = "whatsapp_contacts already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'phone')) {
-            \Illuminate\Support\Facades\Schema::table('leads', function ($table) {
-                $table->string('phone', 20)->nullable()->after('email');
-            });
-            $out[] = "leads.phone column added";
-        } else {
-            $out[] = "leads.phone already exists";
-        }
 
         if (!\Illuminate\Support\Facades\Schema::hasColumn('support_tickets', 'admin_read_at')) {
             \Illuminate\Support\Facades\Schema::table('support_tickets', function ($table) {
@@ -2992,172 +2571,6 @@ Route::get('/setup-new-tables', function () {
     }
 });
 
-// Dedicated WhatsApp Tables Setup
-Route::get('/setup-whatsapp-tables', function () {
-    try {
-        $out = [];
-
-        if (!\Illuminate\Support\Facades\Schema::hasColumn('whatsapp_broadcasts', 'payload')) {
-            \Illuminate\Support\Facades\Schema::table('whatsapp_broadcasts', function ($table) {
-                $table->json('payload')->nullable()->after('message');
-            });
-            $out[] = "whatsapp_broadcasts.payload column added";
-        } else {
-            $out[] = "whatsapp_broadcasts.payload already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasColumn('whatsapp_broadcasts', 'template_id')) {
-            \Illuminate\Support\Facades\Schema::table('whatsapp_broadcasts', function ($table) {
-                $table->unsignedBigInteger('template_id')->nullable()->after('payload');
-            });
-            $out[] = "whatsapp_broadcasts.template_id column added";
-        } else {
-            $out[] = "whatsapp_broadcasts.template_id already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_broadcasts')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_broadcasts', function ($table) {
-                $table->id();
-                $table->string('name');
-                $table->text('message');
-                $table->enum('status', ['draft', 'scheduled', 'sending', 'sent', 'failed'])->default('draft');
-                $table->timestamp('scheduled_at')->nullable();
-                $table->integer('total_recipients')->default(0);
-                $table->integer('sent_count')->default(0);
-                $table->integer('failed_count')->default(0);
-                $table->json('log')->nullable();
-                $table->timestamps();
-            });
-            $out[] = "whatsapp_broadcasts table created";
-        } else {
-            $out[] = "whatsapp_broadcasts already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_contacts')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_contacts', function ($table) {
-                $table->id();
-                $table->unsignedBigInteger('lead_id')->nullable();
-                $table->string('phone', 20);
-                $table->boolean('opted_in')->default(true);
-                $table->timestamp('last_sent_at')->nullable();
-                $table->timestamps();
-                $table->unique(['lead_id', 'phone']);
-            });
-            $out[] = "whatsapp_contacts table created";
-        } else {
-            $out[] = "whatsapp_contacts already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'phone')) {
-            \Illuminate\Support\Facades\Schema::table('leads', function ($table) {
-                $table->string('phone', 20)->nullable()->after('email');
-            });
-            $out[] = "leads.phone column added";
-        } else {
-            $out[] = "leads.phone already exists";
-        }
-
-        // Advanced tables
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_templates')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_templates', function ($table) {
-                $table->id();
-                $table->string('name');
-                $table->enum('category', ['marketing', 'utility', 'authentication'])->default('marketing');
-                $table->enum('message_type', ['text', 'interactive', 'media', 'template', 'flow'])->default('text');
-                $table->string('header_type')->nullable();
-                $table->text('header_value')->nullable();
-                $table->text('body');
-                $table->text('footer')->nullable();
-                $table->json('buttons')->nullable();
-                $table->json('sections')->nullable();
-                $table->string('media_url')->nullable();
-                $table->string('catalog_id')->nullable();
-                $table->enum('status', ['draft', 'active', 'archived'])->default('draft');
-                $table->timestamps();
-            });
-            $out[] = "whatsapp_templates table created";
-        } else {
-            $out[] = "whatsapp_templates already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_flows')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_flows', function ($table) {
-                $table->id();
-                $table->string('name');
-                $table->text('description')->nullable();
-                $table->string('flow_id')->nullable();
-                $table->json('flow_json');
-                $table->json('flow_data')->nullable();
-                $table->enum('status', ['draft', 'deployed', 'archived'])->default('draft');
-                $table->timestamps();
-            });
-            $out[] = "whatsapp_flows table created";
-        } else {
-            $out[] = "whatsapp_flows already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_conversations')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_conversations', function ($table) {
-                $table->id();
-                $table->string('name');
-                $table->text('description')->nullable();
-                $table->enum('trigger_event', ['lead_created', 'purchase_made', 'broadcast_reply', 'manual', 'schedule'])->default('manual');
-                $table->json('steps');
-                $table->boolean('is_active')->default(false);
-                $table->timestamps();
-            });
-            $out[] = "whatsapp_conversations table created";
-        } else {
-            $out[] = "whatsapp_conversations already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_conversation_logs')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_conversation_logs', function ($table) {
-                $table->id();
-                $table->unsignedBigInteger('conversation_id');
-                $table->unsignedBigInteger('contact_id');
-                $table->integer('current_step')->default(0);
-                $table->enum('status', ['active', 'completed', 'exited'])->default('active');
-                $table->text('last_response')->nullable();
-                $table->timestamp('last_step_at')->nullable();
-                $table->timestamps();
-                $table->foreign('conversation_id')->references('id')->on('whatsapp_conversations')->onDelete('cascade');
-                $table->foreign('contact_id')->references('id')->on('whatsapp_contacts')->onDelete('cascade');
-            });
-            $out[] = "whatsapp_conversation_logs table created";
-        } else {
-            $out[] = "whatsapp_conversation_logs already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasTable('whatsapp_groups')) {
-            \Illuminate\Support\Facades\Schema::create('whatsapp_groups', function ($table) {
-                $table->id();
-                $table->string('name');
-                $table->string('group_jid')->unique();
-                $table->text('description')->nullable();
-                $table->integer('member_count')->default(0);
-                $table->boolean('is_active')->default(true);
-                $table->timestamps();
-            });
-            $out[] = "whatsapp_groups table created";
-        } else {
-            $out[] = "whatsapp_groups already exists";
-        }
-
-        if (!\Illuminate\Support\Facades\Schema::hasColumn('whatsapp_broadcasts', 'group_jid')) {
-            \Illuminate\Support\Facades\Schema::table('whatsapp_broadcasts', function ($table) {
-                $table->string('group_jid')->nullable()->after('status');
-            });
-            $out[] = "whatsapp_broadcasts.group_jid column added";
-        } else {
-            $out[] = "whatsapp_broadcasts.group_jid already exists";
-        }
-
-        return "<h2>WhatsApp Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
-    } catch (\Exception $e) {
-        return "<h2>Error</h2><pre>" . $e->getMessage() . "</pre>";
-    }
-});
 
 // Refresh autoloader
 Route::get('/dump-autoload', function () {
@@ -3168,81 +2581,6 @@ Route::get('/dump-autoload', function () {
         return "<h2>dump-autoload (exit code: $code)</h2><pre>" . implode("\n", $output) . "</pre>";
     } catch (\Exception $e) {
         return "<h2>Error</h2><pre>" . $e->getMessage() . "</pre>";
-    }
-});
-
-// Diagnostic: Check what's going wrong with WhatsApp pages
-Route::get('/debug-whatsapp', function () {
-    $key = request('key', '');
-    if ($key !== 'joala2024') { return "Invalid key"; }
-
-    $out = [];
-
-    // Check class existence
-    $classes = [
-        'App\Models\Lead',
-        'App\Models\Segment',
-        'App\Models\WhatsAppBroadcast',
-        'App\Models\WhatsAppContact',
-        'App\Models\WhatsAppTemplate',
-        'App\Models\WhatsAppFlow',
-        'App\Models\WhatsAppConversation',
-        'App\Services\WhatsAppBroadcastService',
-    ];
-    foreach ($classes as $class) {
-        try {
-            $exists = class_exists($class, true);
-            $out[] = ($exists ? 'OK' : 'NOT FOUND') . " – $class";
-        } catch (\Exception $e) {
-            $out[] = 'ERROR – '.$class.': '.$e->getMessage();
-        } catch (\Throwable $e) {
-            $out[] = 'FATAL – '.$class.': '.$e->getMessage();
-        }
-    }
-
-    // Check tables
-    $tables = ['leads', 'segments', 'whatsapp_broadcasts', 'whatsapp_contacts', 'whatsapp_templates', 'whatsapp_flows', 'whatsapp_conversations'];
-    foreach ($tables as $table) {
-        try {
-            $exists = \Illuminate\Support\Facades\Schema::hasTable($table);
-            $out[] = ($exists ? 'OK' : 'MISSING') . " – table '$table'";
-        } catch (\Exception $e) {
-            $out[] = 'ERROR – table \''.$table.'\': '.$e->getMessage();
-        }
-    }
-
-    // Test a simple query on each
-    $queries = [
-        'Segment::count()' => fn() => \App\Models\Segment::count(),
-        'Lead::count()' => fn() => \App\Models\Lead::count(),
-        'WhatsAppContact::count()' => fn() => \App\Models\WhatsAppContact::count(),
-        'WhatsAppTemplate::count()' => fn() => class_exists('App\Models\WhatsAppTemplate') ? \App\Models\WhatsAppTemplate::count() : 'class not found',
-    ];
-    foreach ($queries as $label => $fn) {
-        try {
-            $result = $fn();
-            $out[] = "OK – $label = $result";
-        } catch (\Exception $e) {
-            $out[] = 'ERROR – '.$label.': '.$e->getMessage();
-        }
-    }
-
-    return "<h2>WhatsApp Diagnostics</h2><pre>" . implode("\n", $out) . "</pre>";
-});
-
-// Quick check that create view renders
-Route::get('/test-whatsapp-create', function () {
-    try {
-        $segments = \App\Models\Segment::where('is_active', true)->get();
-        $groups = \App\Models\WhatsAppGroup::active()->get();
-        $leadCount = \App\Models\Lead::count();
-        $contactCount = \App\Models\WhatsAppContact::where('opted_in', true)->count();
-        $tc = 'App\Models\WhatsAppTemplate';
-        $templates = $tc::where('status', 'active')->get();
-        $html = view('admin.whatsapp.create', compact('segments', 'groups', 'leadCount', 'contactCount', 'templates'))->render();
-        return response($html)->header('Content-Type', 'text/html');
-    } catch (\Throwable $e) {
-        return response("ERROR: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString(), 200)->header('Content-Type', 'text/plain');
     }
 });
 

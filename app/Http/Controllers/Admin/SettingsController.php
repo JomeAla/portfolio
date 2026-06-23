@@ -18,7 +18,7 @@ class SettingsController extends Controller
     {
         $fields = [
             'site_name', 'site_description', 'contact_email', 
-            'phone', 'whatsapp', 'address', 'hero_title', 
+            'phone', 'address', 'hero_title', 
             'hero_subtitle', 'cta_text', 'cta_link'
         ];
 
@@ -85,15 +85,6 @@ class SettingsController extends Controller
         Setting::set('github_token', $request->github_token);
 
         return back()->with('success', 'GitHub settings updated.');
-    }
-
-    public function updateWhatsApp(Request $request)
-    {
-        Setting::set('whatsapp_number', $request->whatsapp_number ?? '');
-        Setting::set('whatsapp_api_endpoint', $request->whatsapp_api_endpoint ?? '');
-        Setting::set('whatsapp_api_token', $request->whatsapp_api_token ?? '');
-
-        return back()->with('success', 'WhatsApp settings updated.');
     }
 
     public function updateEmail(Request $request)

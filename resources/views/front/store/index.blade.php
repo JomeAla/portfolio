@@ -69,10 +69,6 @@
                         <a href="/done-for-you-email-automation.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                             View
                         </a>
-                        @elseif($product->slug === 'whatsapp-marketing-bundle')
-                        <a href="/whatsapp-marketing-bundle.php" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                            View
-                        </a>
                         @elseif($product->slug === 'course-creator-kit')
                         <a href="/course-creator-kit.php" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
                             View
@@ -139,10 +135,6 @@
                         </a>
                         @elseif($product->slug === 'real-estate-property-kit')
                         <a href="/real-estate-property-kit.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                            View
-                        </a>
-                        @elseif($product->slug === 'whatsapp-marketing-bundle')
-                        <a href="/whatsapp-marketing-bundle.php" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                             View
                         </a>
                         @elseif($product->slug === 'e-commerce-starter-kit')

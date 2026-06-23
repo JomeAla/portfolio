@@ -112,31 +112,6 @@
                     <i class="fas fa-bullhorn w-5"></i>
                     <span>Campaigns</span>
                 </a>
-                <div class="px-6 py-2 text-slate-500 text-xs font-semibold uppercase">WhatsApp</div>
-                <a href="/admin/whatsapp" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
-                    <i class="fab fa-whatsapp w-5"></i>
-                    <span>Broadcast</span>
-                </a>
-                <a href="/admin/whatsapp/templates" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
-                    <i class="fas fa-layer-group w-5"></i>
-                    <span>Templates</span>
-                </a>
-                <a href="/admin/whatsapp/flows" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
-                    <i class="fas fa-code-branch w-5"></i>
-                    <span>Flows</span>
-                </a>
-                <a href="/admin/whatsapp/conversations" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
-                    <i class="fas fa-comments w-5"></i>
-                    <span>Conversations</span>
-                </a>
-                <a href="/admin/whatsapp/contacts" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
-                    <i class="fas fa-address-book w-5"></i>
-                    <span>Contacts</span>
-                </a>
-                <a href="/admin/whatsapp/groups" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
-                    <i class="fas fa-users w-5"></i>
-                    <span>Groups</span>
-                </a>
                 <div class="px-6 py-2 text-slate-500 text-xs font-semibold uppercase">Content</div>
                 <a href="/admin/marketing/blog" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
                     <i class="fas fa-blog w-5"></i>

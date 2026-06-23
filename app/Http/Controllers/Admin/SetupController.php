@@ -9,6 +9,5 @@ class SetupController extends Controller
 {
     public function setupAuditKit() { return response()->json(['status' => 'ok']); }
     public function setupAuditSequence() { return response()->json(['status' => 'ok']); }
-    public function setupWhatsAppSequence() { return response()->json(['status' => 'ok']); }
-    public function addWhatsAppUpsell() { return response()->json(['status' => 'ok']); }
+
 }

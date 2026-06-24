@@ -12,6 +12,7 @@ use App\Models\TwitterSetting;
 use App\Models\LandingPage;
 use App\Models\EmailOpen;
 use App\Models\Setting;
+use App\Services\EmailFormatterService;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -138,13 +139,11 @@ class MarketingService
 
     private function processTemplate($template, $lead)
     {
-        $replacements = [
-            '{{name}}' => $lead->name ?? 'there',
-            '{{email}}' => $lead->email,
-            '{{date}}' => now()->format('F j, Y'),
-        ];
-        
-        return str_replace(array_keys($replacements), array_values($replacements), $template);
+        $formatter = app(EmailFormatterService::class);
+        return $formatter->formatEmailBody($template, [
+            'name' => $lead->name ?? 'there',
+            'email' => $lead->email,
+        ]);
     }
 
     public function enrollLeadInSequence(Lead $lead, int $sequenceId)

@@ -8,6 +8,7 @@ use App\Models\Lead;
 use App\Models\SequenceStep;
 use Illuminate\Support\Facades\Log;
 use App\Models\Setting;
+use App\Services\EmailFormatterService;
 
 class ProcessEmailQueue extends Command
 {
@@ -29,12 +30,11 @@ class ProcessEmailQueue extends Command
 
     private function processTemplate($template, $lead)
     {
-        $replacements = [
-            '{{name}}' => (!empty($lead->name) ? $lead->name : explode('@', $lead->email)[0]),
-            '{{email}}' => $lead->email,
-            '{{date}}' => now()->format('F j, Y'),
-        ];
-        return str_replace(array_keys($replacements), array_values($replacements), $template);
+        $formatter = app(EmailFormatterService::class);
+        return $formatter->formatEmailBody($template, [
+            'name' => (!empty($lead->name) ? $lead->name : explode('@', $lead->email)[0]),
+            'email' => $lead->email,
+        ]);
     }
 
     public function handle()

@@ -32,7 +32,14 @@
 
         <div class="mb-4">
             <label class="block text-sm font-medium text-slate-700 mb-2">Email Body</label>
-            <textarea name="body" rows="12" required class="w-full border border-slate-300 rounded-lg px-4 py-2 font-mono text-sm">{{ $sequenceStep->body }}</textarea>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3 text-xs text-blue-700">
+                <strong>Available tags:</strong>
+                <code class="bg-blue-100 px-1 rounded">{{name}}</code> —
+                <code class="bg-blue-100 px-1 rounded">{{email}}</code> —
+                <code class="bg-blue-100 px-1 rounded">{{products}}</code> (auto-renders active store products)
+                You can use HTML or plain text — plain text will be auto-formatted.
+            </div>
+            <textarea name="body" rows="16" required class="w-full border border-slate-300 rounded-lg px-4 py-2 font-mono text-sm">{{ $sequenceStep->body }}</textarea>
         </div>
     </div>
 </form>

@@ -28,6 +28,15 @@
             <a href="{{ route('store', ['type' => 'software']) }}" class="px-4 py-2 rounded-full {{ request('type') == 'software' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
                 Software
             </a>
+            <a href="{{ route('store', ['type' => 'webapp']) }}" class="px-4 py-2 rounded-full {{ request('type') == 'webapp' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+                Web Apps
+            </a>
+            <a href="{{ route('store', ['type' => 'mobileapp']) }}" class="px-4 py-2 rounded-full {{ request('type') == 'mobileapp' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+                Mobile Apps
+            </a>
+            <a href="{{ route('store', ['type' => 'desktopapp']) }}" class="px-4 py-2 rounded-full {{ request('type') == 'desktopapp' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+                Desktop Apps
+            </a>
         </div>
 
         @if($products->count() > 0)

@@ -37,6 +37,9 @@
             <a href="{{ route('store', ['type' => 'desktopapp']) }}" class="px-4 py-2 rounded-full {{ request('type') == 'desktopapp' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
                 Desktop Apps
             </a>
+            <a href="{{ route('store', ['type' => 'tools']) }}" class="px-4 py-2 rounded-full {{ request('type') == 'tools' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }}">
+                Tools
+            </a>
         </div>
 
         @if($products->count() > 0)

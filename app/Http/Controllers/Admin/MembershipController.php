@@ -73,7 +73,14 @@ class MembershipController extends Controller
             LEFT JOIN membership_tiers mt ON c.required_tier_id = mt.id
             ORDER BY c.created_at DESC
         ");
-        $courses = $stmt->fetchAll();
+        $courses = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        // Ensure is_free is always set (column may not exist in table)
+        foreach ($courses as &$course) {
+            if (!array_key_exists('is_free', $course)) {
+                $course['is_free'] = false;
+            }
+        }
+        unset($course);
         return view('admin.courses.index', compact('courses'));
     }
 

@@ -26,12 +26,12 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
                 <select name="category" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
                     <option value="">Select Category</option>
-                    <option value="programming" {{ $course['category'] == 'programming' ? 'selected' : '' }}>Programming</option>
-                    <option value="design" {{ $course['category'] == 'design' ? 'selected' : '' }}>Design</option>
-                    <option value="marketing" {{ $course['category'] == 'marketing' ? 'selected' : '' }}>Marketing</option>
-                    <option value="business" {{ $course['category'] == 'business' ? 'selected' : '' }}>Business</option>
-                    <option value="personal" {{ $course['category'] == 'personal' ? 'selected' : '' }}>Personal Development</option>
-                    <option value="other" {{ $course['category'] == 'other' ? 'selected' : '' }}>Other</option>
+                    <option value="programming" {{ ($course['category'] ?? '') == 'programming' ? 'selected' : '' }}>Programming</option>
+                    <option value="design" {{ ($course['category'] ?? '') == 'design' ? 'selected' : '' }}>Design</option>
+                    <option value="marketing" {{ ($course['category'] ?? '') == 'marketing' ? 'selected' : '' }}>Marketing</option>
+                    <option value="business" {{ ($course['category'] ?? '') == 'business' ? 'selected' : '' }}>Business</option>
+                    <option value="personal" {{ ($course['category'] ?? '') == 'personal' ? 'selected' : '' }}>Personal Development</option>
+                    <option value="other" {{ ($course['category'] ?? '') == 'other' ? 'selected' : '' }}>Other</option>
                 </select>
             </div>
         </div>
@@ -67,7 +67,7 @@
         
         <div class="flex items-center gap-6">
             <label class="flex items-center">
-                <input type="checkbox" name="is_free" value="1" {{ $course['is_free'] ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <input type="checkbox" name="is_free" value="1" {{ ($course['is_free'] ?? false) ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                 <span class="ml-2 text-sm text-gray-700">Free Course</span>
             </label>
             <label class="flex items-center">

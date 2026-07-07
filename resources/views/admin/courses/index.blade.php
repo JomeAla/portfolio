@@ -50,7 +50,7 @@
             
             <div class="flex items-center justify-between pt-4 border-t border-gray-100">
                 <span class="font-bold text-blue-600">
-                    @if($course['is_free'] || $course['price'] == 0)
+                    @if(($course['is_free'] ?? false) || $course['price'] == 0)
                         Free
                     @else
                         ₦{{ number_format($course['price']) }}

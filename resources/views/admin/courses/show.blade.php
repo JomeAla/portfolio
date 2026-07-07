@@ -28,7 +28,7 @@
     <div class="bg-white rounded-lg shadow p-6">
         <p class="text-slate-500 text-sm">Price</p>
         <p class="text-3xl font-bold text-slate-800">
-            @if($course['is_free'] || $course['price'] == 0)
+            @if(($course['is_free'] ?? false) || $course['price'] == 0)
                 Free
             @else
                 ₦{{ number_format($course['price']) }}

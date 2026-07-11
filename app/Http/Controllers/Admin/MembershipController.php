@@ -64,24 +64,28 @@ class MembershipController extends Controller
 
     public function courses()
     {
-        $pdo = db_pdo();
-        $stmt = $pdo->query("
-            SELECT c.*, mt.name as required_tier_name,
-                (SELECT COUNT(*) FROM course_lessons WHERE course_id = c.id) as lessons_count,
-                (SELECT COUNT(*) FROM course_enrollments WHERE course_id = c.id) as students_count
-            FROM courses c
-            LEFT JOIN membership_tiers mt ON c.required_tier_id = mt.id
-            ORDER BY c.created_at DESC
-        ");
-        $courses = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        // Ensure is_free is always set (column may not exist in table)
-        foreach ($courses as &$course) {
-            if (!array_key_exists('is_free', $course)) {
-                $course['is_free'] = false;
+        try {
+            $pdo = db_pdo();
+            $stmt = $pdo->query("
+                SELECT c.*, mt.name as required_tier_name,
+                    (SELECT COUNT(*) FROM course_lessons WHERE course_id = c.id) as lessons_count,
+                    (SELECT COUNT(*) FROM course_enrollments WHERE course_id = c.id) as students_count
+                FROM courses c
+                LEFT JOIN membership_tiers mt ON c.required_tier_id = mt.id
+                ORDER BY c.created_at DESC
+            ");
+            $courses = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            // Ensure is_free is always set (column may not exist in table)
+            foreach ($courses as &$course) {
+                if (!array_key_exists('is_free', $course)) {
+                    $course['is_free'] = false;
+                }
             }
+            unset($course);
+            return view('admin.courses.index', compact('courses'));
+        } catch (\Exception $e) {
+            return response('<pre>DB Error: ' . e($e->getMessage()) . '</pre>')->header('Content-Type', 'text/html');
         }
-        unset($course);
-        return view('admin.courses.index', compact('courses'));
     }
 
     public function createCourse()

@@ -64,8 +64,12 @@ class MembershipController extends Controller
 
     public function courses()
     {
-        try {
-            $pdo = db_pdo();
+        $pdo = db_pdo();
+        // Check if required_tier_id column exists (it may not on live)
+        $colCheck = $pdo->query("SHOW COLUMNS FROM courses LIKE 'required_tier_id'")->fetchAll();
+        $hasTierColumn = count($colCheck) > 0;
+
+        if ($hasTierColumn) {
             $stmt = $pdo->query("
                 SELECT c.*, mt.name as required_tier_name,
                     (SELECT COUNT(*) FROM course_lessons WHERE course_id = c.id) as lessons_count,
@@ -74,18 +78,24 @@ class MembershipController extends Controller
                 LEFT JOIN membership_tiers mt ON c.required_tier_id = mt.id
                 ORDER BY c.created_at DESC
             ");
-            $courses = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-            // Ensure is_free is always set (column may not exist in table)
-            foreach ($courses as &$course) {
-                if (!array_key_exists('is_free', $course)) {
-                    $course['is_free'] = false;
-                }
-            }
-            unset($course);
-            return view('admin.courses.index', compact('courses'));
-        } catch (\Exception $e) {
-            return response('<pre>DB Error: ' . e($e->getMessage()) . '</pre>')->header('Content-Type', 'text/html');
+        } else {
+            $stmt = $pdo->query("
+                SELECT c.*, NULL as required_tier_name,
+                    (SELECT COUNT(*) FROM course_lessons WHERE course_id = c.id) as lessons_count,
+                    (SELECT COUNT(*) FROM course_enrollments WHERE course_id = c.id) as students_count
+                FROM courses c
+                ORDER BY c.created_at DESC
+            ");
         }
+        $courses = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        // Ensure is_free is always set (column may not exist in table)
+        foreach ($courses as &$course) {
+            if (!array_key_exists('is_free', $course)) {
+                $course['is_free'] = false;
+            }
+        }
+        unset($course);
+        return view('admin.courses.index', compact('courses'));
     }
 
     public function createCourse()

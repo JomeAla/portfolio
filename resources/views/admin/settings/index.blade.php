@@ -71,30 +71,11 @@
         </div>
 
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/50">
-            <h2 class="text-lg font-semibold text-slate-900 mb-4">Homepage Settings</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Hero Title</label>
-                    <input type="text" name="hero_title" value="{{ $settings['hero_title'] ?? '' }}" 
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Hero Subtitle</label>
-                    <textarea name="hero_subtitle" rows="2" 
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">{{ $settings['hero_subtitle'] ?? '' }}</textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">CTA Button Text</label>
-                    <input type="text" name="cta_text" value="{{ $settings['cta_text'] ?? '' }}" 
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">CTA Button Link</label>
-                    <input type="text" name="cta_link" value="{{ $settings['cta_link'] ?? '' }}" 
-                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none">
-                </div>
-            </div>
+            <h2 class="text-lg font-semibold text-slate-900 mb-4">Homepage</h2>
+            <p class="text-sm text-gray-500">
+                Hero section content (title, subtitle, CTA, stats) is now managed in 
+                <a href="/admin/pages" class="text-blue-600 hover:underline">Admin → Pages → Home</a>.
+            </p>
         </div>
 
         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">

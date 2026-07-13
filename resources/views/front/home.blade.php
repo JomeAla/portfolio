@@ -19,17 +19,17 @@
             <div>
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm mb-6">
                     <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                    Available for projects
+                    {{ $hero['hero']['badge'] ?? 'Available for projects' }}
                 </div>
                 <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight">
-                    {{ $settings['hero_title'] ?? 'Building Digital Solutions That Matter' }}
+                    {{ $hero['hero']['title'] ?? $settings['hero_title'] ?? 'Building Digital Solutions That Matter' }}
                 </h1>
                 <p class="text-xl text-slate-400 mt-6 max-w-xl">
-                    {{ $settings['hero_subtitle'] ?? 'I transform ideas into powerful web and mobile applications. Custom development tailored to your business needs.' }}
+                    {{ $hero['hero']['subtitle'] ?? $settings['hero_subtitle'] ?? 'I transform ideas into powerful web and mobile applications. Custom development tailored to your business needs.' }}
                 </p>
                 <div class="flex flex-wrap gap-4 mt-8">
-                    <a href="{{ $settings['cta_link'] ?? route('brief.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all hover:scale-105">
-                        {{ $settings['cta_text'] ?? 'Start Your Project' }}
+                    <a href="{{ $hero['cta']['link'] ?? $settings['cta_link'] ?? route('brief.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all hover:scale-105">
+                        {{ $hero['cta']['text'] ?? $settings['cta_text'] ?? 'Start Your Project' }}
                         <i class="fas fa-arrow-right"></i>
                     </a>
                     <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-2 bg-slate-700/50 hover:bg-slate-700 text-white font-semibold px-6 py-3 rounded-xl transition-all border border-slate-600 hover:border-slate-500">
@@ -40,16 +40,16 @@
                 <!-- Stats -->
                 <div class="flex gap-8 mt-12 pt-8 border-t border-slate-700/50">
                     <div>
-                        <p class="text-3xl font-bold text-white">50+</p>
-                        <p class="text-slate-400 text-sm">Projects Completed</p>
+                        <p class="text-3xl font-bold text-white">{{ $hero['stats']['projects'] ?? '50+' }}</p>
+                        <p class="text-slate-400 text-sm">{{ $hero['stats']['projects_label'] ?? 'Projects Completed' }}</p>
                     </div>
                     <div>
-                        <p class="text-3xl font-bold text-white">5+</p>
-                        <p class="text-slate-400 text-sm">Years Experience</p>
+                        <p class="text-3xl font-bold text-white">{{ $hero['stats']['experience'] ?? '5+' }}</p>
+                        <p class="text-slate-400 text-sm">{{ $hero['stats']['experience_label'] ?? 'Years Experience' }}</p>
                     </div>
                     <div>
-                        <p class="text-3xl font-bold text-white">100%</p>
-                        <p class="text-slate-400 text-sm">Client Satisfaction</p>
+                        <p class="text-3xl font-bold text-white">{{ $hero['stats']['satisfaction'] ?? '100%' }}</p>
+                        <p class="text-slate-400 text-sm">{{ $hero['stats']['satisfaction_label'] ?? 'Client Satisfaction' }}</p>
                     </div>
                 </div>
             </div>

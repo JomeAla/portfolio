@@ -15,12 +15,21 @@ class PagesSeeder extends Seeder
                 'title' => 'Home',
                 'content' => json_encode([
                     'hero' => [
+                        'badge' => 'Available for projects',
                         'title' => 'Custom Applications That Drive Results',
                         'subtitle' => 'I build scalable web and mobile applications using AI-powered development workflows.',
                     ],
                     'cta' => [
                         'text' => 'Start Your Project',
                         'link' => '/brief',
+                    ],
+                    'stats' => [
+                        'projects' => '50+',
+                        'projects_label' => 'Projects Completed',
+                        'experience' => '5+',
+                        'experience_label' => 'Years Experience',
+                        'satisfaction' => '100%',
+                        'satisfaction_label' => 'Client Satisfaction',
                     ],
                 ]),
                 'meta_title' => 'Home',

@@ -115,8 +115,9 @@ Route::get('/test', function() {
 
 Route::get('/debug-view', function() {
     try {
-        $v = view('front.home');
-        $html = $v->render();
+        $ctrl = new \App\Http\Controllers\Front\HomeController();
+        $iv = $ctrl->index();
+        $html = $iv->render();
         return $html;
     } catch (Throwable $e) {
         return response("ERROR: " . $e->getMessage() . "\nFile: " . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString(), 500, ['Content-Type' => 'text/plain']);

@@ -19,7 +19,7 @@
     <meta name="twitter:title" content="@yield('og_title', @yield('title', 'Web Developer Nigeria')) | Joala Ventures" />
     <meta name="twitter:description" content="@yield('og_description', $metaDescription ?? ($settings['site_description'] ?? 'Professional developer specializing in custom web & mobile applications in Nigeria.'))" />
     <meta name="twitter:image" content="@yield('og_image', asset('joala-og-image.png'))" />
-    @includeWhen(isset($settings), 'partials.schema')
+    @if(isset($settings))@include('partials.schema')@endif
     @if(!empty($settings['favicon']))
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">

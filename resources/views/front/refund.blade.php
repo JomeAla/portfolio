@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Refund Policy')
+@section('meta_description', 'JoAla Ventures refund and return policy for digital products. Learn about our satisfaction guarantee and refund process.')
 
 @section('content')
 <div class="py-20 bg-slate-50">

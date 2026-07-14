@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Blog')
+@section('meta_description', 'Web development tips, tutorials & insights for Nigerian businesses. Learn about Laravel, WordPress, Shopify & business automation from JoAla Ventures.')
+@section('og_title', 'Blog — Web Development Tips & Tutorials')
+@section('og_description', 'Web development tips, tutorials & insights for Nigerian businesses. Learn about Laravel, WordPress, Shopify & business automation.')
 
 @section('content')
 <section class="py-20 bg-slate-900">
@@ -33,7 +36,7 @@
                     <article class="bg-slate-800/50 rounded-2xl overflow-hidden border border-slate-700/50 hover:border-slate-600/50 transition-all hover:shadow-xl hover:shadow-blue-500/10">
                         @if($post->featured_image)
                             <a href="{{ route('blog.show', $post->slug) }}">
-                                <img src="{{ asset($post->featured_image) }}" alt="{{ $post->title }}" class="w-full h-64 object-cover">
+                                <img src="{{ asset($post->featured_image) }}" alt="{{ $post->title }}" loading="lazy" class="w-full h-64 object-cover">
                             </a>
                         @endif
                         <div class="p-8">

@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('title', $product->title ?? 'Product')
+@section('og_title', $product->title . ' — Digital Product')
+@section('og_image', $product->image ? asset($product->image) : asset('joala-og-image.png'))
 
 @section('content')
 <?php $p = $product; ?>
@@ -12,7 +14,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2">
-                <img src="{{ asset($p->image ?? '') }}" alt="{{ $p->title }}" class="w-full rounded-2xl mb-6">
+                <img src="{{ asset($p->image ?? '') }}" alt="{{ $p->title }}" loading="lazy" class="w-full rounded-2xl mb-6">
 
                 <div class="bg-white rounded-2xl p-6 mt-6">
                     <h2 class="text-xl font-bold text-slate-900 mb-4">Description</h2>

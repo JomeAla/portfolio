@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Terms and Conditions')
+@section('meta_description', 'JoAla Ventures terms and conditions governing the use of our website, services, and digital products. Read our terms before purchasing.')
 
 @section('content')
 <div class="py-20 bg-slate-50">

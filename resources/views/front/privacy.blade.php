@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Privacy Policy')
+@section('meta_description', 'JoAla Ventures privacy policy. Learn how we collect, use, and protect your personal information when you use our services.')
 
 @section('content')
 <div class="py-20 bg-slate-50">

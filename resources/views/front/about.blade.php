@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'About')
+@section('meta_description', 'Meet Jome Alawuru — founder of JoAla Ventures. Nigerian software developer with 5+ years building custom web & mobile applications for businesses.')
+@section('og_title', 'About JoAla Ventures')
+@section('og_description', 'Meet Jome Alawuru — founder of JoAla Ventures. Nigerian software developer with 5+ years building custom web & mobile applications.')
 
 @section('content')
 <section class="py-20 bg-slate-50 min-h-screen">

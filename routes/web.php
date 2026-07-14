@@ -36,6 +36,20 @@ use App\Http\Controllers\Admin\EmailCampaignController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\ProcessController;
 
+// Sitemap
+Route::get('/sitemap.xml', function () {
+    $posts = \App\Models\BlogPost::published()->orderBy('published_at', 'desc')->get();
+    $projects = \App\Models\Project::orderBy('id', 'desc')->get();
+    $products = \App\Models\Product::where('is_active', true)->orderBy('id', 'desc')->get();
+    return response()->view('sitemap', compact('posts', 'projects', 'products'))->header('Content-Type', 'application/xml');
+})->name('sitemap');
+
+// RSS Feed
+Route::get('/rss.xml', function () {
+    $posts = \App\Models\BlogPost::published()->latest()->get();
+    return response()->view('rss', compact('posts'))->header('Content-Type', 'application/rss+xml');
+})->name('rss');
+
 // Internal process routes (called from footer)
 Route::get('/process-emails', [ProcessController::class, 'processEmails'])->name('process.emails');
 Route::get('/process-automation', [ProcessController::class, 'processAutomation'])->name('process.automation');

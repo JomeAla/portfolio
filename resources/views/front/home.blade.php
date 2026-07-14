@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('title', 'Home')
+@section('meta_description', 'Nigeria-based web developer specializing in Laravel, React & WordPress. Custom web apps, Shopify stores & business automation. 50+ projects delivered.')
+@section('og_title', 'JoAla Ventures — Web Developer in Nigeria')
+@section('og_description', 'Nigeria-based web developer specializing in Laravel, React & WordPress. Custom web apps, Shopify stores & business automation. 50+ projects delivered.')
+@section('og_image', asset('joala-og-image.png'))
 
 @section('content')
 <!-- Hero Section -->
@@ -113,7 +117,7 @@
             <a href="{{ route('blog.show', $post->slug) }}" class="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1">
                 @if($post->featured_image)
                 <div class="aspect-video overflow-hidden">
-                    <img src="{{ asset($post->featured_image) }}" alt="{{ $post->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <img src="{{ asset($post->featured_image) }}" alt="{{ $post->title }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                 </div>
                 @else
                 <div class="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -153,7 +157,7 @@
             <a href="{{ route('portfolio.show', $project->slug) }}" class="group relative overflow-hidden rounded-2xl bg-slate-900">
                 <div class="aspect-video relative overflow-hidden">
                     @if($project->thumbnail)
-                    <img src="{{ asset($project->thumbnail) }}" alt="{{ $project->title }}" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110">
+                    <img src="{{ asset($project->thumbnail) }}" alt="{{ $project->title }}" loading="lazy" class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110">
                     @else
                     <div class="w-full h-full bg-slate-800 flex items-center justify-center">
                         <i class="fas fa-image text-4xl text-slate-600"></i>
@@ -200,7 +204,7 @@
             <a href="{{ route('store.show', $product->slug) }}" class="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all hover:-translate-y-1">
                 <div class="aspect-video relative overflow-hidden">
                     @if($product->image)
-                    <img src="{{ asset($product->image) }}" alt="{{ $product->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <img src="{{ asset($product->image) }}" alt="{{ $product->title }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     @else
                     <div class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                         <i class="fas fa-box text-4xl text-white/50"></i>

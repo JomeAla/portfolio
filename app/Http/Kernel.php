@@ -23,6 +23,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\LogApiRequests::class,
             \App\Http\Middleware\CaptureUtmParams::class,
             \App\Http\Middleware\LogVisits::class,
+            \App\Http\Middleware\SecurityHeaders::class,
         ],
 
         'api' => [

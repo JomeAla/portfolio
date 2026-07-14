@@ -4,17 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Home') | Joala Ventures</title>
-    <meta name="description" content="{{ $settings['site_description'] ?? 'Professional portfolio website' }}">
+    <title>@yield('title', 'Web Developer Nigeria') | Joala Ventures</title>
+    <meta name="description" content="@yield('meta_description', $metaDescription ?? ($settings['site_description'] ?? 'Professional developer specializing in custom web & mobile applications in Nigeria.'))">
+    @yield('meta')
+    <link rel="canonical" href="{{ url()->current() }}" />
+    <meta property="og:title" content="@yield('og_title', @yield('title', 'Web Developer Nigeria')) | Joala Ventures" />
+    <meta property="og:description" content="@yield('og_description', $metaDescription ?? ($settings['site_description'] ?? 'Professional developer specializing in custom web & mobile applications in Nigeria.'))" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:image" content="@yield('og_image', asset('joala-og-image.png'))" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="JoAla Ventures" />
+    <meta property="og:locale" content="en_NG" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@yield('og_title', @yield('title', 'Web Developer Nigeria')) | Joala Ventures" />
+    <meta name="twitter:description" content="@yield('og_description', $metaDescription ?? ($settings['site_description'] ?? 'Professional developer specializing in custom web & mobile applications in Nigeria.'))" />
+    <meta name="twitter:image" content="@yield('og_image', asset('joala-og-image.png'))" />
+    @includeWhen(isset($settings), 'partials.schema')
     @if(!empty($settings['favicon']))
-    <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon'] }}?v=2">
-    <link rel="shortcut icon" type="image/png" href="/storage/{{ $settings['favicon'] }}?v=2">
-    <link rel="apple-touch-icon" href="/storage/{{ $settings['favicon'] }}">
-    @else
-    <link rel="icon" type="image/png" href="/favicon.png?v=2">
-    <link rel="shortcut icon" type="image/png" href="/favicon.png?v=2">
-    <link rel="apple-touch-icon" href="/favicon.png">
-    @endif
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>

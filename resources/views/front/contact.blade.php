@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Contact')
+@section('meta_description', 'Get in touch with JoAla Ventures. Let\'s discuss your web development project. Based in Ovwian, Delta State, Nigeria. Contact us today.')
+@section('og_title', 'Contact JoAla Ventures')
+@section('og_description', 'Get in touch with JoAla Ventures. Let\'s discuss your web development project. Based in Ovwian, Delta State, Nigeria.')
 
 @section('content')
 <section class="py-20 bg-slate-50 min-h-screen">
@@ -118,6 +121,14 @@
                         Send Message
                     </button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Google Maps -->
+        <div class="mt-12 bg-white rounded-2xl p-4 shadow-sm border border-slate-200/50">
+            <h2 class="text-xl font-bold text-slate-900 mb-4 px-4 pt-4">Our Location</h2>
+            <div class="rounded-xl overflow-hidden">
+                <iframe src="https://www.google.com/maps?q=132+Ovwian+main+road+Delta+State+Nigeria&output=embed" width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </div>

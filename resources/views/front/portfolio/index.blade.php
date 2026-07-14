@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Portfolio')
+@section('meta_description', 'Browse 50+ web development projects by JoAla Ventures. Laravel, React, WordPress & Shopify case studies from Nigeria\'s freelance developer.')
+@section('og_title', 'Portfolio — Web Development Projects')
+@section('og_description', 'Browse 50+ web development projects by JoAla Ventures. Laravel, React, WordPress & Shopify case studies from Nigeria.')
 
 @section('content')
 <section class="py-20 bg-slate-50 min-h-screen">
@@ -24,7 +27,7 @@
             <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200/50 hover:shadow-xl transition-all hover:-translate-y-1">
                 @if($project->thumbnail)
                 <div class="aspect-video bg-slate-200">
-                    <img src="{{ asset($project->thumbnail) }}" alt="{{ $project->title }}" class="w-full h-full object-contain">
+                    <img src="{{ asset($project->thumbnail) }}" alt="{{ $project->title }}" loading="lazy" class="w-full h-full object-contain">
                 </div>
                 @else
                 <div class="aspect-video bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">

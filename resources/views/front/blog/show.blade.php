@@ -1,11 +1,15 @@
 @extends('layouts.app')
 
 @section('title', $post->meta_title ?? $post->title)
+@section('meta_description', $post->meta_description ?? strip_tags($post->excerpt ?? ''))
+@section('og_title', $post->meta_title ?? $post->title)
+@section('og_description', $post->meta_description ?? strip_tags($post->excerpt ?? ''))
+@section('og_image', $post->featured_image ? asset($post->featured_image) : asset('joala-og-image.png'))
+@section('og_type', 'article')
 
 @section('meta')
-    @if($post->meta_description)
-        <meta name="description" content="{{ $post->meta_description }}">
-    @endif
+    <meta property="article:published_time" content="{{ $post->published_at?->toIso8601String() }}" />
+    <meta property="article:author" content="Jome Alawuru" />
 @endsection
 
 @section('content')

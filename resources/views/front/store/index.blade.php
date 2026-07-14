@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('title', 'Store - Digital Products')
+@section('meta_description', 'Premium Laravel templates, email sequences & WhatsApp marketing bundles. Digital products for Nigerian entrepreneurs & developers.')
+@section('og_title', 'Digital Products Store')
+@section('og_description', 'Premium Laravel templates, email sequences & WhatsApp marketing bundles. Digital products for Nigerian entrepreneurs & developers.')
 
 @section('content')
 <div class="min-h-screen bg-gray-50">
@@ -47,7 +50,7 @@
             @foreach($products as $product)
             <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow overflow-hidden">
                 @if($product->image)
-                <img src="{{ asset($product->image) }}" alt="{{ $product->title }}" class="w-full h-48 object-cover">
+                <img src="{{ asset($product->image) }}" alt="{{ $product->title }}" loading="lazy" class="w-full h-48 object-cover">
                 @else
                 <div class="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center relative">
                     <div class="text-center text-white">

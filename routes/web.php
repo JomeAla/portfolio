@@ -115,7 +115,9 @@ Route::get('/test', function() {
 
 Route::get('/debug-view', function() {
     try {
-        return view('front.home');
+        $v = view('front.home');
+        $html = $v->render();
+        return $html;
     } catch (Throwable $e) {
         return response("ERROR: " . $e->getMessage() . "\nFile: " . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString(), 500, ['Content-Type' => 'text/plain']);
     }

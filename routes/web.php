@@ -131,6 +131,10 @@ Route::get('/privacy', function() {
 Route::get('/refund', function() {
     return view('front.refund');
 })->name('refund');
+
+Route::get('/cookie-policy', function() {
+    return view('front.cookie-policy');
+})->name('cookie.policy');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/brief', [FrontBriefController::class, 'create'])->name('brief.create');
 Route::post('/brief', [FrontBriefController::class, 'store'])->name('brief.store');

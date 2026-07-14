@@ -100,6 +100,7 @@
                     <ul class="space-y-2 text-slate-400">
                         <li><a href="{{ route('terms') }}" class="hover:text-white transition-colors">Terms</a></li>
                         <li><a href="{{ route('privacy') }}" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="{{ route('cookie.policy') }}" class="hover:text-white transition-colors">Cookie Policy</a></li>
                         <li><a href="{{ route('refund') }}" class="hover:text-white transition-colors">Refund Policy</a></li>
                     </ul>
                 </div>
@@ -141,6 +142,7 @@
     setInterval(updateNotifBadge, 30000);
     </script>
     @endif
+    @include('partials.cookie-consent')
     @yield('scripts')
     @if(!app()->isLocal() && env('APP_ENV') !== 'local')
     <script>

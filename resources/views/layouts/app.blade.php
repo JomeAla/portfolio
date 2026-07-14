@@ -8,7 +8,7 @@
     <meta name="description" content="@yield('meta_description', $metaDescription ?? ($settings['site_description'] ?? 'Professional developer specializing in custom web & mobile applications in Nigeria.'))">
     @yield('meta')
     <link rel="canonical" href="{{ url()->current() }}" />
-    <meta property="og:title" content="@yield('og_title', @yield('title', 'Web Developer Nigeria')) | Joala Ventures" />
+    <meta property="og:title" content="@yield('og_title', 'Web Developer Nigeria') | Joala Ventures" />
     <meta property="og:description" content="@yield('og_description', $metaDescription ?? ($settings['site_description'] ?? 'Professional developer specializing in custom web & mobile applications in Nigeria.'))" />
     <meta property="og:url" content="{{ url()->current() }}" />
     <meta property="og:image" content="@yield('og_image', asset('joala-og-image.png'))" />
@@ -16,7 +16,7 @@
     <meta property="og:site_name" content="JoAla Ventures" />
     <meta property="og:locale" content="en_NG" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="@yield('og_title', @yield('title', 'Web Developer Nigeria')) | Joala Ventures" />
+    <meta name="twitter:title" content="@yield('og_title', 'Web Developer Nigeria') | Joala Ventures" />
     <meta name="twitter:description" content="@yield('og_description', $metaDescription ?? ($settings['site_description'] ?? 'Professional developer specializing in custom web & mobile applications in Nigeria.'))" />
     <meta name="twitter:image" content="@yield('og_image', asset('joala-og-image.png'))" />
     @if(isset($settings))@include('partials.schema')@endif

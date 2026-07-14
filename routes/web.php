@@ -118,7 +118,7 @@ Route::get('/debug-view', function() {
         $ctrl = new \App\Http\Controllers\Front\HomeController();
         $iv = $ctrl->index();
         $html = $iv->render();
-        return $html;
+        return response($html)->header('X-Debug', 'ok');
     } catch (Throwable $e) {
         return response("ERROR: " . $e->getMessage() . "\nFile: " . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString(), 500, ['Content-Type' => 'text/plain']);
     }

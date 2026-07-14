@@ -113,16 +113,7 @@ Route::get('/test', function() {
     return 'Server is working!';
 });
 
-Route::get('/debug-view', function() {
-    try {
-        $ctrl = new \App\Http\Controllers\Front\HomeController();
-        $iv = $ctrl->index();
-        $html = $iv->render();
-        return response($html)->header('X-Debug', 'ok');
-    } catch (Throwable $e) {
-        return response("ERROR: " . $e->getMessage() . "\nFile: " . $e->getFile() . ":" . $e->getLine() . "\n\n" . $e->getTraceAsString(), 500, ['Content-Type' => 'text/plain']);
-    }
-});
+
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/portfolio', [PortfolioController::class, 'index'])->name('portfolio');

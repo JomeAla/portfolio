@@ -23,3 +23,31 @@ yarn-error.log
 .env.backup
 .php-cs-fixer.cache
 /bootstrap/cache
+
+# --- Secrets & credentials (never commit) ---
+CREDENTIALS.md
+*.sql
+.env_live
+.env.production
+deploy_ftp.txt
+server.log
+
+# --- Legacy one-off/dev scripts (removed; prevent recurrence) ---
+/check_*.php
+/debug*.php
+/test*.php
+/fix_*.php
+/setup_*.php
+/migrate*.php
+/db_*.php
+/phpinfo.php
+/webhooks.php
+/upload_*.php
+/upload_*.py
+/deploy_*.py
+/ftp_*
+/process_emails.php
+/process_brevo.php
+/process_automation.php
+/queue_emails.php
+/*.log

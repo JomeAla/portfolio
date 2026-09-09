@@ -29,6 +29,23 @@ class PaystackWebhookService
         return Setting::get('paystack_secret_key') ?? config('services.paystack.secret', '');
     }
 
+    /**
+     * Apply the site's dynamic mail config when it exists; otherwise fall
+     * back to the .env mailer (log in local/dev) so license emails never
+     * crash the webhook on partially-configured environments.
+     */
+    protected function applyMailSettings(): void
+    {
+        if (Setting::get('mail_mailer') === null && Setting::get('mail_host') === null) {
+            \Illuminate\Support\Facades\Config::set('mail.default', 'log');
+            \Illuminate\Support\Facades\Config::set('mail.mailers.log', ['transport' => 'log']);
+
+            return;
+        }
+
+        $this->applyMailSettings();
+    }
+
     public function verify(string $signature, string $rawBody): bool
     {
         $secret = $this->secretKey();
@@ -118,7 +135,7 @@ class PaystackWebhookService
         $amount = ((int) ($data['amount'] ?? 0)) / 100;
         $days = (int) ($meta['days'] ?? $this->daysForPlan($plan));
 
-        $this->applyMailConfig();
+        $this->applyMailSettings();
 
         if ($plan === 'lifetime') {
             $result = $this->licenses->issue($email, 'pro', 'lifetime', 0, 1);
@@ -132,9 +149,25 @@ class PaystackWebhookService
             Log::info('Secure API: license reused for returning customer', ['email' => $email, 'plan' => $plan]);
         }
 
+        // Wire the sale into JoAla's existing affiliate system (referral
+        // code travels in the checkout metadata as affiliate_id).
+        $affiliateCode = (string) ($meta['affiliate_id'] ?? $meta['referral_code'] ?? '');
+
+        if ($affiliateCode !== '') {
+            try {
+                app(\App\Services\AffiliateCommissionService::class)
+                    ->processReferral($affiliateCode, $email, null, $amount);
+                Log::info('Secure API: affiliate commission recorded', [
+                    'code' => $affiliateCode, 'email' => $email, 'amount' => $amount,
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('Secure API: affiliate commission failed', ['error' => $e->getMessage()]);
+            }
+        }
+
         Log::info('Secure API: license provisioned', [
             'email' => $email, 'plan' => $plan, 'amount' => $amount,
-            'affiliate_id' => $meta['affiliate_id'] ?? null,
+            'affiliate_id' => $affiliateCode !== '' ? $affiliateCode : null,
         ]);
     }
 
@@ -181,7 +214,7 @@ class PaystackWebhookService
             return;
         }
 
-        $this->applyMailConfig();
+        $this->applyMailSettings();
         Mail::to($email)->queue(new SecureApiLicenseMail(null, 'failed', 0, (string) ($data['reference'] ?? '')));
 
         Log::warning('Secure API: charge failed', ['email' => $email, 'reference' => $data['reference'] ?? null]);

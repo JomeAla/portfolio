@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
@@ -639,7 +639,7 @@ Route::prefix('admin')->group(function () {
             try {
                 $funnel = \App\Models\Funnel::where('is_active', true)->latest()->first();
                 if (!$funnel) {
-                    $funnel = (object) ['id' => 0, 'name' => 'No Funnel â€” Create one first'];
+                    $funnel = (object) ['id' => 0, 'name' => 'No Funnel Ã¢â‚¬â€ Create one first'];
                 }
             } catch (\Exception $e) {
                 $funnel = (object) ['id' => 0, 'name' => 'Demo Funnel'];
@@ -654,7 +654,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/run-order-bumps', function() {
             try {
                 if (\Illuminate\Support\Facades\Schema::hasColumn('orders', 'order_bumps')) {
-                    return "âœ… order_bumps column already exists!";
+                    return "Ã¢Å“â€¦ order_bumps column already exists!";
                 }
                 
                 \Illuminate\Support\Facades\Schema::table('orders', function ($table) {
@@ -662,9 +662,9 @@ Route::prefix('admin')->group(function () {
                     $table->decimal('order_bumps_total', 10, 2)->nullable()->after('order_bumps');
                 });
                 
-                return "âœ… SUCCESS! Order Bumps columns added to orders table!";
+                return "Ã¢Å“â€¦ SUCCESS! Order Bumps columns added to orders table!";
             } catch (\Exception $e) {
-                return "âŒ ERROR: " . $e->getMessage();
+                return "Ã¢ÂÅ’ ERROR: " . $e->getMessage();
             }
         });
         
@@ -757,7 +757,7 @@ Route::get('/update-product-paths', function () {
 
         $output .= "<b>{$p['slug']}</b><br>";
         $output .= "&nbsp;&nbsp;File: {$p['file']}<br>";
-        $output .= "&nbsp;&nbsp;Exists: " . ($exists ? "âœ… ($size bytes)" : "âŒ NOT FOUND") . "<br>";
+        $output .= "&nbsp;&nbsp;Exists: " . ($exists ? "Ã¢Å“â€¦ ($size bytes)" : "Ã¢ÂÅ’ NOT FOUND") . "<br>";
         $output .= "&nbsp;&nbsp;DB path set to: {$relPath}<br><br>";
     }
 
@@ -771,7 +771,7 @@ Route::get('/update-product-paths', function () {
     $output .= "<hr><h3>Download Test</h3>";
     foreach ($products as $p) {
         $fullPath = storage_path('app/public/' . $p->file_path);
-        $output .= "<b>{$p->title}:</b> " . (file_exists($fullPath) ? "âœ… File found at {$fullPath}" : "âŒ NOT FOUND at {$fullPath}") . "<br>";
+        $output .= "<b>{$p->title}:</b> " . (file_exists($fullPath) ? "Ã¢Å“â€¦ File found at {$fullPath}" : "Ã¢ÂÅ’ NOT FOUND at {$fullPath}") . "<br>";
     }
 
     return $output;
@@ -793,7 +793,7 @@ Route::get('/setup-new-products', function () {
             'sale_price' => 5000,
             'type' => 'digital',
             'order' => 20,
-            'description' => 'Smart money management guide for Nigerian entrepreneurs â€” budgeting, saving, investing, and building wealth.',
+            'description' => 'Smart money management guide for Nigerian entrepreneurs Ã¢â‚¬â€ budgeting, saving, investing, and building wealth.',
             'selling_points' => '<h2>Master Your Money, Build Your Future</h2><p>Written for the Nigerian economy. Includes budget template + net worth tracker spreadsheets.</p><ul><li>Budgeting that works with irregular income</li><li>Where to save and invest in Nigeria</li><li>How to separate business and personal finances</li><li>Debt payoff strategies</li><li>Building multiple income streams</li></ul>'
         ],
         [
@@ -812,8 +812,8 @@ Route::get('/setup-new-products', function () {
             'sale_price' => 5000,
             'type' => 'digital',
             'order' => 22,
-            'description' => 'Launch your WordPress site in under 2 hours â€” no technical skills required.',
-            'selling_points' => '<h2>Get Online Fast</h2><p>Domain, hosting, WordPress install, theme, plugins, content, SEO â€” all in plain English.</p><ul><li>Best Nigerian hosting providers compared</li><li>One-click WordPress installation</li><li>Free theme recommendations</li><li>Essential free plugins</li><li>SEO and speed optimisation</li><li>Launch checklist</li></ul>'
+            'description' => 'Launch your WordPress site in under 2 hours Ã¢â‚¬â€ no technical skills required.',
+            'selling_points' => '<h2>Get Online Fast</h2><p>Domain, hosting, WordPress install, theme, plugins, content, SEO Ã¢â‚¬â€ all in plain English.</p><ul><li>Best Nigerian hosting providers compared</li><li>One-click WordPress installation</li><li>Free theme recommendations</li><li>Essential free plugins</li><li>SEO and speed optimisation</li><li>Launch checklist</li></ul>'
         ],
         [
             'title' => 'Shopify Launch Checklist',
@@ -832,7 +832,7 @@ Route::get('/setup-new-products', function () {
         if ($exists) {
             $output .= "Already exists: {$data['title']}<br>";
             $result = $gen->generate($data['slug']);
-            $output .= "â†’ " . ($result['success'] ? "Regenerated" : "FAILED: " . $result['message']) . "<br>";
+            $output .= "Ã¢â€ â€™ " . ($result['success'] ? "Regenerated" : "FAILED: " . $result['message']) . "<br>";
             continue;
         }
 
@@ -870,9 +870,9 @@ Route::get('/generate-product/{slug}', function ($slug) {
     $gen = new \App\Services\ProductFileGenerator;
     $result = $gen->generate($slug);
     if ($result['success']) {
-        return "âœ… " . $result['message'];
+        return "Ã¢Å“â€¦ " . $result['message'];
     }
-    return "âŒ " . $result['message'];
+    return "Ã¢ÂÅ’ " . $result['message'];
 });
 
 
@@ -1052,7 +1052,7 @@ Route::get('/update-ecommerce-description', function () {
 
 <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg">
 <p class="text-amber-800 font-bold mb-2"><i class="fas fa-gift mr-2"></i>BONUS: Free Deployment + 2 Free Edits</p>
-<p class="text-amber-700">Purchase the E-commerce Starter Kit and we will deploy your store on your domain for free and make 2 additional customizations of your choice at no extra cost. Valued at â‚¦150,000.</p>
+<p class="text-amber-700">Purchase the E-commerce Starter Kit and we will deploy your store on your domain for free and make 2 additional customizations of your choice at no extra cost. Valued at Ã¢â€šÂ¦150,000.</p>
 </div>';
 
     \Illuminate\Support\Facades\DB::table('products')
@@ -1233,7 +1233,7 @@ Route::get('/download/{slug}', function ($slug) {
         $salesPageUrl = $premiumProduct ? url('/store/' . $premiumProduct->slug) : url('/store');
     }
     $productName = $premiumProduct ? $premiumProduct->title : 'Premium Product';
-    $productPrice = $premiumProduct ? 'â‚¦' . number_format($premiumProduct->current_price) : '';
+    $productPrice = $premiumProduct ? 'Ã¢â€šÂ¦' . number_format($premiumProduct->current_price) : '';
 
     return view('front.download-page', compact(
         'downloadUrl', 'salesPageUrl', 'productName', 'productPrice', 'landingPage', 'funnel'
@@ -1277,11 +1277,11 @@ Route::get('/setup-ecommerce-funnel', function () {
         );
         \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $presaleSeq->id)->delete();
         \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Free eCommerce Kit is ready!', 'body' => "Hi {{name}},\n\nYour free eCommerce Starter Kit checklist is ready.\n\nDownload it here:\nhttps://joala.com.ng/free-download/free-ecommerce-starter-kit\n\nInside this checklist, you'll find everything you need to launch your online store â€” from domain setup to payment gateways.\n\nBut if you're ready to skip the DIY and get a complete platform, check out our active products below:\n\n{{products}}\n\nCheers,\nJome", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 2, 'delay_days' => 2, 'subject' => 'Why most online stores fail (and how to avoid it)', 'body' => "Hi {{name}},\n\nDid you know that 80% of online stores fail within the first 3 months?\n\nThe #1 reason? They use complicated platforms that take months to set up.\n\nThat's exactly why I created our digital solutions â€” complete platforms you can launch quickly.\n\nHere's what you get with any of our products:\nâœ“ Paystack, Stripe & Flutterwave integration\nâœ“ Admin dashboard with real-time analytics\nâœ“ Inventory & order management\nâœ“ Physical & digital product support\nâœ“ Lifetime free updates\n\nSee what's available:\n\n{{products}}\n\nJome", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 3, 'delay_days' => 4, 'subject' => 'Success stories from businesses like yours', 'body' => "Hi {{name}},\n\nNothing speaks louder than real results. Here's what some of our customers have achieved:\n\n\"We launched our online store in just 2 days. The admin panel makes managing orders effortless. Best investment we've made.\"\nâ€” Adebola Kuti, Fashion Store Owner, Lagos\n\n\"The digital tools helped us streamline our entire operation. Our sales increased by 40% in the first month.\"\nâ€” Michael O., Restaurant Owner, Abuja\n\nWhat made the difference?\n- Ready-to-deploy platforms\n- Built-in payment integrations\n- Real-time analytics dashboards\n\nReady to join them? Check out our active products:\n\n{{products}}\n\nJome", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 4, 'delay_days' => 6, 'subject' => 'Exclusive discount on our digital products', 'body' => "Hi {{name}},\n\nAs a valued subscriber, I'm giving you an exclusive discount on any product in our store.\n\nUse code: <strong>LAUNCH15</strong> at checkout for <strong>15% off</strong>\n\nHere are our available products:\n\n{{products}}\n\nThis offer won't last forever â€” grab it today.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 5, 'delay_days' => 9, 'subject' => 'Last chance: Your discount expires soon', 'body' => "Hi {{name}},\n\nJust a friendly reminder that your 15% discount (code: LAUNCH15) is still available.\n\nBut I can't keep it open forever.\n\nIf you're serious about growing your business with the right digital tools, now is the time.\n\nHere are our products â€” each one is ready to deploy and comes with everything you need to get started:\n\n{{products}}\n\nIf you have any questions, just reply to this email.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Free eCommerce Kit is ready!', 'body' => "Hi {{name}},\n\nYour free eCommerce Starter Kit checklist is ready.\n\nDownload it here:\nhttps://joala.com.ng/free-download/free-ecommerce-starter-kit\n\nInside this checklist, you'll find everything you need to launch your online store Ã¢â‚¬â€ from domain setup to payment gateways.\n\nBut if you're ready to skip the DIY and get a complete platform, check out our active products below:\n\n{{products}}\n\nCheers,\nJome", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 2, 'delay_days' => 2, 'subject' => 'Why most online stores fail (and how to avoid it)', 'body' => "Hi {{name}},\n\nDid you know that 80% of online stores fail within the first 3 months?\n\nThe #1 reason? They use complicated platforms that take months to set up.\n\nThat's exactly why I created our digital solutions Ã¢â‚¬â€ complete platforms you can launch quickly.\n\nHere's what you get with any of our products:\nÃ¢Å“â€œ Paystack, Stripe & Flutterwave integration\nÃ¢Å“â€œ Admin dashboard with real-time analytics\nÃ¢Å“â€œ Inventory & order management\nÃ¢Å“â€œ Physical & digital product support\nÃ¢Å“â€œ Lifetime free updates\n\nSee what's available:\n\n{{products}}\n\nJome", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 3, 'delay_days' => 4, 'subject' => 'Success stories from businesses like yours', 'body' => "Hi {{name}},\n\nNothing speaks louder than real results. Here's what some of our customers have achieved:\n\n\"We launched our online store in just 2 days. The admin panel makes managing orders effortless. Best investment we've made.\"\nÃ¢â‚¬â€ Adebola Kuti, Fashion Store Owner, Lagos\n\n\"The digital tools helped us streamline our entire operation. Our sales increased by 40% in the first month.\"\nÃ¢â‚¬â€ Michael O., Restaurant Owner, Abuja\n\nWhat made the difference?\n- Ready-to-deploy platforms\n- Built-in payment integrations\n- Real-time analytics dashboards\n\nReady to join them? Check out our active products:\n\n{{products}}\n\nJome", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 4, 'delay_days' => 6, 'subject' => 'Exclusive discount on our digital products', 'body' => "Hi {{name}},\n\nAs a valued subscriber, I'm giving you an exclusive discount on any product in our store.\n\nUse code: <strong>LAUNCH15</strong> at checkout for <strong>15% off</strong>\n\nHere are our available products:\n\n{{products}}\n\nThis offer won't last forever Ã¢â‚¬â€ grab it today.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 5, 'delay_days' => 9, 'subject' => 'Last chance: Your discount expires soon', 'body' => "Hi {{name}},\n\nJust a friendly reminder that your 15% discount (code: LAUNCH15) is still available.\n\nBut I can't keep it open forever.\n\nIf you're serious about growing your business with the right digital tools, now is the time.\n\nHere are our products Ã¢â‚¬â€ each one is ready to deploy and comes with everything you need to get started:\n\n{{products}}\n\nIf you have any questions, just reply to this email.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
         ]);
         $out[] = "Pre-sale sequence ID: {$presaleSeq->id} (5 steps)";
 
@@ -1303,7 +1303,7 @@ Route::get('/setup-ecommerce-funnel', function () {
             [
                 'name' => 'E-Commerce Starter Kit Funnel',
                 'slug' => 'ecommerce-starter-kit-funnel',
-                'description' => 'Lead magnet â†’ download â†’ checkout â†’ pre-sale nurture',
+                'description' => 'Lead magnet Ã¢â€ â€™ download Ã¢â€ â€™ checkout Ã¢â€ â€™ pre-sale nurture',
                 'goal' => 'sales',
                 'funnel_type' => 'sales',
                 'product_id' => $premiumId ?: null,
@@ -1428,8 +1428,8 @@ Route::get('/setup-email-funnel', function () {
         \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $presaleSeq->id)->delete();
         \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
             ['sequence_id' => $presaleSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Free Email Sequence Templates are ready!', 'body' => "Hi {{name}},\n\nYour free Email Sequence Templates are ready.\n\nDownload them here:\nhttps://joala.com.ng/free-download/free-email-sequence-templates-pack\n\nInside this pack, you'll find ready-to-use templates for welcome emails, sales funnels, cart abandonment, re-engagement, upsells, and follow-ups.\n\nBut if you're ready to go beyond templates, check out our complete digital products below:\n\n{{products}}\n\nCheers,\nJome", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 2, 'delay_days' => 2, 'subject' => 'Why most email sequences fail (and how to make yours convert)', 'body' => "Hi {{name}},\n\nDid you know that the average email open rate across industries is just 21%?\n\nThe difference between a sequence that converts and one that gets ignored often comes down to three things:\n\n1. The right sequence structure\n2. Compelling subject lines\n3. Strategic timing\n\nMost people write emails randomly â€” one today, one next week, no real system. That's why they don't see results.\n\nOur proven digital products give you everything you need:\n\n{{products}}\n\nEach product includes everything you need â€” ready to deploy.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $presaleSeq->id, 'step_order' => 3, 'delay_days' => 4, 'subject' => 'Real results from businesses like yours', 'body' => "Hi {{name}},\n\n\"I was emailing my list randomly â€” sending promos whenever I remembered. When I switched to a structured approach, my revenue doubled in one month.\"\nâ€” Tunde A., Business Coach, Lagos\n\n\"We launched our online store in just 2 days. The admin panel makes managing orders effortless.\"\nâ€” Adebola Kuti, Fashion Store Owner, Lagos\n\nOur customers are achieving real results with our digital solutions:\n\n{{products}}\n\nJoin them today.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 2, 'delay_days' => 2, 'subject' => 'Why most email sequences fail (and how to make yours convert)', 'body' => "Hi {{name}},\n\nDid you know that the average email open rate across industries is just 21%?\n\nThe difference between a sequence that converts and one that gets ignored often comes down to three things:\n\n1. The right sequence structure\n2. Compelling subject lines\n3. Strategic timing\n\nMost people write emails randomly Ã¢â‚¬â€ one today, one next week, no real system. That's why they don't see results.\n\nOur proven digital products give you everything you need:\n\n{{products}}\n\nEach product includes everything you need Ã¢â‚¬â€ ready to deploy.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $presaleSeq->id, 'step_order' => 3, 'delay_days' => 4, 'subject' => 'Real results from businesses like yours', 'body' => "Hi {{name}},\n\n\"I was emailing my list randomly Ã¢â‚¬â€ sending promos whenever I remembered. When I switched to a structured approach, my revenue doubled in one month.\"\nÃ¢â‚¬â€ Tunde A., Business Coach, Lagos\n\n\"We launched our online store in just 2 days. The admin panel makes managing orders effortless.\"\nÃ¢â‚¬â€ Adebola Kuti, Fashion Store Owner, Lagos\n\nOur customers are achieving real results with our digital solutions:\n\n{{products}}\n\nJoin them today.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
             ['sequence_id' => $presaleSeq->id, 'step_order' => 4, 'delay_days' => 6, 'subject' => 'Special offer: 15% off all products', 'body' => "Hi {{name}},\n\nUse code: <strong>SAVE15</strong> at checkout for <strong>15% off</strong> any product.\n\nHere's what's available:\n\n{{products}}\n\nThis offer won't last forever. Grab it today.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
             ['sequence_id' => $presaleSeq->id, 'step_order' => 5, 'delay_days' => 9, 'subject' => 'Last chance: Your discount expires soon', 'body' => "Hi {{name}},\n\nJust a friendly reminder that your 15% discount (code: SAVE15) is still available.\n\nBut I can't keep it open forever.\n\nIf you're serious about growing your business with the right digital tools, now is the time.\n\n{{products}}\n\nIf you have any questions, just reply to this email.\n\nJome", 'created_at' => now(), 'updated_at' => now()],
         ]);
@@ -1454,11 +1454,11 @@ Route::get('/setup-email-funnel', function () {
         );
         \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $postSeq->id)->delete();
         \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
-            ['sequence_id' => $postSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Email Sequence Templates Pack is ready!', 'body' => "Hi {{name}},\n\nThank you for purchasing the Email Sequence Templates Pack!\n\nYour download link: https://joala.com.ng/order/download/{{download_token}}\n\nGetting started fast:\n1. Download the ZIP file\n2. Extract to your computer\n3. Open the Welcome Sequence folder\n4. Read the quick-start guide\n5. Customize your first template\n6. Upload to your email marketing platform\n\nInside your pack:\nâœ“ Welcome Sequence (5 emails)\nâœ“ Launch Sequence (4 emails)\nâœ“ Abandoned Cart Recovery (3 emails)\nâœ“ Post-Purchase Thank You (3 emails)\nâœ“ Re-engagement Campaign (4 emails)\nâœ“ Weekly Newsletter Template\nâœ“ Subject line swipe file\n\nPro tip: Start with the Welcome Sequence â€” it's the highest-impact sequence and sets the tone for all future emails.\n\nIf you need help, just reply to this email.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $postSeq->id, 'step_order' => 2, 'delay_days' => 3, 'subject' => 'Quick start: Setting up your welcome sequence', 'body' => "Hi {{name}},\n\nYour welcome sequence is the most important email sequence you'll ever set up. It's where first impressions are made.\n\nHere's a quick setup guide:\n\n1. Open the Welcome Sequence folder\n2. Review the 5-email structure:\n   - Email 1: Welcome + what to expect\n   - Email 2: Free value (your best content)\n   - Email 3: Social proof + testimonials\n   - Email 4: Soft offer\n   - Email 5: Hard offer + urgency\n3. Copy each template into your email platform\n4. Set delays: 1 day between each email\n5. Personalize with merge tags\n\nBest practices:\n- Send email 1 immediately after signup\n- Send emails in the morning (8-10am)\n- Test subject lines for high open rates\n- Track which emails get the most clicks\n\nThe templates include subject line options for each email â€” pick the one that fits your brand voice.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $postSeq->id, 'step_order' => 3, 'delay_days' => 5, 'subject' => 'Advanced: Crafting high-converting sales sequences', 'body' => "Hi {{name}},\n\nNow that your welcome sequence is running, let's talk about sales sequences.\n\nThe Launch Sequence in your pack is designed to promote product launches, promotions, and special offers.\n\nStructure (4 emails):\n1. Teaser â€” Build anticipation\n2. Announce â€” The big reveal\n3. Social proof â€” Show who's buying\n4. Urgency â€” Last chance\n\nQuick tips:\n- Email 1: Use curiosity-driven subject lines\n- Email 2: Lead with the biggest benefit\n- Email 3: Include customer testimonials or case studies\n- Email 4: Create genuine scarcity (limited time/quantity)\n\nThe templates are ready to go â€” just add your product details and launch date.\n\nRemember: Not everyone who wants to buy is ready today. The Abandoned Cart Recovery sequence handles those who showed interest but didn't purchase. Set it to trigger 24 hours after abandoned interest.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $postSeq->id, 'step_order' => 4, 'delay_days' => 7, 'subject' => 'Re-engagement strategies to win back cold subscribers', 'body' => "Hi {{name}},\n\nEvery email list has inactive subscribers â€” people who signed up but stopped opening emails.\n\nThe Re-engagement Campaign in your pack is designed specifically to win them back.\n\nStructure (4 emails):\n1. \"We miss you\" â€” Friendly reconnection\n2. \"Here's what you missed\" â€” Best content roundup\n3. \"Is this still relevant?\" â€” Survey/feedback\n4. \"Last chance to stay\" â€” Final re-engagement or unsubscribe option\n\nWhat if they don't re-engage?\nIt's better to remove inactive subscribers. A smaller engaged list outperforms a large disengaged list every time.\n\nThe Post-Purchase Thank You sequence is equally important â€” it turns one-time buyers into repeat customers.\n\nTake 30 minutes this week to set up the Re-engagement sequence. It could re-activate 10-15% of your cold list.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-            ['sequence_id' => $postSeq->id, 'step_order' => 5, 'delay_days' => 10, 'subject' => 'Email marketing best practices to maximize your results', 'body' => "Hi {{name}},\n\nHere are some proven email marketing tips to get the most out of your templates:\n\nSubject Lines:\nâœ“ Keep under 50 characters\nâœ“ Use personalization (name, location)\nâœ“ Create curiosity without being clickbait\nâœ“ Test 3-5 subject lines per email\nâœ“ Avoid spam trigger words\n\nSend Timing:\nâœ“ Tuesday-Thursday: Best open rates\nâœ“ 8-11am: Optimal send time\nâœ“ Test different days/times for your audience\n\nList Health:\nâœ“ Clean your list every 3 months\nâœ“ Remove non-openers after 6 months\nâœ“ Segment by behavior (openers, clickers, buyers)\nâœ“ Use re-engagement sequences before removing\n\nTemplates:\nâœ“ Customize each template to your brand voice\nâœ“ Add your own testimonials and case studies\nâœ“ Test different CTAs (button vs text link)\nâœ“ Track and optimize based on data\n\nYou have everything you need in the Email Sequence Templates Pack. The templates are proven â€” now it's up to you to implement them.\n\nIf you ever need help, reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Your Email Sequence Templates Pack is ready!', 'body' => "Hi {{name}},\n\nThank you for purchasing the Email Sequence Templates Pack!\n\nYour download link: https://joala.com.ng/order/download/{{download_token}}\n\nGetting started fast:\n1. Download the ZIP file\n2. Extract to your computer\n3. Open the Welcome Sequence folder\n4. Read the quick-start guide\n5. Customize your first template\n6. Upload to your email marketing platform\n\nInside your pack:\nÃ¢Å“â€œ Welcome Sequence (5 emails)\nÃ¢Å“â€œ Launch Sequence (4 emails)\nÃ¢Å“â€œ Abandoned Cart Recovery (3 emails)\nÃ¢Å“â€œ Post-Purchase Thank You (3 emails)\nÃ¢Å“â€œ Re-engagement Campaign (4 emails)\nÃ¢Å“â€œ Weekly Newsletter Template\nÃ¢Å“â€œ Subject line swipe file\n\nPro tip: Start with the Welcome Sequence Ã¢â‚¬â€ it's the highest-impact sequence and sets the tone for all future emails.\n\nIf you need help, just reply to this email.\n\nCheers,\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 2, 'delay_days' => 3, 'subject' => 'Quick start: Setting up your welcome sequence', 'body' => "Hi {{name}},\n\nYour welcome sequence is the most important email sequence you'll ever set up. It's where first impressions are made.\n\nHere's a quick setup guide:\n\n1. Open the Welcome Sequence folder\n2. Review the 5-email structure:\n   - Email 1: Welcome + what to expect\n   - Email 2: Free value (your best content)\n   - Email 3: Social proof + testimonials\n   - Email 4: Soft offer\n   - Email 5: Hard offer + urgency\n3. Copy each template into your email platform\n4. Set delays: 1 day between each email\n5. Personalize with merge tags\n\nBest practices:\n- Send email 1 immediately after signup\n- Send emails in the morning (8-10am)\n- Test subject lines for high open rates\n- Track which emails get the most clicks\n\nThe templates include subject line options for each email Ã¢â‚¬â€ pick the one that fits your brand voice.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 3, 'delay_days' => 5, 'subject' => 'Advanced: Crafting high-converting sales sequences', 'body' => "Hi {{name}},\n\nNow that your welcome sequence is running, let's talk about sales sequences.\n\nThe Launch Sequence in your pack is designed to promote product launches, promotions, and special offers.\n\nStructure (4 emails):\n1. Teaser Ã¢â‚¬â€ Build anticipation\n2. Announce Ã¢â‚¬â€ The big reveal\n3. Social proof Ã¢â‚¬â€ Show who's buying\n4. Urgency Ã¢â‚¬â€ Last chance\n\nQuick tips:\n- Email 1: Use curiosity-driven subject lines\n- Email 2: Lead with the biggest benefit\n- Email 3: Include customer testimonials or case studies\n- Email 4: Create genuine scarcity (limited time/quantity)\n\nThe templates are ready to go Ã¢â‚¬â€ just add your product details and launch date.\n\nRemember: Not everyone who wants to buy is ready today. The Abandoned Cart Recovery sequence handles those who showed interest but didn't purchase. Set it to trigger 24 hours after abandoned interest.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 4, 'delay_days' => 7, 'subject' => 'Re-engagement strategies to win back cold subscribers', 'body' => "Hi {{name}},\n\nEvery email list has inactive subscribers Ã¢â‚¬â€ people who signed up but stopped opening emails.\n\nThe Re-engagement Campaign in your pack is designed specifically to win them back.\n\nStructure (4 emails):\n1. \"We miss you\" Ã¢â‚¬â€ Friendly reconnection\n2. \"Here's what you missed\" Ã¢â‚¬â€ Best content roundup\n3. \"Is this still relevant?\" Ã¢â‚¬â€ Survey/feedback\n4. \"Last chance to stay\" Ã¢â‚¬â€ Final re-engagement or unsubscribe option\n\nWhat if they don't re-engage?\nIt's better to remove inactive subscribers. A smaller engaged list outperforms a large disengaged list every time.\n\nThe Post-Purchase Thank You sequence is equally important Ã¢â‚¬â€ it turns one-time buyers into repeat customers.\n\nTake 30 minutes this week to set up the Re-engagement sequence. It could re-activate 10-15% of your cold list.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+            ['sequence_id' => $postSeq->id, 'step_order' => 5, 'delay_days' => 10, 'subject' => 'Email marketing best practices to maximize your results', 'body' => "Hi {{name}},\n\nHere are some proven email marketing tips to get the most out of your templates:\n\nSubject Lines:\nÃ¢Å“â€œ Keep under 50 characters\nÃ¢Å“â€œ Use personalization (name, location)\nÃ¢Å“â€œ Create curiosity without being clickbait\nÃ¢Å“â€œ Test 3-5 subject lines per email\nÃ¢Å“â€œ Avoid spam trigger words\n\nSend Timing:\nÃ¢Å“â€œ Tuesday-Thursday: Best open rates\nÃ¢Å“â€œ 8-11am: Optimal send time\nÃ¢Å“â€œ Test different days/times for your audience\n\nList Health:\nÃ¢Å“â€œ Clean your list every 3 months\nÃ¢Å“â€œ Remove non-openers after 6 months\nÃ¢Å“â€œ Segment by behavior (openers, clickers, buyers)\nÃ¢Å“â€œ Use re-engagement sequences before removing\n\nTemplates:\nÃ¢Å“â€œ Customize each template to your brand voice\nÃ¢Å“â€œ Add your own testimonials and case studies\nÃ¢Å“â€œ Test different CTAs (button vs text link)\nÃ¢Å“â€œ Track and optimize based on data\n\nYou have everything you need in the Email Sequence Templates Pack. The templates are proven Ã¢â‚¬â€ now it's up to you to implement them.\n\nIf you ever need help, reply to this email.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
         ]);
         $out[] = "Post-purchase sequence ID: {$postSeq->id} (5 steps)";
 
@@ -1480,7 +1480,7 @@ Route::get('/setup-email-funnel', function () {
             [
                 'name' => 'Email Sequence Templates Funnel',
                 'slug' => 'email-sequence-templates-funnel',
-                'description' => 'Lead magnet â†’ download â†’ checkout â†’ pre-sale nurture',
+                'description' => 'Lead magnet Ã¢â€ â€™ download Ã¢â€ â€™ checkout Ã¢â€ â€™ pre-sale nurture',
                 'goal' => 'sales',
                 'funnel_type' => 'sales',
                 'product_id' => $premiumId ?: null,
@@ -1583,7 +1583,7 @@ ul li:before{content:"\\2713";position:absolute;left:0;color:#059669;font-weight
 <body>
 <div class="container">
 <h1>Email Sequence Templates</h1>
-<p class="lead">24 proven email templates to automate your marketing â€” welcome, sales, cart recovery, re-engagement, and more.</p>
+<p class="lead">24 proven email templates to automate your marketing Ã¢â‚¬â€ welcome, sales, cart recovery, re-engagement, and more.</p>
 
 <h2>1. Welcome Sequence Template</h2>
 <p>First impressions matter. A well-crafted welcome sequence builds trust and sets expectations.</p>
@@ -1598,10 +1598,10 @@ ul li:before{content:"\\2713";position:absolute;left:0;color:#059669;font-weight
 <h2>2. Sales Funnel / Launch Sequence</h2>
 <p>Promote products, services, or launches with a structured approach that builds excitement and drives conversions.</p>
 <ul>
-<li>Email 1: Teaser â€” spark curiosity about what\'s coming</li>
-<li>Email 2: Announcement â€” the big reveal + key benefits</li>
-<li>Email 3: Social proof â€” share early adopter results</li>
-<li>Email 4: Urgency â€” limited time offer + CTA</li>
+<li>Email 1: Teaser Ã¢â‚¬â€ spark curiosity about what\'s coming</li>
+<li>Email 2: Announcement Ã¢â‚¬â€ the big reveal + key benefits</li>
+<li>Email 3: Social proof Ã¢â‚¬â€ share early adopter results</li>
+<li>Email 4: Urgency Ã¢â‚¬â€ limited time offer + CTA</li>
 </ul>
 
 <h2>3. Cart Abandonment Recovery</h2>
@@ -1615,9 +1615,9 @@ ul li:before{content:"\\2713";position:absolute;left:0;color:#059669;font-weight
 <h2>4. Re-engagement Campaign</h2>
 <p>Win back inactive subscribers before they churn forever.</p>
 <ul>
-<li>Email 1: "We miss you" â€” gentle reconnection</li>
+<li>Email 1: "We miss you" Ã¢â‚¬â€ gentle reconnection</li>
 <li>Email 2: Show what they\'ve missed (best content roundup)</li>
-<li>Email 3: Survey â€” ask what they want to see</li>
+<li>Email 3: Survey Ã¢â‚¬â€ ask what they want to see</li>
 <li>Email 4: Final re-engagement or unsubscribe option</li>
 </ul>
 
@@ -1647,7 +1647,7 @@ ul li:before{content:"\\2713";position:absolute;left:0;color:#059669;font-weight
 <li>Send between 8-11am for optimal open rates</li>
 <li>Test subject lines (A/B test 3-5 options)</li>
 <li>Track open rates, click rates, and conversions</li>
-<li>Clean your list quarterly â€” remove non-openers</li>
+<li>Clean your list quarterly Ã¢â‚¬â€ remove non-openers</li>
 <li>Segment subscribers by behavior and interests</li>
 <li>Always include a clear call-to-action</li>
 <li>Use preview text to complement subject lines</li>
@@ -2215,6 +2215,7 @@ Route::get('/create-automation-logs-table', function() {
 });
 
 // Customer Portal Routes
+Route::get('/customer/licenses', [CustomerController::class, 'licenses'])->name('customer.licenses');
 Route::get('/customer/login', [CustomerController::class, 'showLogin'])->name('customer.login');
 Route::post('/customer/login', [CustomerController::class, 'login']);
 Route::get('/customer/register', [CustomerController::class, 'showRegister'])->name('customer.register');
@@ -2395,7 +2396,8 @@ Route::get('/subscription/callback', [CustomerController::class, 'subscriptionCa
 Route::post('/subscription/cancel', [CustomerController::class, 'cancelSubscription'])->name('subscription.cancel');
 Route::get('/customer/subscribe/{planId}', [CustomerController::class, 'subscribeToPlan']);
 
-// Paystack Subscription Webhook
+// Paystack Subscription Webhook (routes Secure API plugin sales to the
+// issuer service; everything else to the legacy subscription service)
 Route::post('/paystack/subscription-webhook', function (\Illuminate\Http\Request $request) {
     $payload = $request->all();
     $secret = \App\Models\Setting::get('paystack_secret_key');
@@ -2405,6 +2407,18 @@ Route::post('/paystack/subscription-webhook', function (\Illuminate\Http\Request
     
     if ($signature !== $expected) {
         return response('Invalid signature', 401);
+    }
+
+    $meta = $payload['data']['metadata'] ?? [];
+    if (is_string($meta)) {
+        $meta = json_decode($meta, true) ?: [];
+    }
+    $isSecureApi = !empty($meta['secure_api']) && in_array($meta['secure_api'], [true, 1, 'true', '1'], true);
+
+    if ($isSecureApi) {
+        $result = app(\App\Services\SecureApi\PaystackWebhookService::class)->handle($payload, $request->getContent());
+
+        return response()->json($result, ($result['status'] ?? 'ok') === 'error' ? 500 : 200);
     }
     
     $service = app(\App\Services\PaystackSubscriptionService::class);
@@ -2613,7 +2627,7 @@ Route::get('/setup-welcome-sequence', function () {
         $emailSeq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->first();
 
         if ($emailSeq) {
-            // Already exists in email_sequences â€” check if sequences record is missing
+            // Already exists in email_sequences Ã¢â‚¬â€ check if sequences record is missing
             $seqCheck = \Illuminate\Support\Facades\DB::table('sequences')->where('id', $emailSeq->id)->exists();
             if (!$seqCheck) {
                 \Illuminate\Support\Facades\DB::insert('INSERT INTO sequences (id, name, description, is_active, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())', [
@@ -2652,7 +2666,7 @@ Route::get('/setup-welcome-sequence', function () {
             ],
             [
                 'subject' => 'Real Results from Businesses Like Yours',
-                'body' => '<h2>Hey {{name}},</h2><p>Nothing speaks louder than real results. Here is what some of our clients have achieved using JoAla Ventures solutions:</p><blockquote style="border-left:4px solid #6366f1;padding:12px 20px;margin:16px 0;background:#f8f9fa;"><p>"The digital tools helped us launch our website in just one day. Professional and easy to customize!"</p><footer style="margin-top:8px;font-style:italic;">â€” Pastor Michael, Lagos</footer></blockquote><blockquote style="border-left:4px solid #6366f1;padding:12px 20px;margin:16px 0;background:#f8f9fa;"><p>"The email sequence templates saved us weeks of work. Our open rates increased by 40%!"</p><footer style="margin-top:8px;font-style:italic;">â€” Chioma, Digital Marketing Agency</footer></blockquote><blockquote style="border-left:4px solid #6366f1;padding:12px 20px;margin:16px 0;background:#f8f9fa;"><p>"The e-commerce starter kit was a game-changer. We launched our online store in under a week."</p><footer style="margin-top:8px;font-style:italic;">â€” Ade, Small Business Owner</footer></blockquote><p>Ready to join them? Check out our products:</p>{{products}}',
+                'body' => '<h2>Hey {{name}},</h2><p>Nothing speaks louder than real results. Here is what some of our clients have achieved using JoAla Ventures solutions:</p><blockquote style="border-left:4px solid #6366f1;padding:12px 20px;margin:16px 0;background:#f8f9fa;"><p>"The digital tools helped us launch our website in just one day. Professional and easy to customize!"</p><footer style="margin-top:8px;font-style:italic;">Ã¢â‚¬â€ Pastor Michael, Lagos</footer></blockquote><blockquote style="border-left:4px solid #6366f1;padding:12px 20px;margin:16px 0;background:#f8f9fa;"><p>"The email sequence templates saved us weeks of work. Our open rates increased by 40%!"</p><footer style="margin-top:8px;font-style:italic;">Ã¢â‚¬â€ Chioma, Digital Marketing Agency</footer></blockquote><blockquote style="border-left:4px solid #6366f1;padding:12px 20px;margin:16px 0;background:#f8f9fa;"><p>"The e-commerce starter kit was a game-changer. We launched our online store in under a week."</p><footer style="margin-top:8px;font-style:italic;">Ã¢â‚¬â€ Ade, Small Business Owner</footer></blockquote><p>Ready to join them? Check out our products:</p>{{products}}',
                 'delay_days' => 5,
             ],
             [
@@ -2741,7 +2755,7 @@ Route::get('/test-subscribe', function () {
     $lead = \App\Models\Lead::where('email', $email)->first();
 
     if ($lead && $lead->confirmed) {
-        // Already confirmed â€” enroll directly
+        // Already confirmed Ã¢â‚¬â€ enroll directly
         $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->where('is_active', true)->first();
         if ($seq && !$lead->sequence_id) {
             try {
@@ -2763,7 +2777,7 @@ Route::get('/test-subscribe', function () {
                 }
             }
         } else {
-            // New lead â€” auto-confirm to simulate clicking confirmation link
+            // New lead Ã¢â‚¬â€ auto-confirm to simulate clicking confirmation link
             $lead->confirm();
             $seq = \App\Models\EmailSequence::where('name', 'Welcome Sequence')->where('is_active', true)->first();
             if ($seq && !$lead->sequence_id) {
@@ -2858,7 +2872,7 @@ Route::get('/setup-branching', function () {
         foreach ($funnels as $funnelSlug => $config) {
             $funnel = \App\Models\Funnel::where('slug', $funnelSlug)->first();
             if (!$funnel) {
-                $out[] = "Funnel '{$funnelSlug}' not found â€” skipping";
+                $out[] = "Funnel '{$funnelSlug}' not found Ã¢â‚¬â€ skipping";
                 continue;
             }
             $out[] = "--- Processing: {$config['name']} (ID {$funnel->id}) ---";
@@ -2875,10 +2889,10 @@ Route::get('/setup-branching', function () {
             );
             \Illuminate\Support\Facades\DB::table('sequence_steps')->where('sequence_id', $reSeq->id)->delete();
             \Illuminate\Support\Facades\DB::table('sequence_steps')->insert([
-                ['sequence_id' => $reSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Did you get your free guide? + Special offer inside', 'body' => "Hi {{name}},\n\nI noticed you downloaded the free guide recently but haven't grabbed the premium version yet.\n\nI wanted to check in â€” do you have any questions about what's included?\n\nHere's what you're getting with the premium pack:\nâœ“ Everything in the free guide, supercharged\nâœ“ Done-for-you templates ready to use\nâœ“ Step-by-step implementation guides\nâœ“ Lifetime access + free updates\n\nCheck it out: https://joala.com.ng/store/{$config['slug']}\n\nReply if you have any questions!\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-                ['sequence_id' => $reSeq->id, 'step_order' => 2, 'delay_days' => 1, 'subject' => 'Still thinking about it? Here\'s what you\'ll miss', 'body' => "Hi {{name}},\n\nStill on the fence? I get it â€” you want to make sure it's worth it.\n\nHere's what customers say they wish they'd done sooner:\n\n1. Stop guessing â€” use proven templates instead of reinventing the wheel\n2. Save 20+ hours with ready-to-use workflows\n3. Start seeing results in days, not weeks\n\nThe free guide gives you the foundation. The premium pack gives you the complete system â€” and that's where the real results come from.\n\nSee what's inside: https://joala.com.ng/store/{$config['slug']}\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-                ['sequence_id' => $reSeq->id, 'step_order' => 3, 'delay_days' => 2, 'subject' => 'How one customer got 3x ROI in the first month', 'body' => "Hi {{name}},\n\n\"I was skeptical at first, but the templates saved me weeks of work. I implemented the system in one weekend and saw 3x ROI in the first month.\"\nâ€” A recent customer\n\nThis is what happens when you stop piecing things together and use a complete, proven system.\n\nThe premium pack includes everything you need:\nâœ“ Ready-to-use templates\nâœ“ Implementation guides\nâœ“ Best practices from years of experience\nâœ“ Lifetime updates\nâœ“ Priority support\n\nDon't wait â€” start seeing results today.\n\nGet it here: https://joala.com.ng/store/{$config['slug']}\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
-                ['sequence_id' => $reSeq->id, 'step_order' => 4, 'delay_days' => 3, 'subject' => 'Special offer: 20% off â€” just for you', 'body' => "Hi {{name}},\n\nI'm giving you an exclusive 20% discount to make this an easy yes.\n\nUse code: REENGAGE20 at checkout\n\nThis is a limited offer, so grab it while it's available:\nhttps://joala.com.ng/store/{$config['slug']}?coupon=REENGAGE20\n\nHere's why this is a no-brainer:\n- Proven templates that work\n- Complete system, not just fragments\n- Save hours of work\n- Lifetime access\n- 20% off right now\n\nDon't let this opportunity pass.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+                ['sequence_id' => $reSeq->id, 'step_order' => 1, 'delay_days' => 0, 'subject' => 'Did you get your free guide? + Special offer inside', 'body' => "Hi {{name}},\n\nI noticed you downloaded the free guide recently but haven't grabbed the premium version yet.\n\nI wanted to check in Ã¢â‚¬â€ do you have any questions about what's included?\n\nHere's what you're getting with the premium pack:\nÃ¢Å“â€œ Everything in the free guide, supercharged\nÃ¢Å“â€œ Done-for-you templates ready to use\nÃ¢Å“â€œ Step-by-step implementation guides\nÃ¢Å“â€œ Lifetime access + free updates\n\nCheck it out: https://joala.com.ng/store/{$config['slug']}\n\nReply if you have any questions!\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+                ['sequence_id' => $reSeq->id, 'step_order' => 2, 'delay_days' => 1, 'subject' => 'Still thinking about it? Here\'s what you\'ll miss', 'body' => "Hi {{name}},\n\nStill on the fence? I get it Ã¢â‚¬â€ you want to make sure it's worth it.\n\nHere's what customers say they wish they'd done sooner:\n\n1. Stop guessing Ã¢â‚¬â€ use proven templates instead of reinventing the wheel\n2. Save 20+ hours with ready-to-use workflows\n3. Start seeing results in days, not weeks\n\nThe free guide gives you the foundation. The premium pack gives you the complete system Ã¢â‚¬â€ and that's where the real results come from.\n\nSee what's inside: https://joala.com.ng/store/{$config['slug']}\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+                ['sequence_id' => $reSeq->id, 'step_order' => 3, 'delay_days' => 2, 'subject' => 'How one customer got 3x ROI in the first month', 'body' => "Hi {{name}},\n\n\"I was skeptical at first, but the templates saved me weeks of work. I implemented the system in one weekend and saw 3x ROI in the first month.\"\nÃ¢â‚¬â€ A recent customer\n\nThis is what happens when you stop piecing things together and use a complete, proven system.\n\nThe premium pack includes everything you need:\nÃ¢Å“â€œ Ready-to-use templates\nÃ¢Å“â€œ Implementation guides\nÃ¢Å“â€œ Best practices from years of experience\nÃ¢Å“â€œ Lifetime updates\nÃ¢Å“â€œ Priority support\n\nDon't wait Ã¢â‚¬â€ start seeing results today.\n\nGet it here: https://joala.com.ng/store/{$config['slug']}\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
+                ['sequence_id' => $reSeq->id, 'step_order' => 4, 'delay_days' => 3, 'subject' => 'Special offer: 20% off Ã¢â‚¬â€ just for you', 'body' => "Hi {{name}},\n\nI'm giving you an exclusive 20% discount to make this an easy yes.\n\nUse code: REENGAGE20 at checkout\n\nThis is a limited offer, so grab it while it's available:\nhttps://joala.com.ng/store/{$config['slug']}?coupon=REENGAGE20\n\nHere's why this is a no-brainer:\n- Proven templates that work\n- Complete system, not just fragments\n- Save hours of work\n- Lifetime access\n- 20% off right now\n\nDon't let this opportunity pass.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
                 ['sequence_id' => $reSeq->id, 'step_order' => 5, 'delay_days' => 4, 'subject' => 'Last call: This offer won\'t last', 'body' => "Hi {{name}},\n\nThis is your last chance to grab the {$config['name']} with 20% off.\n\nAfter today, the discount code REENGAGE20 expires.\n\nIf you're serious about growing your business, now is the time. The templates, workflows, and systems in this pack will save you weeks of work and help you get results faster.\n\nGet it now: https://joala.com.ng/store/{$config['slug']}?coupon=REENGAGE20\n\nIf money is tight, reply to this email and let me know. I might be able to work something out.\n\nJome\njoala.com.ng", 'created_at' => now(), 'updated_at' => now()],
             ]);
             $out[] = "Re-engagement sequence ID: {$reSeq->id} (5 steps)";
@@ -2947,13 +2961,13 @@ Route::get('/setup-branching', function () {
                         ['condition' => 'default', 'stage_id' => $stage4->id],
                     ],
                 ]);
-                $out[] = "Stage 3 conditional_stages updated â†’ converted=complete, not_converted=Stage {$stage4->id}";
+                $out[] = "Stage 3 conditional_stages updated Ã¢â€ â€™ converted=complete, not_converted=Stage {$stage4->id}";
             }
         }
 
         $out[] = "========================================";
         $out[] = "Branching setup complete for all 3 funnels!";
-        $out[] = "Flow: Stage 1 â†’ Stage 2 â†’ Stage 3 (wait 9d) â†’ branch â†’ Stage 4 (wait 5d) â†’ exit";
+        $out[] = "Flow: Stage 1 Ã¢â€ â€™ Stage 2 Ã¢â€ â€™ Stage 3 (wait 9d) Ã¢â€ â€™ branch Ã¢â€ â€™ Stage 4 (wait 5d) Ã¢â€ â€™ exit";
 
         return "<h2>Branching Setup Complete</h2><pre>" . implode("\n", $out) . "</pre>";
 
@@ -3043,47 +3057,47 @@ Route::get('/fix-membership-schema', function () {
         // Add discount_percent to membership_tiers
         try {
             $pdo->exec("ALTER TABLE membership_tiers ADD COLUMN discount_percent DECIMAL(5,2) DEFAULT 0 AFTER features");
-            $output[] = "âœ“ Added discount_percent column to membership_tiers";
+            $output[] = "Ã¢Å“â€œ Added discount_percent column to membership_tiers";
         } catch (\Exception $e) {
             if (str_contains($e->getMessage(), 'Duplicate column')) {
-                $output[] = "â†’ discount_percent already exists";
+                $output[] = "Ã¢â€ â€™ discount_percent already exists";
             } else {
-                $output[] = "âœ— discount_percent error: " . $e->getMessage();
+                $output[] = "Ã¢Å“â€” discount_percent error: " . $e->getMessage();
             }
         }
 
         // Add required_tier_id to courses
         try {
             $pdo->exec("ALTER TABLE courses ADD COLUMN required_tier_id INT DEFAULT NULL AFTER is_published");
-            $output[] = "âœ“ Added required_tier_id column to courses";
+            $output[] = "Ã¢Å“â€œ Added required_tier_id column to courses";
         } catch (\Exception $e) {
             if (str_contains($e->getMessage(), 'Duplicate column')) {
-                $output[] = "â†’ required_tier_id already exists";
+                $output[] = "Ã¢â€ â€™ required_tier_id already exists";
             } else {
-                $output[] = "âœ— required_tier_id error: " . $e->getMessage();
+                $output[] = "Ã¢Å“â€” required_tier_id error: " . $e->getMessage();
             }
         }
 
         // Update existing tiers with correct data
         try {
             $affected = $pdo->exec("UPDATE membership_tiers SET discount_percent = 5, price = 5000, billing_period = 'monthly' WHERE LOWER(name) LIKE '%basic%'");
-            $output[] = "âœ“ Updated Basic tier (5% discount, â‚¦5,000/month)";
+            $output[] = "Ã¢Å“â€œ Updated Basic tier (5% discount, Ã¢â€šÂ¦5,000/month)";
         } catch (\Exception $e) {
-            $output[] = "âœ— Basic tier update error: " . $e->getMessage();
+            $output[] = "Ã¢Å“â€” Basic tier update error: " . $e->getMessage();
         }
 
         try {
             $affected = $pdo->exec("UPDATE membership_tiers SET discount_percent = 10, price = 15000, billing_period = 'monthly' WHERE LOWER(name) LIKE '%pro%'");
-            $output[] = "âœ“ Updated Pro tier (10% discount, â‚¦15,000/month)";
+            $output[] = "Ã¢Å“â€œ Updated Pro tier (10% discount, Ã¢â€šÂ¦15,000/month)";
         } catch (\Exception $e) {
-            $output[] = "âœ— Pro tier update error: " . $e->getMessage();
+            $output[] = "Ã¢Å“â€” Pro tier update error: " . $e->getMessage();
         }
 
         try {
             $affected = $pdo->exec("UPDATE membership_tiers SET discount_percent = 20, price = 50000, billing_period = 'monthly' WHERE LOWER(name) LIKE '%vip%'");
-            $output[] = "âœ“ Updated VIP tier (20% discount, â‚¦50,000/month)";
+            $output[] = "Ã¢Å“â€œ Updated VIP tier (20% discount, Ã¢â€šÂ¦50,000/month)";
         } catch (\Exception $e) {
-            $output[] = "âœ— VIP tier update error: " . $e->getMessage();
+            $output[] = "Ã¢Å“â€” VIP tier update error: " . $e->getMessage();
         }
 
         return '<h2 style="color:#1e293b;font-family:sans-serif;">Membership Schema Update</h2><pre style="background:#f8fafc;padding:16px;border-radius:8px;font-size:14px;">' . implode("\n", $output) . '</pre>';

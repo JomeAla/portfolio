@@ -208,6 +208,22 @@ class CustomerController extends Controller
         return view('front.customer.settings', ['customer' => $customer]); 
     }
 
+    /**
+     * Customer's WP Secure API Gateway licenses (My Licenses).
+     */
+    public function licenses()
+    {
+        $customer = $this->requireCustomer();
+        if (is_a($customer, '\Illuminate\Http\RedirectResponse')) return $customer;
+
+        $email = (string) ($customer['email'] ?? '');
+        $licenses = $email !== ''
+            ? \App\Models\SecureApiLicense::where('meta->email', $email)->orderByDesc('id')->get()
+            : collect();
+
+        return view('front.customer.licenses', compact('customer', 'licenses'));
+    }
+
     public function updateSettings(Request $request)
     {
         $customer = $this->requireCustomer();

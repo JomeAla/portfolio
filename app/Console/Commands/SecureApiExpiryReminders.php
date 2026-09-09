@@ -17,9 +17,19 @@ class SecureApiExpiryReminders extends Command
 
     protected $description = 'Email customers whose Secure API licenses expire in 7/3/1 days';
 
+    protected function applyMailSettings(): void
+    {
+        if (\App\Models\Setting::get('mail_mailer') === null && \App\Models\Setting::get('mail_host') === null) {
+            \Illuminate\Support\Facades\Config::set('mail.default', 'log');
+            \Illuminate\Support\Facades\Config::set('mail.mailers.log', ['transport' => 'log']);
+            return;
+        }
+        $this->applyMailConfig();
+    }
+
     public function handle(LicenseService $licenses): int
     {
-        $this->applyMailConfig();
+        $this->applyMailSettings();
         $sent = 0;
 
         foreach ($licenses->expiringSoon() as $license) {

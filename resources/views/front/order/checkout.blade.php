@@ -496,7 +496,10 @@ function payWithPaystack() {
                 product_title: productTitle,
                 name: name,
                 phone: phone,
-                coupon_code: coupon || ''
+                coupon_code: coupon || '',
+                secure_api: <?php echo str_starts_with((string) $product->slug, 'secure-api-') ? 'true' : 'false'; ?>,
+                plan: '<?php echo str_starts_with((string) $product->slug, 'secure-api-') ? substr($product->slug, 11) : ''; ?>',
+                affiliate_id: '<?php echo isset($_GET['ref']) ? e($_GET['ref']) : ''; ?>'
             },
             callback: function(response) {
                 window.location.href = '/order/success?reference=' + response.reference + '&trxref=' + response.trxref;

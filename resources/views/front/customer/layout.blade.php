@@ -43,9 +43,12 @@ footer { display: none !important; }
                 <a href="/customer/orders" class="sidebar-link {{ request()->is('customer/orders') ? 'active' : '' }}">
                     <i class="fas fa-shopping-bag w-5"></i> My Orders
                 </a>
-                <a href="/customer/downloads" class="sidebar-link {{ request()->is('customer/downloads') ? 'active' : '' }}">
-                    <i class="fas fa-download w-5"></i> Downloads
-                </a>
+<a href="/customer/downloads" class="sidebar-link {{ request()->is('customer/downloads') ? 'active' : '' }}">
+<i class="fas fa-download w-5"></i> Downloads
+</a>
+<a href="/customer/licenses" class="sidebar-link {{ request()->is('customer/licenses') ? 'active' : '' }}">
+<i class="fas fa-key w-5"></i> My Licenses
+</a>
                 <a href="/customer/subscriptions" class="sidebar-link {{ request()->is('customer/subscriptions') ? 'active' : '' }}">
                     <i class="fas fa-credit-card w-5"></i> Subscriptions
                 </a>

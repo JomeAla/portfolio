@@ -62,6 +62,23 @@
                     <i class="fas fa-tag w-5"></i>
                     <span>Coupons</span>
                 </a>
+                <div class="px-6 py-3 text-slate-400 text-sm font-semibold uppercase">Secure API</div>
+                <a href="/admin/secure-api/licenses" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
+                    <i class="fas fa-key w-5"></i>
+                    <span>Licenses</span>
+                </a>
+                <a href="/admin/secure-api/agency" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
+                    <i class="fas fa-users w-5"></i>
+                    <span>Agency</span>
+                </a>
+                <a href="/admin/secure-api/plans" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
+                    <i class="fas fa-layer-group w-5"></i>
+                    <span>Plans</span>
+                </a>
+                <a href="/admin/secure-api/events" class="flex items-center px-6 py-2 hover:bg-slate-800 text-sm">
+                    <i class="fas fa-bolt w-5"></i>
+                    <span>Webhook Events</span>
+                </a>
                 <a href="/admin/pages" class="flex items-center px-6 py-3 hover:bg-slate-800">
                     <i class="fas fa-file-alt w-5"></i>
                     <span>Pages</span>

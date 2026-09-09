@@ -73,3 +73,8 @@ Route::post('/submit-lead', function (Request $request) {
         ], 500);
     }
 });
+// ---------------------------------------------------------------------------
+// Secure API Gateway (WP plugin) - central issuer endpoints (JoAla Ventures)
+// ---------------------------------------------------------------------------
+Route::post('/secure-api/activate', [\App\Http\Controllers\Api\SecureApiActivationController::class, 'activate']);
+Route::post('/secure-api/webhook', [\App\Http\Controllers\Api\SecureApiWebhookController::class, 'handle']);

@@ -86,6 +86,7 @@ class SecureApiAdminController extends Controller
             'price_monthly'    => 'required|numeric|min:0',
             'quota_monthly'    => 'required|integer|min:-1',
             'rate_rpm'         => 'required|integer|min:1',
+            'rpm_override'     => 'nullable|integer|min:1',
             'service_accounts' => 'required|integer|min:-1',
             'trial_days'       => 'required|integer|min:0',
             'grace_days'       => 'required|integer|min:0',

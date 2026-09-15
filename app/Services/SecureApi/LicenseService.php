@@ -178,8 +178,25 @@ class LicenseService
             'expires_at'       => $license->expires_at?->toDateTimeString() ?? '',
             'max_activations'  => (int) $license->max_activations,
             'type'             => $license->type,
+            'rpm'              => $this->effectiveRpm($license->plan),
             'message'          => 'ok',
         ];
+    }
+
+    /**
+     * Effective RPM for a plan: admin override wins over the catalog value.
+     */
+    public function effectiveRpm(string $planSlug): int
+    {
+        $plan = SecureApiPlan::where('slug', $planSlug)->first();
+
+        if (!$plan) {
+            return 600;
+        }
+
+        return $plan->rpm_override !== null && (int) $plan->rpm_override > 0
+            ? (int) $plan->rpm_override
+            : (int) $plan->rate_rpm;
     }
 
     public function setStatus(int $id, string $status): bool

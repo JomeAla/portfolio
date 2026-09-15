@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
@@ -36,9 +36,13 @@ use App\Http\Controllers\Admin\EmailCampaignController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\ProcessController;
 
+// Public documentation for the WP Secure API Gateway plugin.
+Route::get('/secure-api-gateway/docs', function () {
+    return view('front.secure-api-docs');
+})->name('secure-api.docs');
+
 // Sitemap
-Route::get('/sitemap.xml', function () {
-    $posts = \App\Models\BlogPost::published()->orderBy('published_at', 'desc')->get();
+Route::get('/sitemap.xml', function () {    $posts = \App\Models\BlogPost::published()->orderBy('published_at', 'desc')->get();
     $projects = \App\Models\Project::orderBy('id', 'desc')->get();
     $products = \App\Models\Product::where('is_active', true)->orderBy('id', 'desc')->get();
     return response()->view('sitemap', compact('posts', 'projects', 'products'))->header('Content-Type', 'application/xml');

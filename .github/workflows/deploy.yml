@@ -138,7 +138,7 @@ jobs:
             fi
 
             echo "Running Secure API migrations (scoped - legacy schema is managed separately)..."
-            ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "cd $DEPLOY_PATH && php artisan migrate --path=database/migrations/2026_09_04_000001_create_secure_api_tables.php --force 2>&1 || echo 'migrate unavailable - run manually'"
+            ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "cd $DEPLOY_PATH && php artisan migrate --path=database/migrations/2026_09_04_000001_create_secure_api_tables.php --path=database/migrations/2026_09_09_000002_add_rpm_override_to_secure_api_plans.php --force 2>&1 || echo 'migrate unavailable - run manually'"
 
             echo "Seeding Secure API plans/products (idempotent)..."
             ssh -o StrictHostKeyChecking=no -o BatchMode=yes $SSH_USERNAME@$SSH_HOST "cd $DEPLOY_PATH && php artisan db:seed --class=SecureApiSeeder --force 2>&1 || echo 'seeder unavailable - run manually'"

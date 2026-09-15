@@ -10,7 +10,7 @@ class SecureApiPlan extends Model
 
     protected $fillable = [
         'slug', 'name', 'price_monthly', 'quota_monthly', 'rate_rpm',
-        'service_accounts', 'features', 'is_default', 'trial_days', 'grace_days',
+        'rpm_override', 'service_accounts', 'features', 'is_default', 'trial_days', 'grace_days',
     ];
 
     protected $casts = [

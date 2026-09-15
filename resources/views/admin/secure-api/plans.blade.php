@@ -16,6 +16,7 @@
                     <th class="text-left px-4 py-3">Price (₦)</th>
                     <th class="text-left px-4 py-3">Quota/mo</th>
                     <th class="text-left px-4 py-3">RPM</th>
+                    <th class="text-left px-4 py-3">RPM Override</th>
                     <th class="text-left px-4 py-3">Service Accounts</th>
                     <th class="text-left px-4 py-3">Trial / Grace</th>
                     <th class="text-left px-4 py-3">Save</th>
@@ -34,6 +35,9 @@
                             <td class="px-4 py-3"><input type="number" step="0.01" min="0" name="price_monthly" value="{{ $plan->price_monthly }}" class="w-24 border border-slate-300 rounded px-2 py-1"></td>
                             <td class="px-4 py-3"><input type="number" min="-1" name="quota_monthly" value="{{ $plan->quota_monthly }}" class="w-20 border border-slate-300 rounded px-2 py-1"></td>
                             <td class="px-4 py-3"><input type="number" min="1" name="rate_rpm" value="{{ $plan->rate_rpm }}" class="w-20 border border-slate-300 rounded px-2 py-1"></td>
+                            <td class="px-4 py-3">
+                                <input type="number" min="1" name="rpm_override" value="{{ $plan->rpm_override ?? '' }}" placeholder="{{ $plan->rate_rpm }}" class="w-20 border border-slate-300 rounded px-2 py-1" title="Admin override (empty = default)">
+                            </td>
                             <td class="px-4 py-3"><input type="number" min="-1" name="service_accounts" value="{{ $plan->service_accounts }}" class="w-20 border border-slate-300 rounded px-2 py-1"></td>
                             <td class="px-4 py-3">
                                 <div class="flex gap-2">
